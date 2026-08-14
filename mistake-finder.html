@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mistake Finder — Pull Your Games, Find Your Leaks</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root{
+    --ink: #23241f;
+    --parchment: #f6f1e4;
+    --wood-light: #e8dcc4;
+    --wood-dark: #8a6a4a;
+    --wood-darker: #5f4630;
+    --feather-teal: #2f5d5a;
+    --feather-teal-light: #4f8783;
+    --rust: #b5502f;
+    --gold: #b8923f;
+    --line: rgba(35,36,31,0.12);
+    --panel: #fffdf8;
+    --mistake-red: #9c3b2e;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--parchment);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(47,93,90,0.05), transparent 45%),
+      radial-gradient(circle at 90% 85%, rgba(181,80,47,0.05), transparent 45%);
+    color: var(--ink);
+    font-family: 'Source Sans 3', sans-serif;
+    min-height: 100vh;
+  }
+  .wrap{ max-width: 1180px; margin: 0 auto; padding: 28px 20px 80px; }
+  header{
+    display:flex; align-items: flex-end; justify-content: space-between; gap: 24px;
+    padding-bottom: 18px; margin-bottom: 22px; border-bottom: 2px solid var(--ink); flex-wrap: wrap;
+  }
+  .brand{ display:flex; align-items:center; gap: 14px; }
+  .feather-mark{ width: 40px; height: 40px; flex-shrink:0; }
+  h1{ font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(24px, 4vw, 38px); margin:0; letter-spacing: -0.01em; line-height: 1; }
+  .tag{ font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--feather-teal); font-weight:600; margin-top:6px;}
+  .subtitle{ font-size: 14px; color: #6b6a5f; max-width: 320px; text-align:right; line-height:1.5;}
+
+  /* --- Setup panel --- */
+  .setup-panel{ background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 22px; margin-bottom: 22px; }
+  .setup-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; align-items:end; }
+  .field label{ display:block; font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color: var(--rust); margin-bottom:6px; font-weight:600; }
+  .field input, .field select{
+    width:100%; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 4px; font-family:'Source Sans 3',sans-serif;
+    font-size: 15px; background: #fff; color: var(--ink);
+  }
+  .field input:focus, .field select:focus{ outline:none; border-color: var(--feather-teal); }
+  .fetch-btn{
+    font-family:'Fraunces',serif; font-weight:600; font-size: 15px; background: var(--ink); color: var(--parchment);
+    border:none; padding: 11px 22px; border-radius: 4px; cursor:pointer; white-space:nowrap;
+  }
+  .fetch-btn:hover{ background: var(--feather-teal); }
+  .fetch-btn:disabled{ opacity:0.4; cursor:wait; }
+  .status-line{ margin-top: 14px; font-family:'JetBrains Mono',monospace; font-size: 12.5px; color:#6b6a5f; min-height: 18px; }
+  .status-line.error{ color: var(--mistake-red); }
+
+  /* --- Summary stats --- */
+  .stats-row{ display:flex; gap: 14px; margin-bottom: 22px; flex-wrap:wrap; }
+  .stat-card{ background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 16px 20px; flex:1; min-width: 140px; }
+  .stat-num{ font-family:'Fraunces',serif; font-size: 30px; font-weight:700; color: var(--feather-teal); line-height:1; }
+  .stat-label{ font-family:'JetBrains Mono',monospace; font-size: 11px; text-transform:uppercase; letter-spacing:0.05em; color:#8a897c; margin-top:6px; }
+
+  /* --- Leak list --- */
+  .leak-list{ display:flex; flex-direction:column; gap: 10px; margin-bottom: 26px; }
+  .leak-item{
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 14px 18px;
+    display:flex; align-items:center; gap: 16px; cursor:pointer; transition: border-color 0.15s;
+  }
+  .leak-item:hover{ border-color: var(--rust); }
+  .leak-item.active{ border-color: var(--feather-teal); background: rgba(47,93,90,0.05); }
+  .leak-count{
+    font-family:'Fraunces',serif; font-size: 22px; font-weight:700; color: var(--mistake-red);
+    min-width: 46px; text-align:center; background: rgba(156,59,46,0.08); border-radius: 4px; padding: 4px 0;
+  }
+  .leak-info{ flex:1; }
+  .leak-title{ font-family:'Source Sans 3',sans-serif; font-weight:600; font-size:14.5px; }
+  .leak-sub{ font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#8a897c; margin-top:2px; }
+
+  /* --- Puzzle panel --- */
+  .puzzle-panel{ display:grid; grid-template-columns: 1fr 380px; gap: 22px; align-items:start; }
+  @media (max-width: 900px){ .puzzle-panel{ grid-template-columns: 1fr; } }
+  .board-panel{ background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 22px; }
+  .board-outer{ display:flex; justify-content:center; margin: 6px 0 18px; }
+  .board-frame{ background: linear-gradient(160deg, var(--wood-darker), var(--wood-dark)); padding: 14px; border-radius: 4px; box-shadow: 0 12px 30px -14px rgba(35,36,31,0.5); }
+  .board{ display:grid; grid-template-columns: repeat(8, 46px); grid-template-rows: repeat(8, 46px); border: 2px solid var(--wood-darker); }
+  .sq{ display:flex; align-items:center; justify-content:center; font-size: 32px; position:relative; user-select:none; }
+  .sq.light{ background: var(--wood-light); }
+  .sq.dark{ background: var(--wood-dark); }
+  .piece{ line-height:1; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.25)); }
+  .piece.black-piece{ filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5)); }
+  .coord{ position:absolute; font-family:'JetBrains Mono',monospace; font-size:9px; color: rgba(35,36,31,0.4); }
+  .coord.file{ bottom:1px; right:3px; } .coord.rank{ top:1px; left:3px; }
+
+  .puzzle-prompt{ font-family:'Fraunces',serif; font-size: 18px; font-weight:600; text-align:center; margin-bottom:4px; }
+  .puzzle-meta{ text-align:center; font-family:'JetBrains Mono',monospace; font-size: 12px; color:#8a897c; margin-bottom: 12px; }
+
+  .candidate-row{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top: 10px; }
+  .cand-btn{
+    font-family:'JetBrains Mono',monospace; font-size: 13px; background: rgba(47,93,90,0.08); border: 1px solid var(--feather-teal-light);
+    color: var(--feather-teal); padding: 7px 14px; border-radius: 4px; cursor:pointer;
+  }
+  .cand-btn:hover{ background: var(--feather-teal); color: var(--parchment); }
+  .your-move-btn{
+    font-family:'JetBrains Mono',monospace; font-size: 13px; background: rgba(156,59,46,0.08); border: 1px solid var(--mistake-red);
+    color: var(--mistake-red); padding: 7px 14px; border-radius: 4px; cursor:pointer;
+  }
+  .your-move-btn:hover{ background: var(--mistake-red); color: var(--parchment); }
+  .reset-btn{
+    font-family:'JetBrains Mono',monospace; font-size: 12px; background: none; border: 1px solid var(--line);
+    color: #6b6a5f; padding: 6px 12px; border-radius: 4px; cursor:pointer; display:block; margin: 14px auto 0;
+  }
+
+  /* --- Explanation panel --- */
+  .explain-panel{ background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 22px; position:sticky; top:20px; }
+  .explain-eyebrow{ font-family:'JetBrains Mono',monospace; font-size: 11px; color: var(--rust); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px; }
+  .explain-move{ font-family:'Fraunces',serif; font-size: 24px; font-weight:600; margin: 0 0 12px; }
+  .explain-text{ font-size: 15px; line-height: 1.6; color: #2e2f28; margin-bottom: 14px; }
+  .game-links{ margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .game-links h4{ font-family:'Fraunces',serif; font-size:13px; margin:0 0 8px; color: var(--feather-teal); }
+  .game-links a{ display:block; font-family:'JetBrains Mono',monospace; font-size: 11.5px; color: var(--rust); text-decoration:none; margin-bottom:5px; }
+  .game-links a:hover{ text-decoration:underline; }
+
+  .empty-state{ text-align:center; padding: 60px 20px; color: #8a897c; font-family:'Fraunces',serif; font-size: 17px; }
+  .how-it-works{ margin-top: 6px; font-size: 13px; color: #6b6a5f; line-height:1.6; }
+  .how-it-works ol{ margin: 8px 0 0 18px; padding:0; }
+  .how-it-works li{ margin-bottom: 4px; }
+
+  ::selection{ background: var(--gold); color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <svg class="feather-mark" viewBox="0 0 48 48" fill="none">
+        <path d="M38 6C24 8 14 18 10 32c-1 4-1 7 1 9 2-4 5-8 9-11-2 4-3 8-2 11 3-1 6-4 8-8-1 3-1 6 1 8 4-2 7-6 8-11 3-1 6-4 8-8-3 0-6 1-8 3 3-3 5-7 5-11-3 1-6 3-8 6 2-4 4-9 4-14z" stroke="#2f5d5a" stroke-width="1.6" fill="rgba(47,93,90,0.08)"/>
+      </svg>
+      <div>
+        <div class="tag">Chess Trainer · Mistake Finder</div>
+        <h1>Find Your Opening Leaks</h1>
+      </div>
+    </div>
+    <div class="subtitle">Pulls your real games from Chess.com, diffs them against the lines you're studying, and turns your most common deviations into puzzles.</div>
+  </header>
+
+  <div class="setup-panel">
+    <div class="setup-grid">
+      <div class="field">
+        <label for="usernameInput">Chess.com Username</label>
+        <input type="text" id="usernameInput" placeholder="e.g. hikaru">
+      </div>
+      <div class="field">
+        <label for="openingSelect">Opening You're Studying</label>
+        <select id="openingSelect">
+          <option value="bird">The Bird Opening (1. f4)</option>
+          <option value="philidor">The Philidor Defense (1...d6)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="colorSelect">Repertoire Side</label>
+        <select id="colorSelect">
+          <option value="w">White (Bird)</option>
+          <option value="b">Black (Philidor)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="monthsInput">Months of History</label>
+        <input type="number" id="monthsInput" value="3" min="1" max="12">
+      </div>
+      <div class="field">
+        <button class="fetch-btn" id="fetchBtn">Fetch &amp; Analyze</button>
+      </div>
+    </div>
+    <div class="status-line" id="statusLine">
+      Enter a Chess.com username, pick which repertoire you're training, and fetch. Nothing is stored — this runs entirely in your browser against the public Chess.com API.
+    </div>
+  </div>
+
+  <div id="statsRow" class="stats-row" style="display:none;"></div>
+  <div id="leakSection" style="display:none;">
+    <div class="setup-panel" style="padding: 18px 22px;">
+      <strong style="font-family:'Fraunces',serif;">Your most common deviations</strong>
+      <div class="how-it-works">Click any leak below to load it as a puzzle. The count is how many of your fetched games left theory at that exact position.</div>
+    </div>
+    <div class="leak-list" id="leakList"></div>
+  </div>
+
+  <div id="puzzleSection" style="display:none;">
+    <div class="puzzle-panel">
+      <div class="board-panel">
+        <div class="puzzle-prompt" id="puzzlePrompt">—</div>
+        <div class="puzzle-meta" id="puzzleMeta">—</div>
+        <div class="board-outer">
+          <div class="board-frame"><div class="board" id="board"></div></div>
+        </div>
+        <div class="candidate-row" id="candidateRow"></div>
+        <button class="reset-btn" id="resetBtn">↺ Reset position</button>
+      </div>
+      <div class="explain-panel">
+        <div class="explain-eyebrow">Why This Matters</div>
+        <div class="explain-move" id="explainMove">—</div>
+        <div class="explain-text" id="explainText">Click a candidate move above to see the reasoning theory gives for it, or click "What I actually played" to see where the game diverged.</div>
+        <div class="game-links" id="gameLinks" style="display:none;">
+          <h4>Games where this happened</h4>
+          <div id="gameLinksList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="emptyState" class="empty-state">Fetch your games above to see where your play diverges from theory.</div>
+</div>
+
+<script>
+const PIECE_UNICODE = { p:'♟', n:'♞', b:'♝', r:'♜', q:'♛', k:'♚', P:'♙', N:'♘', B:'♗', R:'♖', Q:'♕', K:'♔' };
+const DATA_BIRD = [
+{ section: "A · 1...d5 — Main Line (Reversed Dutch)", lines: [
+  { code:"A1", title:"Classical Bird / Leningrad-Bird setup", idea:"Both sides fianchetto onto the same long diagonal, fighting over e5 from range.",
+    moves:[
+      ["f4","Claims kingside space, eyes e5, prepares a knight/bishop-led attack rather than a pawn storm."],
+      ["d5","Black takes the center directly, denying White e4 forever."],
+      ["Nf3","Develops toward e5; guards against ...Qh4+ ideas since the knight covers h4's approach."],
+      ["Nf6","Mirrors, developing and preparing kingside castling."],
+      ["e3","Opens the f1-bishop's diagonal and supports a future d4 push without blocking the f-pawn's influence."],
+      ["g6","Prepares a kingside fianchetto to contest the long diagonal instead of holding the center with pawns."],
+      ["b3","Prepares Bb2, aiming the bishop at e5 from range."],
+      ["Bg7","Completes Black's fianchetto, mirroring White's plan on the same diagonal."],
+      ["Bb2","The point of b3: the bishop now pressures e5 and the long diagonal."],
+      ["O-O","Gets the king safe before the middlegame fight begins."],
+      ["Be2","Modest development; keeps the bishop flexible and prepares O-O."],
+      ["c5","Grabs queenside space and prepares ...Nc6, adding pressure toward d4/e5."],
+      ["O-O","Completes development — king is safe on both sides, ready for a normal middlegame."],
+      ["Nc6","Completes development, adds a third attacker/defender of e5."]
+    ]},
+  { code:"A2", title:"Stonewall setup", idea:"Black stonewalls White's own weapon — a mirrored, solid structure with the queen heading toward the kingside.",
+    moves:[
+      ["f4","Same core idea: space and a delayed kingside attack."],
+      ["d5","Controls the center."],
+      ["Nf3","Natural development, eyes e5."],
+      ["g6","Prepares ...Bg7, same long-diagonal idea as A1."],
+      ["e3","Opens the light-squared bishop's diagonal."],
+      ["Bg7","Fianchetto complete."],
+      ["Be2","Quiet development, avoids committing the bishop to a more aggressive diagonal yet."],
+      ["Nf6","Develops and prepares castling."],
+      ["O-O","King safety first."],
+      ["O-O","Black castles too — both kings tucked away before the real fight starts."],
+      ["d3","Keeps the center flexible; avoids letting Black trade off White's key f4-pawn structure too easily."],
+      ["c5","Queenside space, prepares ...Nc6."],
+      ["Qe1","The key Bird maneuver: the queen heads to h4 or g3 to support a kingside pawn storm or direct attack."],
+      ["Nc6","Completes development, pressures d4/e5."]
+    ]},
+  { code:"A3", title:"Bird vs. Queen's Gambit structure", idea:"Same tabiya as A1, reached via a different move order — proof these lines transpose.",
+    moves:[
+      ["f4","Space grab."],
+      ["d5","Center control."],
+      ["Nf3","Development toward e5."],
+      ["c5","Black leads with queenside expansion instead of ...Nf6 first — same eventual structure, different move order."],
+      ["e3","Opens the bishop's diagonal, same plan as A1."],
+      ["Nc6","Develops, adds pressure on d4/e5."],
+      ["b3","Prepares the fianchetto."],
+      ["Nf6","Develops toward e4/e5 control."],
+      ["Bb2","Bishop aims down the long diagonal at e5 and beyond."],
+      ["g6","Prepares Black's own fianchetto."],
+      ["Be2","Completes light-square development for White."],
+      ["Bg7","Completes Black's fianchetto."],
+      ["O-O","King safety."],
+      ["O-O","Black castles too — same tabiya as A1, different move order."]
+    ]},
+  { code:"A4", title:"Double Fianchetto", idea:"White's most modern try: fianchetto both bishops for maximum long-diagonal pressure.",
+    moves:[
+      ["f4","Space grab."],
+      ["d5","Center control."],
+      ["Nf3","Development."],
+      ["Nf6","Mirrors development."],
+      ["g3","Prepares Bg2 instead of Be2 — White fianchettoes BOTH bishops eventually."],
+      ["g6","Black matches with its own fianchetto plan."],
+      ["Bg2","Points at the a8-h1 diagonal, adding pressure toward d5 and beyond."],
+      ["Bg7","Completes Black's mirroring fianchetto."],
+      ["O-O","King safety."],
+      ["O-O","Black castles too."],
+      ["d3","Supports a future e4 break and keeps the center elastic."],
+      ["c5","Queenside space and pressure on d4."],
+      ["Qe1","Heads toward h4/g3 for kingside ideas, the standard Bird queen maneuver."],
+      ["Nc6","Completes development."],
+      ["Ne5","The thematic outpost: hard to dislodge since ...Nxe5 opens the long diagonal further in White's favor."]
+    ]},
+  { code:"A5", title:"Bird Reversed Leningrad Dutch", idea:"Black pins early to probe whether White reacts passively or actively.",
+    moves:[
+      ["f4","Space grab."],
+      ["d5","Center control."],
+      ["Nf3","Development."],
+      ["Nf6","Mirrors development."],
+      ["g3","Prepares the fianchetto."],
+      ["Bg4","An early pin, disrupting White's plan to develop the f1-bishop smoothly."],
+      ["Bg2","White develops anyway, accepting the pin rather than wasting a tempo on h3."],
+      ["Nbd7","Develops the other knight, preparing ...e6 and central solidity."],
+      ["O-O","King safety, ignoring the pin since it isn't dangerous yet."],
+      ["e6","Solidifies the center and opens the f8-bishop's diagonal."],
+      ["d3","Supports a future e4 break."],
+      ["Bd6","Develops actively, eyeing the h2-b8 diagonal and preparing ...O-O."],
+      ["Nc3","Develops, adds pressure on d5 and prepares e4."],
+      ["O-O","King safety complete for Black."]
+    ]},
+  { code:"A6", title:"Anti-Dutch approach", idea:"White avoids g3 in favor of the modest, harder-to-attack Be2 setup.",
+    moves:[
+      ["f4","Space grab."],
+      ["d5","Center control."],
+      ["Nf3","Development."],
+      ["Nf6","Mirrors."],
+      ["e3","Opens the bishop's diagonal — White chooses the modest Be2 setup instead of g3/Bg2."],
+      ["c5","Queenside space, prepares ...Nc6."],
+      ["Be2","Simple, solid development — less ambitious than Bg2 but harder for Black to attack."],
+      ["Nc6","Develops, pressures d4."],
+      ["O-O","King safety."],
+      ["g6","Black still fianchettoes even though White didn't mirror it."],
+      ["b3","Prepares Bb2, adding pressure to the long diagonal despite already playing e3."],
+      ["Bg7","Completes Black's fianchetto."],
+      ["Bb2","Bishop joins the pressure on e5/long diagonal."],
+      ["O-O","King safety complete — a slightly quieter version of A1/A3."]
+    ]},
+  { code:"A7", title:"Early ...Bf5 development", idea:"Black solves the classic bad-bishop problem early by developing outside the pawn chain.",
+    moves:[
+      ["f4","Space grab."],
+      ["d5","Center control."],
+      ["Nf3","Development."],
+      ["Bf5","Develops the light-squared bishop OUTSIDE the pawn chain before ...e6 — solving the 'bad bishop' problem early."],
+      ["e3","Opens the f1-bishop's diagonal; safe now since Black's light bishop already escaped."],
+      ["e6","Solidifies the center — the bishop isn't trapped behind this pawn."],
+      ["Be2","Quiet development."],
+      ["Nf6","Develops toward e4/e5."],
+      ["O-O","King safety."],
+      ["Bd6","Repositions actively, eyeing h2, preparing to meet Qe1-h4 ideas with control of key dark squares."],
+      ["b3","Prepares Bb2."],
+      ["O-O","King safety complete for Black."],
+      ["Bb2","Completes White's long-diagonal setup."],
+      ["Nbd7","Develops the last minor piece, ready to support central breaks with ...c5 or ...e5."]
+    ]}
+]},
+{ section: "B · 1...e5 — From's Gambit", lines: [
+  { code:"B1", title:"Main Line From's Gambit", idea:"Black sacrifices a pawn to rip open the center before White's king finds safety.",
+    moves:[
+      ["f4","Space grab, but it costs the e1-h4 diagonal — exactly what From's Gambit punishes."],
+      ["e5","The gambit: offers a pawn to open lines immediately, before White consolidates."],
+      ["fxe5","Accepting is nearly forced; declining loses the whole point of playing f4."],
+      ["d6","Strikes back at the e5-pawn immediately, refusing to let White simply hold the extra material."],
+      ["exd6","Grabs a second pawn, but falls further behind in development."],
+      ["Bxd6","Recaptures with tempo-gaining development: the bishop aims straight at h2, ready to castle and attack fast."]
+    ]},
+  { code:"B2", title:"From's Gambit — Accepted, ...Nf6 setup", idea:"The critical shock idea: ...g5 threatens to deflect the defending knight.",
+    moves:[
+      ["f4","Space grab."],
+      ["e5","The gambit offer."],
+      ["fxe5","Accepts."],
+      ["d6","Strikes back at the pawn."],
+      ["exd6","Grabs the second pawn."],
+      ["Bxd6","Develops with threats down the h2-diagonal."],
+      ["Nf3","The critical defensive try — blocks the diagonal and covers h4, the two squares Black wants most."],
+      ["g5","The shock point of From's Gambit: threatens ...g4 to deflect the f3-knight, reopening the diagonal and h4 for an attack."]
+    ]},
+  { code:"B3", title:"From's Gambit Declined", idea:"White sidesteps all From's Gambit theory by refusing the pawn.",
+    moves:[
+      ["f4","Space grab."],
+      ["e5","The gambit offer."],
+      ["e4","White refuses the pawn, locking into a structure resembling a reversed King's Gambit — avoids all From's theory but concedes central space."]
+    ]},
+  { code:"B4", title:"From's Gambit — Lipke Variation", idea:"White grabs the pawn back with the knight instead of the pawn, simplifying Black's attacking chances.",
+    moves:[
+      ["f4","Space grab."],
+      ["e5","The gambit offer."],
+      ["fxe5","Accepts."],
+      ["d6","Strikes back."],
+      ["Nf3","Instead of taking the second pawn immediately, White develops first — a more solid, modern approach."],
+      ["dxe5","Black recaptures the pawn back, restoring material balance."],
+      ["Nxe5","White grabs the pawn with the knight, reducing Black's attacking chances since there's no bishop on d6 yet."],
+      ["Nd7","Challenges the knight immediately, fighting for the initiative back."]
+    ]},
+  { code:"B5", title:"From's Gambit — Wagner-Kmoch Line", idea:"The main theoretical battleground: White directly challenges Black's dark-squared bishop.",
+    moves:[
+      ["f4","Space grab."],
+      ["e5","The gambit offer."],
+      ["fxe5","Accepts."],
+      ["d6","Strikes back."],
+      ["exd6","Grabs the second pawn."],
+      ["Bxd6","Develops with threats."],
+      ["g3","Prepares Bg2, directly challenging the h2-b8 diagonal Black's bishop just claimed."]
+    ]},
+  { code:"B6", title:"From's Gambit — Bg7 setup (rare)", idea:"A higher-risk move order avoiding some of White's most prepared responses.",
+    moves:[
+      ["f4","Space grab."],
+      ["e5","The gambit offer."],
+      ["fxe5","Accepts."],
+      ["Nc6","Instead of ...d6 first, Black develops immediately, planning to regain the pawn with pieces."],
+      ["Nf3","The natural defensive developing move, covering e5/h4."],
+      ["g5","Same shock idea as B2, reached a move earlier without committing the d-pawn yet."]
+    ]}
+]},
+{ section: "C · 1...Nf6 — Flexible Systems", lines: [
+  { code:"C1", title:"Main Flexible Line", idea:"Black waits to see White's plan before committing the center.",
+    moves:[
+      ["f4","Space grab."],
+      ["Nf6","Develops flexibly without committing the center yet, waiting to see White's plan first."],
+      ["Nf3","Development."],
+      ["g6","Prepares a fianchetto."],
+      ["e3","Opens the bishop's diagonal."],
+      ["Bg7","Completes the fianchetto."],
+      ["Be2","Quiet development."],
+      ["O-O","King safety."],
+      ["O-O","King safety for White too."],
+      ["d6","Finally commits the center — From's Gambit ideas are unavailable once the king is castled and developed."],
+      ["d3","Supports a future e4 push."],
+      ["Nc6","Completes development, adds central pressure."]
+    ]},
+  { code:"C2", title:"Nf6 into Stonewall", idea:"Shows how move-order flexibility collapses back into the same core A-section structures.",
+    moves:[
+      ["f4","Space grab."],
+      ["Nf6","Flexible development."],
+      ["Nf3","Development."],
+      ["d5","Now commits the center, transposing toward Stonewall/A-section ideas."],
+      ["e3","Opens the bishop's diagonal."],
+      ["Bf5","Develops the light bishop outside the pawn chain, same idea as A7."],
+      ["Be2","Quiet development."],
+      ["e6","Solidifies the center now that the bishop has already escaped."],
+      ["O-O","King safety."],
+      ["Bd6","Active development, eyeing h2."],
+      ["b3","Prepares Bb2."],
+      ["O-O","King safety complete — transposed into an A7-style structure."]
+    ]},
+  { code:"C3", title:"Nf6 with early ...b6", idea:"A queenside mirror instead of the more common kingside fianchetto race.",
+    moves:[
+      ["f4","Space grab."],
+      ["Nf6","Flexible development."],
+      ["Nf3","Development."],
+      ["b6","Black chooses a queenside fianchetto instead of a kingside one, mirroring onto the opposite wing."],
+      ["e3","Opens the bishop's diagonal."],
+      ["Bb7","Completes Black's queenside fianchetto, aiming at e4 and beyond."],
+      ["Be2","Quiet development."],
+      ["e6","Solidifies the center, opens the f8-bishop."],
+      ["O-O","King safety."],
+      ["Be7","Modest development, prepares castling."],
+      ["b3","White mirrors with its own queenside fianchetto."],
+      ["O-O","King safety complete — a quieter, more symmetrical structure."]
+    ]},
+  { code:"C4", title:"Nf6, Leningrad-style for Black", idea:"A full hypermodern setup — Black delays the central break until development is complete.",
+    moves:[
+      ["f4","Space grab."],
+      ["Nf6","Flexible development."],
+      ["Nf3","Development."],
+      ["g6","Prepares a fianchetto."],
+      ["g3","White matches with its own fianchetto plan."],
+      ["Bg7","Completes Black's fianchetto."],
+      ["Bg2","Completes White's fianchetto."],
+      ["O-O","King safety."],
+      ["O-O","King safety for White."],
+      ["d6","Commits the center modestly."],
+      ["d3","Supports a future e4 push."],
+      ["Nc6","Develops, adds central pressure."],
+      ["Qe1","The standard queen maneuver toward h4/g3."],
+      ["e5","Black strikes the center in one move — the flexible move order let Black delay this break until fully developed."]
+    ]}
+]},
+{ section: "D · Other Flexible Tries", lines: [
+  { code:"D1", title:"1...c5 Symmetrical approach", idea:"Black tests White's committed structure with a sudden central break.",
+    moves:[
+      ["f4","Space grab."],
+      ["c5","Black claims queenside space immediately instead of the center."],
+      ["Nf3","Development."],
+      ["Nc6","Develops, supports a future ...e5 or ...d5 break."],
+      ["e3","Opens the bishop's diagonal."],
+      ["g6","Prepares a fianchetto."],
+      ["Be2","Quiet development."],
+      ["Bg7","Completes the fianchetto."],
+      ["O-O","King safety."],
+      ["d6","Solidifies, prepares ...e5."],
+      ["b3","Prepares Bb2."],
+      ["e5","Black strikes the center now that White's structure is fully committed."]
+    ]},
+  { code:"D2", title:"1...g6 Modern/hypermodern", idea:"Black lets White commit fully, then strikes the center in one clean move.",
+    moves:[
+      ["f4","Space grab."],
+      ["g6","Immediate fianchetto commitment, most flexible possible start for Black."],
+      ["Nf3","Development."],
+      ["Bg7","Completes the fianchetto right away."],
+      ["e3","Opens the bishop's diagonal."],
+      ["d6","Prepares ...e5 safely."],
+      ["Be2","Quiet development."],
+      ["Nf6","Develops toward e4/e5."],
+      ["O-O","King safety."],
+      ["O-O","King safety for Black."],
+      ["d3","Supports a future e4 push."],
+      ["Nc6","Develops, adds central pressure."],
+      ["Qe1","Standard queen maneuver."],
+      ["e5","The full hypermodern plan pays off with a clean central strike."]
+    ]},
+  { code:"D3", title:"1...b6 Owen-style setup", idea:"A rare but sound quiet, positional race between two long diagonals.",
+    moves:[
+      ["f4","Space grab."],
+      ["b6","Immediate queenside fianchetto commitment."],
+      ["Nf3","Development."],
+      ["Bb7","Completes the fianchetto right away, aiming at e4 and the long diagonal."],
+      ["e3","Opens the bishop's diagonal."],
+      ["e6","Solidifies the center, opens the f8-bishop."],
+      ["Be2","Quiet development."],
+      ["Nf6","Develops toward e4/e5."],
+      ["O-O","King safety."],
+      ["Be7","Modest development, prepares castling."],
+      ["b3","White mirrors with its own fianchetto."],
+      ["O-O","King safety complete."]
+    ]},
+  { code:"D4", title:"1...d6 (preparing ...e5 safely)", idea:"Sidesteps From's Gambit entirely — a clean pawn trade instead of a piece sac.",
+    moves:[
+      ["f4","Space grab."],
+      ["d6","Prepares ...e5 without allowing From's Gambit complications, since the pawn will simply trade."],
+      ["Nf3","Development, also covers e5/h4 in case tactics arise."],
+      ["g6","Prepares a fianchetto."],
+      ["e3","Opens the bishop's diagonal."],
+      ["Bg7","Completes the fianchetto."],
+      ["Be2","Quiet development."],
+      ["e5","Strikes the center now, a full tempo earlier than D2 since ...d6 already prepared it."],
+      ["fxe5","Trades rather than allowing Black to keep central tension indefinitely."],
+      ["dxe5","Recaptures, keeping the position balanced and open."],
+      ["O-O","King safety."],
+      ["Ne7","Flexible development, keeping options open for ...Nc6 or ...Ng6."]
+    ]},
+  { code:"D5", title:"1...Nc6 (rare flank try)", idea:"An unusual knight-first move order that transposes back into A-section ideas.",
+    moves:[
+      ["f4","Space grab."],
+      ["Nc6","An unusual knight-first move order, keeping central intentions hidden."],
+      ["Nf3","Development."],
+      ["d5","Commits the center now."],
+      ["e3","Opens the bishop's diagonal."],
+      ["Bg4","An early pin, same disruptive idea as A5."],
+      ["Be2","Accepts the pin rather than losing time with h3."],
+      ["e6","Solidifies the center."],
+      ["O-O","King safety."],
+      ["Bd6","Active development, eyeing h2."],
+      ["b3","Prepares Bb2."],
+      ["Nge7","An unusual but flexible development square, keeping f5 and g6 available."]
+    ]}
+]},
+{ section: "E · White Sidelines & Move-Order Tricks", lines: [
+  { code:"E1", title:"Bird → Reversed King's Gambit", idea:"High-risk, high-reward — trades the calm plan for a sharp reversed King's Gambit.",
+    moves:[
+      ["f4","Space grab."],
+      ["d5","Center control."],
+      ["e4","Instead of the calm reversed-Dutch plan, White offers a pawn to open the center immediately."],
+      ["dxe4","Black accepts, grabbing the pawn."],
+      ["Nc3","Develops with tempo, attacking the e4-pawn and preparing to regain it."],
+      ["Nf6","Develops, defends against threats and prepares ...e5 ideas of Black's own."],
+      ["g4","An aggressive follow-up, grabbing more kingside space and preparing g5 — high-risk, weakens White's own king further."]
+    ]},
+  { code:"E2", title:"Bird → Réti transposition", idea:"Skips e3 entirely, keeping maximum flexibility for the bishop's diagonal.",
+    moves:[
+      ["f4","Space grab."],
+      ["Nf6","Flexible development."],
+      ["Nf3","Development."],
+      ["d5","Commits the center."],
+      ["b3","Skips e3 entirely, going straight for the fianchetto — keeps the bishop's diagonal decision open."]
+    ]},
+  { code:"E3", title:"From's Gambit Deferred", idea:"Similar piece activity to the normal From's Gambit but via a sneaky move order.",
+    moves:[
+      ["f4","Space grab."],
+      ["d6","A quieter first move, not committing to ...e5 yet."],
+      ["Nf3","Development."],
+      ["e5","Black springs the central strike a move later, aiming to catch an unprepared opponent off guard."],
+      ["fxe5","Accepts, same as the main From's Gambit."],
+      ["dxe5","Recaptures, keeping material even — no pawn sac needed this time."],
+      ["Nxe5","White grabs the pawn with the knight, similar to the Lipke idea."],
+      ["Qd4","An aggressive queen sortie, forking ideas on e5 and b2, forcing a precise response."]
+    ]},
+  { code:"E4", title:"Bird with an early c4 (English transposition)", idea:"Important to recognize so the position doesn't feel unfamiliar.",
+    moves:[
+      ["f4","Space grab."],
+      ["Nf6","Flexible development."],
+      ["Nf3","Development."],
+      ["g6","Prepares a fianchetto."],
+      ["c4","Adds queenside space and steers toward an English Opening structure with f4 thrown in as a bonus."],
+      ["Bg7","Completes the fianchetto."],
+      ["Nc3","Develops, adds central control."],
+      ["O-O","King safety."],
+      ["e3","Opens the bishop's diagonal."],
+      ["d6","Solidifies, prepares ...e5."],
+      ["Be2","Quiet development."],
+      ["e5","Black strikes the center once development is complete."]
+    ]},
+  { code:"E5", title:"1. f4 f5?! (mirror attempt)", idea:"Whoever breaks symmetry first with a central pawn push typically gets the edge.",
+    moves:[
+      ["f4","Space grab."],
+      ["f5","Black tries to mirror White's own idea exactly."],
+      ["Nf3","Development."],
+      ["Nf6","Mirrors development."],
+      ["e3","Opens the bishop's diagonal."],
+      ["e6","Solidifies the center, mirroring."],
+      ["b3","Prepares a fianchetto."],
+      ["b6","Mirrors again."],
+      ["Bb2","Completes the fianchetto."],
+      ["Bb7","Mirrors again — whoever breaks symmetry first with a central push usually gets the advantage, since White moves first."]
+    ]}
+]}
+];
+
+// ================= OPENING 2: THE PHILIDOR DEFENSE =================
+const DATA_PHILIDOR = [
+{ section: "A · 3...exd4 — Exchange Lines", lines: [
+  { code:"A1", title:"Main Exchange Line", idea:"White resolves the center immediately, exploiting Black's slightly passive setup with a small development lead.",
+    moves:[
+      ["e4","Central control, opens lines for the bishop and queen."],
+      ["e5","Symmetric central claim."],
+      ["Nf3","Develops, attacks e5."],
+      ["d6","Philidor's hallmark: defends e5 with a pawn instead of a knight, keeping the position solid but slightly passive."],
+      ["d4","Challenges the center immediately, exploiting Black's modest setup."],
+      ["exd4","Trades before falling behind in space."],
+      ["Nxd4","Recaptures, centralizing the knight with free development."],
+      ["Nf6","Develops, attacks e4."],
+      ["Nc3","Defends e4, develops."],
+      ["Be7","Develops, prepares castling."],
+      ["Be2","Quiet development, prepares O-O."],
+      ["O-O","King safety."],
+      ["O-O","King safety for White."],
+      ["Nc6","Challenges the centralized knight, completes development."]
+    ]},
+  { code:"A2", title:"Exchange with Bc4 and Nxc6", idea:"White trades off the centralized knight for a favorable structural concession from Black.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops, attacks e5."],
+      ["d6","Defends e5 solidly."],
+      ["d4","Strikes the center."],
+      ["exd4","Trades."],
+      ["Nxd4","Recaptures centrally."],
+      ["Nf6","Develops, attacks e4."],
+      ["Nc3","Defends e4."],
+      ["Be7","Develops."],
+      ["Bc4","Aims at f7, more aggressive than Be2."],
+      ["O-O","King safety."],
+      ["O-O","King safety for White."],
+      ["Nc6","Challenges the knight."],
+      ["Nxc6","Trades off the centralized knight, giving Black doubled c-pawns but open lines."],
+      ["bxc6","Recaptures — Black gets the bishop pair and an open b-file as compensation for the structure."]
+    ]},
+  { code:"A3", title:"Exchange, Black develops Nc6 before Nf6", idea:"Black challenges the centralized knight immediately, trading for the bishop pair.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["exd4","Trades."],
+      ["Nxd4","Recaptures."],
+      ["Nc6","Develops immediately, challenging the centralized knight right away."],
+      ["Nxc6","Accepts the trade."],
+      ["bxc6","Gives Black the bishop pair and an open b-file for compensation."],
+      ["Nc3","Develops."],
+      ["Nf6","Develops toward e4."],
+      ["Bd3","Modest development, keeps kingside options flexible."],
+      ["Be7","Develops."],
+      ["O-O","King safety."],
+      ["O-O","King safety for Black."]
+    ]},
+  { code:"A4", title:"Exchange with a kingside fianchetto", idea:"Black aims the bishop at the long diagonal and the centralized knight instead of developing a knight first.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["exd4","Trades."],
+      ["Nxd4","Recaptures."],
+      ["g6","Fianchettoes instead of developing a knight first, aiming the bishop at the long diagonal and the centralized knight."],
+      ["Nc3","Develops."],
+      ["Bg7","Completes the fianchetto."],
+      ["Be3","Solid development, supports the centralized knight and prepares Qd2."],
+      ["Nf6","Develops."],
+      ["Bc4","Develops toward f7."],
+      ["O-O","King safety."],
+      ["O-O","King safety for White."],
+      ["Nc6","Completes development, adds pressure to d4."]
+    ]},
+  { code:"A5", title:"Exchange with an early Bg5 pin", idea:"White pins the e7-bishop against the queen and castles queenside for an opposite-side attack.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["exd4","Trades."],
+      ["Nxd4","Recaptures."],
+      ["Nf6","Develops, attacks e4."],
+      ["Nc3","Defends e4."],
+      ["Be7","Develops."],
+      ["Bg5","Pins the bishop against the queen behind it, adding pressure before Black castles."],
+      ["O-O","King safety."],
+      ["Qd2","Prepares long castling and connects rooks for a kingside pawn storm."],
+      ["Nc6","Develops."],
+      ["O-O-O","Castles queenside — opposite-side castling, aiming for a pawn storm against Black's king."],
+      ["Re8","Completes development, prepares central or kingside counterplay."]
+    ]},
+  { code:"A6", title:"Exchange, quiet setup with c6/Nbd7", idea:"A prophylactic setup that sidesteps tactics before committing to a plan.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["exd4","Trades."],
+      ["Nxd4","Recaptures."],
+      ["Nf6","Develops."],
+      ["Nc3","Develops."],
+      ["c6","Prepares ...Qc7/...d5 ideas, mirroring Sicilian-style solidity."],
+      ["Be2","Quiet development."],
+      ["Be7","Develops."],
+      ["O-O","King safety."],
+      ["O-O","King safety for Black."],
+      ["Kh1","Prophylaxis, sidesteps future tactics on the a7-g1 diagonal before committing to a plan."],
+      ["Nbd7","Develops the last knight flexibly, ready to reroute to c5 or e5."]
+    ]}
+]},
+{ section: "B · 3...Nf6 — Classical Lines", lines: [
+  { code:"B1", title:"Classical into a simplified endgame", idea:"Philidor's solid but slightly passive structure often heads toward exactly this type of symmetric, drawish endgame.",
+    moves:[
+      ["e4","Central control, opens lines for the bishop and queen."],
+      ["e5","Symmetric central claim."],
+      ["Nf3","Develops, attacks e5."],
+      ["d6","Defends e5, the Philidor hallmark."],
+      ["d4","Strikes the center."],
+      ["Nf6","Develops before resolving central tension, keeping options flexible."],
+      ["dxe5","Resolves the tension immediately."],
+      ["dxe5","Recaptures, keeping the structure symmetric."],
+      ["Qxd8+","Trades queens, exploiting the open d-file."],
+      ["Kxd8","Forced recapture — loses castling rights but reaches a balanced, simplified position."],
+      ["Nc3","Develops naturally into the resulting position."],
+      ["Bd6","Develops actively, defends e5, eyes the kingside."],
+      ["Bc4","Develops with tempo, eyeing f7."],
+      ["Ke8","Tucks the king back to a safer central square now that the position is clear."],
+      ["Be3","Completes development, prepares long-term pressure on the queenside dark squares."],
+      ["Nc6","Completes development, adds central pressure."]
+    ]},
+  { code:"B2", title:"Classical, White maintains tension with Nc3", idea:"White defends e4 and keeps the central tension unresolved rather than trading immediately.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops, attacks e5."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["Nf6","Develops before resolving the tension."],
+      ["Nc3","Develops and defends e4, keeping the central tension unresolved rather than trading immediately."],
+      ["Nbd7","Develops the other knight, supporting e5 a second time."],
+      ["Bc4","Develops toward f7, the classic weak point in Black's setup."],
+      ["Be7","Develops, prepares castling."],
+      ["O-O","King safety."],
+      ["O-O","King safety for Black."],
+      ["Qe2","Connects rooks, prepares Rd1 and keeps an eye on e5 via the battery."],
+      ["c6","Solidifies, prepares ...Qc7 or ...b5 expansion."],
+      ["a4","Restrains ...b5, gains queenside space."]
+    ]},
+  { code:"B3", title:"Classical, resolving tension with exd4", idea:"Black trades immediately rather than waiting, avoiding some sharper Nc3-driven tricks.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["Nf6","Develops."],
+      ["Nc3","Develops, defends e4."],
+      ["exd4","Trades now instead of waiting, avoiding some sharper Nc3-driven tricks."],
+      ["Nxd4","Recaptures centrally."],
+      ["Be7","Develops."],
+      ["Bc4","Develops toward f7."],
+      ["O-O","King safety."],
+      ["O-O","King safety for White."],
+      ["Nc6","Challenges the knight."],
+      ["Nxc6","Trades off the centralized knight."],
+      ["bxc6","Same structural trade-off as the pure Exchange lines, reached via a different move order."]
+    ]},
+  { code:"B4", title:"Classical with Bg5 pressuring f6", idea:"White pins the newly developed knight before Black castles, adding pressure early.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["Nf6","Develops."],
+      ["Nc3","Develops, defends e4."],
+      ["Nbd7","Develops the other knight, supporting e5."],
+      ["Bc4","Develops toward f7."],
+      ["Be7","Develops."],
+      ["Bg5","Pins the f6-knight against the e7-bishop's own defensive duties, adding pressure before Black castles."],
+      ["h6","Asks the bishop a question immediately."],
+      ["Bxf6","Trades rather than retreating — doubling Black's pawns has some appeal in this structure."],
+      ["Nxf6","Recaptures."],
+      ["Qd3","Unusual but flexible, eyes a possible Qg3 or Qb3 idea later."],
+      ["O-O","King safety complete."]
+    ]},
+  { code:"B5", title:"Classical, Black delays castling with c6", idea:"A flexible Hanham-adjacent setup keeping options open for ...b5 and ...Re8.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["Nf6","Develops."],
+      ["Nc3","Develops, defends e4."],
+      ["Nbd7","Develops the other knight."],
+      ["Bc4","Develops toward f7."],
+      ["c6","Prepares ...Qc7 and ...b5, a common flexible setup."],
+      ["O-O","King safety."],
+      ["Be7","Develops."],
+      ["Re1","Supports a future dxe5 or e5 push, adds pressure down the e-file."],
+      ["O-O","King safety for Black."],
+      ["a4","Restrains ...b5 before it happens."],
+      ["Qc7","Completes the standard flexible setup, ready for ...Re8 or ...Nb6 next."]
+    ]},
+  { code:"B6", title:"Classical, Black fianchettoes instead", idea:"A King's Indian-style approach, adding dynamism at the cost of some central control.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["Nf6","Develops."],
+      ["Nc3","Develops, defends e4."],
+      ["g6","Chooses a King's Indian-style fianchetto instead of the solid Hanham setup."],
+      ["Bc4","Develops toward f7."],
+      ["Bg7","Completes the fianchetto."],
+      ["O-O","King safety."],
+      ["O-O","King safety for Black."],
+      ["Re1","Adds central pressure, prepares e5 breaks."],
+      ["Nc6","Develops."],
+      ["Bg5","Pressures the position, ready to meet ...exd4 with Nxd4 or trade on f6 depending on Black's response."],
+      ["h6","Questions the bishop before committing further."]
+    ]}
+]},
+{ section: "C · 3...Nd7 — Hanham System", lines: [
+  { code:"C1", title:"Main Hanham", idea:"The modern main line: Black supports e5 with a piece while keeping the c8-bishop's diagonal open for later.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops, attacks e5."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["Nd7","The modern main line: supports e5 with a piece while keeping the structure intact and the c8-bishop's diagonal open for later."],
+      ["Bc4","Develops toward f7, the classic target in all Philidor structures."],
+      ["c6","Prepares ...Qc7 and covers d5/b5 against tricks."],
+      ["O-O","King safety."],
+      ["Be7","Develops."],
+      ["Re1","Supports the e4 pawn and prepares a future e5 push or added central pressure."],
+      ["Ngf6","Develops the second knight (disambiguated since the d7-knight could also reach f6)."],
+      ["a4","Restrains ...b5, gains space."],
+      ["O-O","King safety for Black."],
+      ["h3","Prevents ...Bg4 pinning ideas, a standard prophylactic move in these structures."],
+      ["Re8","Completes development, adds central pressure."]
+    ]},
+  { code:"C2", title:"Hanham with Nc3 first", idea:"White develops naturally instead of Bc4 first, keeping options flexible.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["Nd7","Supports e5 with a piece."],
+      ["Nc3","Develops naturally instead of Bc4 first, keeping options flexible."],
+      ["c6","Prepares ...Qc7 and covers key squares."],
+      ["Bc4","Develops toward f7."],
+      ["Be7","Develops."],
+      ["O-O","King safety."],
+      ["Ngf6","Develops the second knight."],
+      ["Qe2","Connects rooks, adds pressure on the e-file battery, prepares Rd1."],
+      ["O-O","King safety for Black."],
+      ["a4","Restrains ...b5."],
+      ["b6","Black expands on the queenside anyway, preparing ...Bb7 to add pressure to e4."]
+    ]},
+  { code:"C3", title:"Hanham resolving into a queen-trade endgame", idea:"White trades into a balanced but slightly easier position thanks to greater piece activity.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["Nd7","Supports e5 with a piece."],
+      ["Bc4","Develops toward f7."],
+      ["c6","Prepares ...Qc7 and covers key squares."],
+      ["O-O","King safety."],
+      ["Be7","Develops."],
+      ["dxe5","Resolves the tension, since Black's e5 pawn is now only defended by the d7-knight."],
+      ["Nxe5","Recaptures with the knight rather than the pawn, keeping the structure intact."],
+      ["Nxe5","White trades the centralizing knight for Black's."],
+      ["dxe5","Recaptures, keeping the pawn structure symmetric."],
+      ["Qxd8+","Trades queens, exploiting the open d-file."],
+      ["Kxd8","The queens come off into a balanced but slightly better endgame for White, thanks to easier piece activity."]
+    ]},
+  { code:"C4", title:"Hanham with an early Bg5 pin", idea:"White restricts Black's ability to castle comfortably by pinning early.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["Nd7","Supports e5 with a piece."],
+      ["Bc4","Develops toward f7."],
+      ["Be7","Develops before ...c6, a slightly different move order."],
+      ["Bg5","Pins the bishop, restricting Black's ability to castle comfortably."],
+      ["h6","Asks the question immediately rather than allowing White to build more pressure."],
+      ["Bh4","Maintains the pin rather than trading."],
+      ["Ngf6","Develops the second knight."],
+      ["Nc3","Develops, adds pressure on d5 and e4."],
+      ["O-O","King safety."],
+      ["Qd2","Connects rooks and eyes a potential kingside plan with g4 later, since ...h6 could become a target."]
+    ]},
+  { code:"C5", title:"Hanham with an early Qe2", idea:"An unusual but flexible queen development, keeping the option of long castling open while preparing quick central or kingside play.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["Nd7","Supports e5 with a piece."],
+      ["Bc4","Develops toward f7."],
+      ["c6","Prepares ...Qc7 and covers key squares."],
+      ["Qe2","An unusual but flexible setup — keeps the option of long castling open and prepares to meet ...b5 or a central break without committing the king's side yet."],
+      ["Be7","Develops."],
+      ["O-O","King safety."],
+      ["Ngf6","Develops the second knight."],
+      ["Re1","Supports the e4 pawn, adds central pressure."],
+      ["O-O","King safety for Black."],
+      ["c3","Supports d4 and prepares a Bc2/Qc4-style regrouping if needed."],
+      ["b5","Black grabs queenside space now that ...c6 supports the advance."]
+    ]},
+  { code:"C6", title:"Hanham with queenside expansion", idea:"White restrains ...b5 before Black even finishes development.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["Nd7","Supports e5 with a piece."],
+      ["Bc4","Develops toward f7."],
+      ["c6","Prepares ...Qc7 and covers key squares."],
+      ["O-O","King safety."],
+      ["Be7","Develops."],
+      ["a4","Restrains ...b5 immediately, before Black even develops the second knight."],
+      ["Ngf6","Develops the second knight."],
+      ["Nc3","Develops."],
+      ["O-O","King safety for Black."],
+      ["Bg5","Adds pressure, pinning the newly developed knight."],
+      ["h6","Questions the bishop, typical follow-up."]
+    ]},
+  { code:"C7", title:"Hanham with the Ruy-Lopez-style knight regrouping", idea:"A common regrouping plan rerouting the knight toward g3 without blocking the position.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["Nd7","Supports e5 with a piece."],
+      ["Bc4","Develops toward f7."],
+      ["c6","Prepares ...Qc7 and covers key squares."],
+      ["O-O","King safety."],
+      ["Be7","Develops."],
+      ["Re1","Supports the e4 pawn, adds central pressure."],
+      ["Ngf6","Develops the second knight."],
+      ["Bb3","Tucks the bishop safely off the c4-square before Black can harass it with ...b5 or ...Nc5 later."],
+      ["O-O","King safety for Black."],
+      ["Nbd2","Reroutes toward f1 and g3, a common regrouping plan to add another piece toward the kingside without blocking the position."]
+    ]}
+]},
+{ section: "D · 3...f5 — Philidor Countergambit", lines: [
+  { code:"D1", title:"Main Countergambit line", idea:"Black immediately strikes for central and kingside activity instead of playing solidly, accepting some risk to the king.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops, attacks e5."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["f5","The Philidor Countergambit: Black immediately strikes for central and kingside activity instead of playing solidly, accepting some risk to the king."],
+      ["Nc3","Develops, adds pressure to e4/d5 and prepares to meet ...fxe4 with Nxe4."],
+      ["fxe4","Captures, since holding the tension only helps White."],
+      ["Nxe4","Recaptures, keeping central control since Black's last pawn move weakened the e-file and the king's safety."],
+      ["d5","Strikes back in the center immediately, gaining a tempo on the knight."],
+      ["Ng3","Retreats to a useful square, eyeing f5 and h5, rather than a passive retreat."],
+      ["e4","Gains more space, though this overextends the pawn chain and can become a long-term target."],
+      ["Ne5","Centralizes actively, hard to dislodge and eyes f7/d7."]
+    ]},
+  { code:"D2", title:"Countergambit Declined with an e6 sacrifice", idea:"White rips open Black's position with a thematic pawn sacrifice before development is complete.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["f5","The Countergambit."],
+      ["dxe5","Captures instead of developing, since Black's center is about to become overextended anyway."],
+      ["fxe4","Recaptures on the other side, keeping some central presence."],
+      ["Ng5","An aggressive leap, eyeing e4 and the e6/f7 weaknesses created by Black's last two pawn moves."],
+      ["d5","Defends e4 and grabs central space, the critical test of the position."],
+      ["e6","A thematic pawn sacrifice, ripping open Black's position before development is complete."],
+      ["Bxe6","Accepts, though development is now well behind for Black."]
+    ]},
+  { code:"D3", title:"Countergambit, White plays exf5 directly", idea:"The simplest approach: take the pawn immediately rather than allowing Black's plan to unfold.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["f5","The Countergambit."],
+      ["exf5","The simplest approach: just take the pawn, unbalancing the center immediately rather than allowing Black's plan to unfold."],
+      ["exd4","Black recaptures in the center instead of chasing the f5-pawn right away, keeping lines open."],
+      ["Qxd4","Centralizes the queen actively since Black can't easily challenge it yet."],
+      ["Nc6","Develops with tempo, attacking the queen."],
+      ["Qd1","Retreats to safety now that it's been challenged, having achieved some useful central influence."],
+      ["Bxf5","Recaptures the pawn, completing development while the position remains balanced."]
+    ]},
+  { code:"D4", title:"Countergambit transposition via Nf6", idea:"Shows how the drawish endgame theme reappears across many Philidor move orders.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["Nf6","Transposes toward Classical Nf6 lines rather than the immediate ...f5 idea, included here to show the move-order relationship to the true Countergambit."],
+      ["dxe5","Resolves the tension, testing whether Black recaptures solidly."],
+      ["dxe5","Recaptures with the pawn."],
+      ["Qxd8+","Trades queens on the open d-file."],
+      ["Kxd8","The same drawish endgame theme reappears — recognizing this pattern helps across many Philidor move orders."],
+      ["Nc3","Develops naturally into the resulting simplified position."]
+    ]},
+  { code:"D5", title:"Countergambit, aggressive knight trade idea", idea:"White trades to exploit a development lead, since Black's kingside is slightly airy after the early ...f5.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["f5","The Countergambit."],
+      ["Nc3","Develops, prepares to meet ...fxe4 with Nxe4."],
+      ["fxe4","Captures."],
+      ["Nxe4","Recaptures centrally."],
+      ["Nf6","Challenges the knight immediately instead of striking with ...d5."],
+      ["Nxf6+","Trades rather than retreating, since the resulting structure change favors White's development lead."],
+      ["Qxf6","Recaptures, the only reasonable way back."],
+      ["Bd3","Develops actively, prepares O-O and eyes the h7-b1 diagonal since Black's kingside is slightly airy after the earlier ...f5."]
+    ]}
+]},
+{ section: "E · Sidelines & Move-Order Tricks", lines: [
+  { code:"E1", title:"Larsen's 3.Bc4", idea:"White develops straight toward f7 before committing to when (or whether) to play d4.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops, attacks e5."],
+      ["d6","Defends e5."],
+      ["Bc4","Skips d4 for now, developing straight toward f7 and keeping options flexible about when (or whether) to play d4."],
+      ["Be7","Solid development, prepares castling and covers pin ideas."],
+      ["d4","Now strikes in the center, transposing back toward main-line structures but with the bishop already committed to c4."],
+      ["exd4","Trades."],
+      ["Nxd4","Recaptures."],
+      ["Nf6","Develops, attacks e4."],
+      ["Nc3","Defends e4."],
+      ["O-O","King safety."],
+      ["O-O","King safety for White — a near-identical structure to the Exchange lines, reached through a different move order."]
+    ]},
+  { code:"E2", title:"The Nc3-first move order", idea:"White develops before committing the d-pawn, keeping Black guessing about the eventual plan.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops, attacks e5."],
+      ["d6","Defends e5."],
+      ["Nc3","Develops before committing the d-pawn, keeping Black guessing about d4 vs g3 setups."],
+      ["Nf6","Develops, adds pressure to e4."],
+      ["d4","Now commits to the central strike."],
+      ["Nbd7","Supports e5 a second time rather than resolving the tension immediately."],
+      ["Bc4","Develops toward f7."],
+      ["Be7","Develops."],
+      ["O-O","King safety."],
+      ["O-O","King safety for Black."],
+      ["Re1","Standard Hanham-style structure reached via a Nc3-first move order."]
+    ]},
+  { code:"E3", title:"Quiet g3 setup, avoiding the Exchange entirely", idea:"An unusual, quiet approach that avoids all main-line Philidor theory, at the cost of a tempo.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops."],
+      ["d6","Defends e5."],
+      ["g3","An unusual, quiet approach, fianchettoing instead of the standard d4 strike, avoiding all main-line Philidor theory."],
+      ["Nf6","Develops."],
+      ["Bg2","Completes the fianchetto."],
+      ["Be7","Develops."],
+      ["O-O","King safety."],
+      ["O-O","King safety for Black."],
+      ["d4","Finally commits to the center once development is complete, though a tempo behind the more direct main lines."]
+    ]},
+  { code:"E4", title:"Transposition from a Petrov-style move order", idea:"Shows how these two openings can transpose depending on move order.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops, attacks e5."],
+      ["Nf6","Black plays what looks like a Petrov's Defense first."],
+      ["d4","Strikes immediately rather than the main Petrov continuations."],
+      ["d6","Transposes directly into Classical Philidor structures, showing how these two openings can transpose depending on move order."],
+      ["dxe5","Resolves the tension."],
+      ["dxe5","Recaptures."],
+      ["Qxd8+","Trades queens."],
+      ["Kxd8","The same simplified structure reached yet again, reinforcing how central this endgame theme is across many Philidor-adjacent move orders."],
+      ["Nc3","Develops naturally."]
+    ]},
+  { code:"E5", title:"Black tries an early ...Bg4 pin", idea:"Black tries to disrupt White's development immediately, but falls behind after the trade.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops, attacks e5."],
+      ["d6","Defends e5."],
+      ["d4","Strikes the center."],
+      ["Bg4","An immediate pin instead of the standard ...Nd7 or ...Nf6, trying to disrupt White's development right away."],
+      ["dxe5","Exploits the fact that the bishop no longer defends e5 or supports ...dxe5 cleanly."],
+      ["Bxf3","Trades rather than losing more central control."],
+      ["Qxf3","Recaptures."],
+      ["dxe5","Recaptures the pawn, restoring material balance."],
+      ["Bc4","Develops actively with the bishop pair and a lead in development, since Black spent extra time on the early pin."]
+    ]},
+  { code:"E6", title:"Black declines with an early ...Nc6", idea:"Transposes toward an Italian/Scotch-style setup, reaching a Philidor structure a move down on development.",
+    moves:[
+      ["e4","Central control."],
+      ["e5","Central claim."],
+      ["Nf3","Develops, attacks e5."],
+      ["Nc6","Transposes toward an Italian/Scotch-style setup rather than a true Philidor."],
+      ["d4","Strikes immediately."],
+      ["exd4","Trades."],
+      ["Nxd4","Recaptures."],
+      ["d6","Black returns to a Philidor-like pawn structure, but a move down on development compared to the normal ...d6-first move orders."],
+      ["Nc3","Develops."],
+      ["Nf6","Develops."],
+      ["Bg5","Pressures the position, exploiting Black's slightly slower setup."],
+      ["Be7","Develops."],
+      ["Qd2","Prepares long castling, a thematic aggressive plan against this particular structure."]
+    ]}
+]}
+];
+
+// ================= TRIE BUILDER =================
+function buildTrie(data){
+  const root = { children: {} };
+  data.forEach(section => {
+    section.lines.forEach(line => {
+      let node = root;
+      line.moves.forEach(([san, explanation]) => {
+        if (!node.children[san]){
+          node.children[san] = { children: {}, explanation, lineCode: line.code, lineTitle: line.title, lineIdea: line.idea };
+        }
+        node = node.children[san];
+      });
+    });
+  });
+  return root;
+}
+
+const TRIES = { bird: buildTrie(DATA_BIRD), philidor: buildTrie(DATA_PHILIDOR) };
+
+// ================= PGN CLEANUP =================
+// Strips headers, clock/eval comments, NAGs, and move numbers, returning a flat SAN move list.
+function extractSanMoves(pgn){
+  let text = pgn.replace(/\[[^\]]*\]/g, ' ');       // remove header tags
+  text = text.replace(/\{[^}]*\}/g, ' ');            // remove {comments/clocks}
+  text = text.replace(/\$\d+/g, ' ');                // remove NAGs
+  text = text.replace(/\d+\.\.\./g, ' ');             // remove "12..." black-to-move markers
+  text = text.replace(/\d+\./g, ' ');                 // remove "12." move numbers
+  text = text.replace(/(1-0|0-1|1\/2-1\/2|\*)\s*$/, ''); // remove result token
+  return text.split(/\s+/).map(s => s.trim()).filter(s => s.length > 0);
+}
+
+// ================= CHESS.COM FETCH =================
+async function fetchGamesForUser(username, monthsBack){
+  const archivesResp = await fetch(`https://api.chess.com/pub/player/${encodeURIComponent(username.toLowerCase())}/games/archives`);
+  if (!archivesResp.ok) throw new Error(`Could not find Chess.com user "${username}" (status ${archivesResp.status})`);
+  const archivesJson = await archivesResp.json();
+  const archives = archivesJson.archives || [];
+  if (archives.length === 0) throw new Error(`No game archives found for "${username}".`);
+  const recentArchives = archives.slice(-monthsBack);
+  const allGames = [];
+  for (const url of recentArchives){
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) continue;
+      const json = await resp.json();
+      if (json.games) allGames.push(...json.games);
+    } catch(e){ /* skip a bad month, keep going */ }
+  }
+  return allGames;
+}
+
+// ================= DIVERGENCE ANALYSIS =================
+// Walks a single game's SAN moves against the trie. Returns null if no attributable
+// divergence was found (opponent left book, or game stayed in book the whole tracked depth),
+// otherwise returns a divergence record.
+function findDivergence(sanMoves, trie, trainedColor, gameUrl){
+  const chess = new Chess();
+  let node = trie;
+  for (let ply = 0; ply < sanMoves.length; ply++){
+    const san = sanMoves[ply];
+    const isWhiteMove = (ply % 2 === 0);
+    const moverColor = isWhiteMove ? 'w' : 'b';
+    const fenBefore = chess.fen();
+
+    const result = chess.move(san, { sloppy: true });
+    if (!result) return null; // corrupt/unparseable PGN, bail out of this game
+
+    const hasTheoryHere = Object.keys(node.children).length > 0;
+    const matched = node.children[san];
+
+    if (matched){
+      node = matched;
+      continue;
+    }
+
+    // No match at this ply.
+    if (!hasTheoryHere){
+      return null; // we've run past the end of our curated depth — nothing more to compare
+    }
+    if (moverColor !== trainedColor){
+      return null; // the OPPONENT left our prepared lines — not the trainee's mistake, stop here
+    }
+    // The trainee deviated from known theory at a point where theory existed.
+    return {
+      fenBefore,
+      ply,
+      moveNumber: Math.floor(ply/2) + 1,
+      color: moverColor,
+      playedMove: san,
+      theoryMoves: Object.entries(node.children).map(([mv, n]) => ({
+        san: mv, explanation: n.explanation, lineCode: n.lineCode, lineTitle: n.lineTitle
+      })),
+      lineIdeaContext: node.lineIdea || null,
+      gameUrl
+    };
+  }
+  return null; // game ended still fully inside book — nothing to flag
+}
+
+function analyzeGames(games, openingKey, trainedColor, username){
+  const trie = TRIES[openingKey];
+  const divergences = [];
+  let parsedCount = 0, skippedCount = 0, staidInBookCount = 0;
+
+  games.forEach(game => {
+    if (!game.pgn) { skippedCount++; return; }
+    const whiteUser = (game.white && game.white.username || '').toLowerCase();
+    const blackUser = (game.black && game.black.username || '').toLowerCase();
+    const uname = username.toLowerCase();
+    let userColor = null;
+    if (whiteUser === uname) userColor = 'w';
+    else if (blackUser === uname) userColor = 'b';
+    if (userColor !== trainedColor) { skippedCount++; return; } // not the side we're training
+
+    const sanMoves = extractSanMoves(game.pgn);
+    if (sanMoves.length === 0) { skippedCount++; return; }
+    parsedCount++;
+
+    const div = findDivergence(sanMoves, trie, trainedColor, game.url || null);
+    if (div) divergences.push(div);
+    else staidInBookCount++;
+  });
+
+  return { divergences, parsedCount, skippedCount, staidInBookCount };
+}
+
+function groupDivergences(divergences){
+  const groups = {};
+  divergences.forEach(d => {
+    const key = d.fenBefore + '|' + d.playedMove;
+    if (!groups[key]){
+      groups[key] = { ...d, count: 0, gameUrls: [] };
+    }
+    groups[key].count++;
+    if (d.gameUrl) groups[key].gameUrls.push(d.gameUrl);
+  });
+  return Object.values(groups).sort((a,b) => b.count - a.count);
+}
+
+// ================= UI STATE =================
+let currentGroups = [];
+let currentPuzzle = null;
+let puzzleChess = null;
+
+const usernameInput = document.getElementById('usernameInput');
+const openingSelect = document.getElementById('openingSelect');
+const colorSelect = document.getElementById('colorSelect');
+const monthsInput = document.getElementById('monthsInput');
+const fetchBtn = document.getElementById('fetchBtn');
+const statusLine = document.getElementById('statusLine');
+
+openingSelect.addEventListener('change', () => {
+  colorSelect.value = openingSelect.value === 'bird' ? 'w' : 'b';
+});
+
+function setStatus(msg, isError){
+  statusLine.textContent = msg;
+  statusLine.classList.toggle('error', !!isError);
+}
+
+fetchBtn.addEventListener('click', async () => {
+  const username = usernameInput.value.trim();
+  if (!username){ setStatus('Enter a Chess.com username first.', true); return; }
+  const openingKey = openingSelect.value;
+  const trainedColor = colorSelect.value;
+  const monthsBack = Math.max(1, Math.min(12, parseInt(monthsInput.value) || 3));
+
+  fetchBtn.disabled = true;
+  setStatus(`Fetching ${username}'s last ${monthsBack} month(s) of games from Chess.com...`, false);
+
+  try {
+    const games = await fetchGamesForUser(username, monthsBack);
+    setStatus(`Fetched ${games.length} games. Comparing each against your ${openingKey === 'bird' ? 'Bird' : 'Philidor'} study lines...`, false);
+
+    // yield to the browser so the status line actually paints before the heavy loop
+    await new Promise(r => setTimeout(r, 30));
+
+    const result = analyzeGames(games, openingKey, trainedColor, username);
+    currentGroups = groupDivergences(result.divergences);
+
+    renderStats(result, games.length);
+    renderLeakList();
+
+    if (currentGroups.length === 0){
+      setStatus(`Analyzed ${result.parsedCount} relevant games — no divergences found within the studied depth. Either you're playing it very well, or none of your recent games used this opening as ${trainedColor === 'w' ? 'White' : 'Black'}.`, false);
+    } else {
+      setStatus(`Done. Found ${currentGroups.length} distinct leak point(s) across ${result.divergences.length} game(s).`, false);
+    }
+  } catch (err) {
+    setStatus('Error: ' + err.message, true);
+  } finally {
+    fetchBtn.disabled = false;
+  }
+});
+
+function renderStats(result, totalFetched){
+  const statsRow = document.getElementById('statsRow');
+  statsRow.style.display = 'flex';
+  statsRow.innerHTML = '';
+  const stats = [
+    [totalFetched, 'Games Fetched'],
+    [result.parsedCount, 'Matching Your Side'],
+    [result.divergences.length, 'Left Theory'],
+    [result.staidInBookCount, 'Stayed In Book']
+  ];
+  stats.forEach(([num,label]) => {
+    const card = document.createElement('div');
+    card.className = 'stat-card';
+    card.innerHTML = `<div class="stat-num">${num}</div><div class="stat-label">${label}</div>`;
+    statsRow.appendChild(card);
+  });
+}
+
+function renderLeakList(){
+  const section = document.getElementById('leakSection');
+  const list = document.getElementById('leakList');
+  list.innerHTML = '';
+  if (currentGroups.length === 0){ section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  currentGroups.forEach((g, idx) => {
+    const item = document.createElement('div');
+    item.className = 'leak-item';
+    item.dataset.idx = idx;
+    const bestTheory = g.theoryMoves[0];
+    item.innerHTML = `
+      <div class="leak-count">${g.count}×</div>
+      <div class="leak-info">
+        <div class="leak-title">Move ${g.moveNumber}${g.color==='w'?'.':'...'} you played <strong>${g.playedMove}</strong> — theory wants ${g.theoryMoves.map(t=>t.san).join(' or ')}</div>
+        <div class="leak-sub">${bestTheory.lineCode} · ${bestTheory.lineTitle}</div>
+      </div>`;
+    item.addEventListener('click', () => loadPuzzle(idx));
+    list.appendChild(item);
+  });
+  document.getElementById('emptyState').style.display = 'none';
+}
+
+function loadPuzzle(idx){
+  document.querySelectorAll('.leak-item').forEach(el => el.classList.toggle('active', +el.dataset.idx === idx));
+  currentPuzzle = currentGroups[idx];
+  document.getElementById('puzzleSection').style.display = 'block';
+  resetPuzzlePosition();
+
+  const trainedSideLabel = currentPuzzle.color === 'w' ? 'White' : 'Black';
+  document.getElementById('puzzlePrompt').textContent = `It's ${trainedSideLabel} to move — what does theory recommend?`;
+  document.getElementById('puzzleMeta').textContent = `Move ${currentPuzzle.moveNumber} · seen in ${currentPuzzle.count} of your games`;
+
+  const candRow = document.getElementById('candidateRow');
+  candRow.innerHTML = '';
+  currentPuzzle.theoryMoves.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'cand-btn';
+    btn.textContent = t.san;
+    btn.addEventListener('click', () => showMoveExplanation(t, false));
+    candRow.appendChild(btn);
+  });
+  const yourBtn = document.createElement('button');
+  yourBtn.className = 'your-move-btn';
+  yourBtn.textContent = 'What I actually played: ' + currentPuzzle.playedMove;
+  yourBtn.addEventListener('click', () => showMoveExplanation({ san: currentPuzzle.playedMove, explanation: "This is the move actually played in your game(s) at this position — compare the resulting piece placement to the theory move above." }, true));
+  candRow.appendChild(yourBtn);
+
+  document.getElementById('explainMove').textContent = 'Choose a move above';
+  document.getElementById('explainText').textContent = 'Click a theory candidate to see why it\'s recommended, or click your own move to see how the position differs.';
+
+  const gameLinksDiv = document.getElementById('gameLinks');
+  const gameLinksList = document.getElementById('gameLinksList');
+  if (currentPuzzle.gameUrls && currentPuzzle.gameUrls.length > 0){
+    gameLinksDiv.style.display = 'block';
+    gameLinksList.innerHTML = '';
+    currentPuzzle.gameUrls.slice(0, 5).forEach((url,i) => {
+      const a = document.createElement('a');
+      a.href = url; a.target = '_blank'; a.textContent = `Game ${i+1} →`;
+      gameLinksList.appendChild(a);
+    });
+  } else {
+    gameLinksDiv.style.display = 'none';
+  }
+}
+
+function resetPuzzlePosition(){
+  puzzleChess = new Chess(currentPuzzle.fenBefore);
+  renderBoard(puzzleChess);
+}
+
+document.getElementById('resetBtn').addEventListener('click', () => { if (currentPuzzle) resetPuzzlePosition(); });
+
+function showMoveExplanation(moveInfo, isMistake){
+  const tempChess = new Chess(currentPuzzle.fenBefore);
+  tempChess.move(moveInfo.san, { sloppy: true });
+  renderBoard(tempChess);
+  const head = document.getElementById('explainMove');
+  const text = document.getElementById('explainText');
+  if (isMistake){
+    head.innerHTML = `<span style="color:var(--mistake-red);">Played: ${moveInfo.san}</span>`;
+  } else {
+    head.innerHTML = `<span style="color:var(--feather-teal);">Theory: ${moveInfo.san}</span> ${moveInfo.lineCode ? '<span style="font-family:JetBrains Mono, monospace; font-size:12px; color:var(--gold);">('+moveInfo.lineCode+')</span>' : ''}`;
+  }
+  text.textContent = moveInfo.explanation;
+}
+
+// ================= BOARD RENDER =================
+const filesArr = ['a','b','c','d','e','f','g','h'];
+function renderBoard(chessInstance){
+  const boardEl = document.getElementById('board');
+  boardEl.innerHTML = '';
+  const board = chessInstance.board();
+  for (let r = 0; r < 8; r++){
+    for (let f = 0; f < 8; f++){
+      const sq = document.createElement('div');
+      const isLight = (r + f) % 2 === 0;
+      sq.className = 'sq ' + (isLight ? 'light' : 'dark');
+      const piece = board[r][f];
+      if (piece){
+        const span = document.createElement('span');
+        span.className = 'piece' + (piece.color === 'b' ? ' black-piece' : '');
+        const key = piece.color === 'w' ? piece.type.toUpperCase() : piece.type;
+        span.textContent = PIECE_UNICODE[key];
+        sq.appendChild(span);
+      }
+      if (f === 0){ const rc=document.createElement('span'); rc.className='coord rank'; rc.textContent=8-r; sq.appendChild(rc); }
+      if (r === 7){ const fc=document.createElement('span'); fc.className='coord file'; fc.textContent=filesArr[f]; sq.appendChild(fc); }
+      boardEl.appendChild(sq);
+    }
+  }
+}
+</script>
+</body>
+</html>
