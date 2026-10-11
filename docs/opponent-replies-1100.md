@@ -21,8 +21,13 @@ After 4.Bf4 Nc6 5.Nf3 Bb4+: 6.Nc3 51% (**not covered**), 6.Nbd2 29% (our line).
 After 2.exd5 Nf6: **3.Nc3 43%, 3.c4 18%, 3.Bc4 9%, 3.d4 only 5%.** The gambit lines we teach start with 3.d4, so they will rarely appear. This is the biggest gap in the app.
 After 3.d4 Bg4: 4.f3 42%, 4.Be2 22%, 4.Nf3 17% (all three covered).
 
-## What to build next (ranked by how often it would be used)
-1. Scandinavian: 3.Nc3 and 3.c4 after 2.exd5 Nf6, then 2.e5 and 2.Nc3. (Black)
-2. Bird: 1...d5 2.Nf3 Nc6; then 1...Nc6, 1...f5, 1...d6. (White)
-3. Budapest: 3.e3, 3.Nc3, 3.d5, then 4.f4 and 4.h3. (Black)
+## Coverage after the first round of new lines (added in the same session)
+- Bird after 1.f4: now answers d5, e6, Nf6, c5, e5, g6, f5 and d6, about 81% of replies (still missing Nc6 7%). After 1...d5 2.Nf3 it now answers Nf6 13% and Nc6 25% (38% of that node; e6 12% and c5 8% remain).
+- Budapest after 2...e5: answers 3.dxe5 28%, 3.e3 19%, 3.Nc3 15% and 3.d5 13%, about 75%. Still missing 4.f4 15% and 4.h3 9% after 3.dxe5 Ng4, and 6.Nc3 51% after 4.Bf4 Nc6 5.Nf3 Bb4+.
+- Scandinavian after 2.exd5 Nf6: answers 3.Nc3 43%, 3.c4 18% and 3.d4 5%, about 66%. Still missing 3.Bc4 9%, and the 2.e5 18% and 2.Nc3 11% branches.
+
+## Still to build, ranked
+1. Scandinavian: 2.e5 and 2.Nc3, then 3.Bc4. (Black)
+2. Budapest: 4.f4, 4.h3, and 6.Nc3 in the Rubinstein line. (Black)
+3. Bird: 1...Nc6, and more answers once Black deviates at move 3. (White)
 4. Re-run `scripts/maia/` after adding lines to see the new coverage.

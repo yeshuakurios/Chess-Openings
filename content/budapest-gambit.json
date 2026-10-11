@@ -53,7 +53,7 @@
         {
           "san": "d4",
           "note": "White takes the center.",
-          "eval": 0.3
+          "eval": 0.2
         },
         {
           "san": "Nf6",
@@ -68,12 +68,12 @@
         {
           "san": "e5",
           "note": "The Budapest Gambit.",
-          "eval": 0.9
+          "eval": 0.8
         },
         {
           "san": "dxe5",
           "note": "White takes the pawn.",
-          "eval": 1
+          "eval": 0.8
         },
         {
           "san": "Ng4",
@@ -83,7 +83,7 @@
             {
               "san": "Bb4+",
               "reply": "Bd2",
-              "eval": 1.9
+              "eval": 2.1
             }
           ],
           "shapes": [
@@ -101,7 +101,7 @@
         {
           "san": "Bf4",
           "note": "White defends e5.",
-          "eval": 0.7
+          "eval": 0.5
         },
         {
           "san": "Nc6",
@@ -111,22 +111,22 @@
             {
               "san": "Bb4+",
               "reply": "Nc3",
-              "eval": 0.6
+              "eval": 0.7
             },
             {
               "san": "Nxe5",
               "reply": "Bxe5",
-              "eval": 6.6
+              "eval": 6.7
             },
             {
               "san": "Nxh2",
               "reply": "Bxh2",
-              "eval": 6.5
+              "eval": 6.9
             },
             {
               "san": "Nxf2",
               "reply": "Kxf2",
-              "eval": 4.1
+              "eval": 4.7
             }
           ],
           "shapes": [
@@ -140,17 +140,17 @@
         {
           "san": "Nf3",
           "note": "White develops.",
-          "eval": 0.6
+          "eval": 0.5
         },
         {
           "san": "Bb4+",
           "note": "Check and pin the knight.",
-          "eval": 0.4,
+          "eval": 0.5,
           "caps": [
             {
               "san": "Ncxe5",
               "reply": "Bxe5",
-              "eval": 5.7
+              "eval": 5.9
             },
             {
               "san": "Ngxe5",
@@ -165,7 +165,7 @@
             {
               "san": "Nxf2",
               "reply": "Kxf2",
-              "eval": 4.7
+              "eval": 4.5
             }
           ],
           "shapes": [
@@ -179,7 +179,7 @@
         {
           "san": "Nbd2",
           "note": "White blocks.",
-          "eval": 0.4
+          "eval": 0.3
         },
         {
           "san": "Qe7",
@@ -188,18 +188,18 @@
           "caps": [
             {
               "san": "Ncxe5",
-              "reply": "Bxe5",
-              "eval": 5.8
+              "reply": "Nxe5",
+              "eval": 6
             },
             {
               "san": "Bxd2+",
               "reply": "Qxd2",
-              "eval": 2.1
+              "eval": 2
             },
             {
               "san": "Ngxe5",
-              "reply": "Bxe5",
-              "eval": 5.9
+              "reply": "Nxe5",
+              "eval": 5.7
             },
             {
               "san": "Nxh2",
@@ -228,7 +228,7 @@
         {
           "san": "Ngxe5",
           "note": "Win the pawn back; Black is fully developed.",
-          "eval": 0.4,
+          "eval": 0.3,
           "caps": [
             {
               "san": "Qxe5",
@@ -237,18 +237,18 @@
             },
             {
               "san": "Ncxe5",
-              "reply": "a3",
+              "reply": "Be2",
               "eval": 0.5
             },
             {
               "san": "Bxd2+",
               "reply": "Qxd2",
-              "eval": 0.8
+              "eval": 0.9
             },
             {
               "san": "Nxh2",
-              "reply": "Rxh2",
-              "eval": 6.3
+              "reply": "Bxh2",
+              "eval": 6.4
             },
             {
               "san": "Nxf2",
@@ -258,7 +258,7 @@
             {
               "san": "Nxe3",
               "reply": "Bxe3",
-              "eval": 5.6
+              "eval": 5.5
             }
           ],
           "shapes": [
@@ -312,32 +312,32 @@
         {
           "san": "Nf6",
           "note": "Develop and hold e4.",
-          "eval": 0.2
+          "eval": 0.3
         },
         {
           "san": "c4",
           "note": "Gain space.",
-          "eval": 0.3
+          "eval": 0.2
         },
         {
           "san": "e5",
           "note": "The Budapest Gambit.",
-          "eval": 0.9
+          "eval": 0.7
         },
         {
           "san": "dxe5",
           "note": "White takes the pawn.",
-          "eval": 1
+          "eval": 0.9
         },
         {
           "san": "Ng4",
           "note": "Attack the pawn on e5.",
-          "eval": 0.7,
+          "eval": 0.8,
           "caps": [
             {
               "san": "Bb4+",
               "reply": "Bd2",
-              "eval": 2.2
+              "eval": 2
             }
           ],
           "shapes": [
@@ -355,32 +355,32 @@
         {
           "san": "Nf3",
           "note": "White defends e5 with a developing move.",
-          "eval": 0.5
+          "eval": 0.6
         },
         {
           "san": "Nc6",
           "note": "Attack the pawn again.",
-          "eval": 0.7,
+          "eval": 0.5,
           "caps": [
             {
               "san": "Bb4+",
-              "reply": "Nc3",
-              "eval": 1.3
+              "reply": "Bd2",
+              "eval": 1.1
             },
             {
               "san": "Nxe5",
               "reply": "Nxe5",
-              "eval": 6.3
+              "eval": 6.7
             },
             {
               "san": "Nxh2",
               "reply": "Rxh2",
-              "eval": 6.2
+              "eval": 6.6
             },
             {
               "san": "Nxf2",
               "reply": "Kxf2",
-              "eval": 5.2
+              "eval": 5.4
             }
           ],
           "shapes": [
@@ -394,12 +394,12 @@
         {
           "san": "Nc3",
           "note": "White develops.",
-          "eval": 0.5
+          "eval": 0.6
         },
         {
           "san": "Ngxe5",
           "note": "Win the pawn back right away; the gambit has done its job.",
-          "eval": 0.7,
+          "eval": 0.6,
           "caps": [
             {
               "san": "Ncxe5",
@@ -409,7 +409,7 @@
             {
               "san": "Nxh2",
               "reply": "Rxh2",
-              "eval": 6.3
+              "eval": 6.2
             },
             {
               "san": "Nxf2",
@@ -432,12 +432,12 @@
         {
           "san": "Nxe5",
           "note": "Recapture; the centralised knight is strong.",
-          "eval": 0.5
+          "eval": 0.6
         },
         {
           "san": "e4",
           "note": "White takes space in the center.",
-          "eval": 0.5
+          "eval": 0.4
         }
       ],
       "board": {
@@ -492,12 +492,12 @@
         {
           "san": "e5",
           "note": "The gambit: Black offers a pawn to open the game for fast development.",
-          "eval": 0.7
+          "eval": 0.9
         },
         {
           "san": "dxe5",
           "note": "White accepts the pawn.",
-          "eval": 0.7
+          "eval": 0.9
         },
         {
           "san": "Ng4",
@@ -517,15 +517,15 @@
             {
               "san": "Bb4+",
               "reply": "Bd2",
-              "eval": 2
+              "eval": 2.1
             }
           ],
-          "eval": 0.6
+          "eval": 0.8
         },
         {
           "san": "Bf4",
           "note": "White defends the pawn with a bishop.",
-          "eval": 0.6
+          "eval": 0.4
         },
         {
           "san": "Nc6",
@@ -541,25 +541,25 @@
             {
               "san": "Bb4+",
               "reply": "Bd2",
-              "eval": 0.4
+              "eval": 0.6
             },
             {
               "san": "Nxe5",
               "reply": "Bxe5",
-              "eval": 6.6
+              "eval": 6.5
             },
             {
               "san": "Nxh2",
-              "reply": "Rxh2",
-              "eval": 6.5
+              "reply": "Bxh2",
+              "eval": 6.6
             },
             {
               "san": "Nxf2",
               "reply": "Kxf2",
-              "eval": 4.8
+              "eval": 4.6
             }
           ],
-          "eval": 0.5
+          "eval": 0.4
         },
         {
           "san": "Nf3",
@@ -580,25 +580,25 @@
             {
               "san": "Ncxe5",
               "reply": "Bxe5",
-              "eval": 5.9
+              "eval": 5.7
             },
             {
               "san": "Ngxe5",
               "reply": "Bxe5",
-              "eval": 5.9
+              "eval": 5.8
             },
             {
               "san": "Nxh2",
               "reply": "Rxh2",
-              "eval": 6.5
+              "eval": 6.7
             },
             {
               "san": "Nxf2",
               "reply": "Kxf2",
-              "eval": 5.1
+              "eval": 4.7
             }
           ],
-          "eval": 0.4
+          "eval": 0.5
         },
         {
           "san": "Nbd2",
@@ -629,12 +629,12 @@
             {
               "san": "Ngxe5",
               "reply": "Bxe5",
-              "eval": 6
+              "eval": 5.9
             },
             {
               "san": "Nxh2",
               "reply": "Bxh2",
-              "eval": 6.2
+              "eval": 6.4
             },
             {
               "san": "Nxf2",
@@ -642,12 +642,12 @@
               "eval": 4.7
             }
           ],
-          "eval": 0.3
+          "eval": 0.4
         },
         {
           "san": "a3",
           "note": "A natural-looking attack on the bishop, but it walks into a trap.",
-          "eval": 0.4
+          "eval": 0.3
         },
         {
           "san": "Ngxe5",
@@ -667,7 +667,7 @@
             {
               "san": "Qxe5",
               "reply": "Nxe5",
-              "eval": 7.7
+              "eval": 7.5
             },
             {
               "san": "Ncxe5",
@@ -687,7 +687,7 @@
             {
               "san": "Nxh2",
               "reply": "Rxh2",
-              "eval": 7.4
+              "eval": 7.7
             },
             {
               "san": "Nxf2",
@@ -695,7 +695,7 @@
               "eval": 5.7
             }
           ],
-          "eval": 0.4
+          "eval": 0.3
         },
         {
           "san": "axb4",
@@ -714,26 +714,429 @@
           "caps": [
             {
               "san": "Qxb4",
-              "reply": "Bxe5",
-              "eval": 8.4
+              "reply": "Nxe5",
+              "eval": 8.5
             },
             {
               "san": "Nxb4",
               "reply": "Nxe5",
-              "eval": 6
+              "eval": 6.1
             },
             {
               "san": "Nxf3+",
               "reply": "Nxf3",
-              "eval": 5.6
+              "eval": 5.7
             },
             {
               "san": "Nxc4",
-              "reply": "Nxc4",
-              "eval": 6.4
+              "reply": "b5",
+              "eval": 6.5
             }
           ],
           "eval": -100
+        }
+      ]
+    },
+    {
+      "id": "e3-declined",
+      "name": "3.e3: White declines the gambit",
+      "strategy": "If White does not take the pawn there is nothing to win back. Take the central pawn, build a central pawn of your own and develop calmly. The goal is the same: active pieces and a healthy center, and the position ends level.",
+      "board": {
+        "ply": 14,
+        "shapes": [
+          {
+            "from": "d5",
+            "color": "green"
+          },
+          {
+            "from": "d5",
+            "to": "c3",
+            "color": "yellow"
+          }
+        ]
+      },
+      "moves": [
+        {
+          "san": "d4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "Nf6",
+          "note": "Black develops and watches the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "c4",
+          "note": "White gains more space.",
+          "eval": 0.3
+        },
+        {
+          "san": "e5",
+          "note": "The gambit: Black offers a pawn to open the game for fast development.",
+          "eval": 0.8
+        },
+        {
+          "san": "e3",
+          "note": "White declines and keeps a solid structure.",
+          "eval": 0.1
+        },
+        {
+          "san": "exd4",
+          "note": "Black takes the central pawn.",
+          "shapes": [
+            {
+              "from": "d4",
+              "color": "yellow"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Bb4+",
+              "reply": "Bd2",
+              "eval": 0.1
+            }
+          ],
+          "eval": 0.1
+        },
+        {
+          "san": "exd4",
+          "note": "White recaptures.",
+          "eval": 0.1
+        },
+        {
+          "san": "d5",
+          "note": "Black grabs the center with a pawn.",
+          "shapes": [
+            {
+              "from": "d5",
+              "color": "green"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Qe7+",
+              "reply": "Be2",
+              "eval": 0.8
+            },
+            {
+              "san": "Bb4+",
+              "reply": "Nc3",
+              "eval": 0.1
+            }
+          ],
+          "eval": 0.1
+        },
+        {
+          "san": "Nc3",
+          "note": "White develops.",
+          "eval": 0.1
+        },
+        {
+          "san": "Be7",
+          "note": "Black prepares to castle.",
+          "caps": [
+            {
+              "san": "Qe7+",
+              "reply": "Be2",
+              "eval": 0.9
+            },
+            {
+              "san": "dxc4",
+              "reply": "Bxc4",
+              "eval": 0.2
+            }
+          ],
+          "eval": 0.2
+        },
+        {
+          "san": "Nf3",
+          "note": "White develops the other knight.",
+          "eval": 0.2
+        },
+        {
+          "san": "O-O",
+          "note": "Black castles.",
+          "caps": [
+            {
+              "san": "dxc4",
+              "reply": "Bxc4",
+              "eval": 0.6
+            }
+          ],
+          "eval": 0.2
+        },
+        {
+          "san": "cxd5",
+          "note": "White opens the position.",
+          "eval": 0.2
+        },
+        {
+          "san": "Nxd5",
+          "note": "Black recaptures and the position is level.",
+          "shapes": [
+            {
+              "from": "d5",
+              "color": "green"
+            },
+            {
+              "from": "d5",
+              "to": "c3",
+              "color": "yellow"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Qxd5",
+              "reply": "Nxd5",
+              "eval": 6.6
+            }
+          ],
+          "eval": 0.2
+        }
+      ]
+    },
+    {
+      "id": "nc3-declined",
+      "name": "3.Nc3: White develops instead of taking",
+      "strategy": "White ignores the gambit and develops. Take the center pawn, chase the queen with a developing move and pin the knight with the dark-squared bishop. Black's pieces come out with tempo and the position stays level.",
+      "board": {
+        "ply": 10,
+        "shapes": [
+          {
+            "from": "b4",
+            "to": "c3",
+            "color": "red"
+          },
+          {
+            "from": "e1",
+            "color": "yellow"
+          }
+        ]
+      },
+      "moves": [
+        {
+          "san": "d4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "Nf6",
+          "note": "Black develops and watches the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "c4",
+          "note": "White gains more space.",
+          "eval": 0.3
+        },
+        {
+          "san": "e5",
+          "note": "The gambit: Black offers a pawn to open the game for fast development.",
+          "eval": 0.9
+        },
+        {
+          "san": "Nc3",
+          "note": "White develops instead of taking the pawn.",
+          "eval": 0
+        },
+        {
+          "san": "exd4",
+          "note": "Black takes the central pawn.",
+          "eval": 0
+        },
+        {
+          "san": "Qxd4",
+          "note": "White recaptures with the queen.",
+          "eval": 0
+        },
+        {
+          "san": "Nc6",
+          "note": "Black attacks the queen with a developing move.",
+          "shapes": [
+            {
+              "from": "c6",
+              "to": "d4",
+              "color": "red"
+            }
+          ],
+          "eval": 0
+        },
+        {
+          "san": "Qd1",
+          "note": "The queen retreats.",
+          "eval": 0
+        },
+        {
+          "san": "Bb4",
+          "note": "Black pins the knight against the king.",
+          "shapes": [
+            {
+              "from": "b4",
+              "to": "c3",
+              "color": "red"
+            }
+          ],
+          "eval": 0
+        },
+        {
+          "san": "Bd2",
+          "note": "White unpins by developing the bishop.",
+          "eval": 0
+        },
+        {
+          "san": "O-O",
+          "note": "Black castles.",
+          "caps": [
+            {
+              "san": "Bxc3",
+              "reply": "Bxc3",
+              "eval": 0
+            }
+          ],
+          "eval": 0
+        },
+        {
+          "san": "e3",
+          "note": "White develops.",
+          "eval": 0
+        },
+        {
+          "san": "Re8",
+          "note": "The rook takes the half-open file against White's e-pawn.",
+          "caps": [
+            {
+              "san": "Bxc3",
+              "reply": "Bxc3",
+              "eval": 0.1
+            }
+          ],
+          "eval": 0
+        }
+      ]
+    },
+    {
+      "id": "d5-declined",
+      "name": "3.d5: White closes the center",
+      "strategy": "The center is closed, so the fight moves to the wings. Develop, castle and prepare to break open the position later with a side pawn move, or aim for a strong knight outpost. Keep your pieces flexible and do not hurry.",
+      "board": {
+        "ply": 12,
+        "shapes": [
+          {
+            "from": "e5",
+            "color": "yellow"
+          }
+        ]
+      },
+      "moves": [
+        {
+          "san": "d4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "Nf6",
+          "note": "Black develops and watches the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "c4",
+          "note": "White gains more space.",
+          "eval": 0.3
+        },
+        {
+          "san": "e5",
+          "note": "The gambit: Black offers a pawn to open the game for fast development.",
+          "shapes": [
+            {
+              "from": "e5",
+              "color": "yellow"
+            }
+          ],
+          "eval": 0.8
+        },
+        {
+          "san": "d5",
+          "note": "White gains space and closes the center.",
+          "eval": -0.1
+        },
+        {
+          "san": "d6",
+          "note": "Black supports the pawn and prepares to develop.",
+          "caps": [
+            {
+              "san": "Bb4+",
+              "reply": "Bd2",
+              "eval": -0.1
+            },
+            {
+              "san": "Nxd5",
+              "reply": "cxd5",
+              "eval": 5.4
+            }
+          ],
+          "eval": 0.4
+        },
+        {
+          "san": "Nc3",
+          "note": "White develops.",
+          "eval": 0.4
+        },
+        {
+          "san": "Be7",
+          "note": "Black prepares to castle.",
+          "caps": [
+            {
+              "san": "Nxd5",
+              "reply": "cxd5",
+              "eval": 5.7
+            }
+          ],
+          "eval": 0.7
+        },
+        {
+          "san": "e4",
+          "note": "White takes a big center.",
+          "eval": 0.7
+        },
+        {
+          "san": "O-O",
+          "note": "Black castles.",
+          "caps": [
+            {
+              "san": "Nxe4",
+              "reply": "Nxe4",
+              "eval": 4.9
+            },
+            {
+              "san": "Nxd5",
+              "reply": "cxd5",
+              "eval": 6
+            }
+          ],
+          "eval": 0.7
+        },
+        {
+          "san": "Nf3",
+          "note": "White develops.",
+          "eval": 0.8
+        },
+        {
+          "san": "Nbd7",
+          "note": "Black develops the last minor piece toward the center.",
+          "caps": [
+            {
+              "san": "Nxe4",
+              "reply": "Nxe4",
+              "eval": 4.3
+            },
+            {
+              "san": "Nxd5",
+              "reply": "Nxd5",
+              "eval": 5.8
+            }
+          ],
+          "eval": 0.9
         }
       ]
     }
