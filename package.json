@@ -10,7 +10,7 @@
     "validate": "tsx scripts/validate-content.ts",
     "evals": "tsx scripts/add-evals.ts",
     "try": "tsx scripts/try-line.ts",
-    "test": "tsx scripts/test-merge.ts && tsx scripts/test-mastery.ts && tsx scripts/test-mistakes.ts"
+    "test": "tsx scripts/test-merge.ts && tsx scripts/test-mastery.ts && tsx scripts/test-mistakes.ts && tsx scripts/test-explain.ts && tsx worker/test-explain.ts"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261011.1",

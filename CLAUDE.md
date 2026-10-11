@@ -12,7 +12,7 @@ Vite + TypeScript (no UI framework), Chessground (board), chess.js (rules), ts-f
 - `npm run try -- "d4 Nf6 c4 e5"` prints the engine eval after each move, for checking a candidate line.
 
 ## Rules
-- Content is static JSON in `content/` (one file per opening). The schema lives in `src/types.ts`. Never call Claude or any API at runtime; no engine ships to the client.
+- Content is static JSON in `content/` (one file per opening). The schema lives in `src/types.ts`. No paid API, no Claude and no engine at runtime in the client. The one allowed runtime AI is Workers AI on the free plan, called only from the Worker (`/api/explain`) to rephrase verified, rule-based mistake explanations; results are cached in D1 and the app always falls back to the rule-based text. It is never used during Drill.
 - The user's side has exactly one accepted move per position. Any other legal move shows "<move> isn't part of this line." For captures and checks it adds a reason: a hand-written `why[<san>]` on the move if present, otherwise text built from the generated `caps` (engine's best reply and eval). Never name the line's own move in that text (it would give the answer away in Drill). `caps` is written by `npm run evals`; do not edit it by hand.
 - The message card has a fixed height on purpose: a taller message would shift the board and break Chessground's cached tap positions.
 - Keep it a PWA on free tiers only. No card-on-file services, no secrets in client code. The sync token is a Worker secret and the user's own copy in IndexedDB; never commit `.dev.vars`.

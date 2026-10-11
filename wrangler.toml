@@ -11,3 +11,6 @@ run_worker_first = ["/api/*"]
 binding = "DB"
 database_name = "chess-openings"
 database_id = "c0091afa-49e7-47d0-a3dc-9be393f7de43"
+
+[ai]
+binding = "AI"

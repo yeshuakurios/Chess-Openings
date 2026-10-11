@@ -4,7 +4,8 @@ import type { Attempt } from './store.ts';
 import type { Opening, Variation } from './types.ts';
 import { whyNot } from './why.ts';
 
-export type Kind = 'tactical' | 'other-line' | 'move-order' | 'hint' | 'slow' | 'other';
+import type { Kind } from './explainShared.ts';
+export type { Kind };
 export interface Explained { kind: Kind; text: string }
 
 /**
@@ -40,7 +41,7 @@ export function explain(a: Attempt, o: Opening, v: Variation): Explained {
   return { kind: 'other', text: `${played} isn't part of this line. Remember the plan: ${o.goal.title.toLowerCase()}.` };
 }
 
-export interface Trouble { k: string; p: number; count: number; hints: number; slow: number; last: Explained }
+export interface Trouble { k: string; p: number; count: number; hints: number; slow: number; last: Explained; played?: string }
 
 const DAY = 24 * 3600_000;
 const isClean = (a: Attempt) => a.ok === 1 && a.h === 0 && a.ms <= SLOW_MS;
@@ -62,7 +63,7 @@ export function troubleSpots(attempts: Attempt[], find: (k: string) => [Opening,
     const wrong = bad.filter(a => a.ok === 0).length, hints = bad.filter(a => a.ok === 1 && a.h === 1).length;
     const slow = bad.filter(a => a.ok === 1 && a.h === 0).length;
     const latest = bad[bad.length - 1];
-    out.push({ k: g[0].k, p: g[0].p, count: wrong, hints, slow, last: explain(latest, found[0], found[1]), score: wrong + hints + slow * 0.5, at: latest.t });
+    out.push({ k: g[0].k, p: g[0].p, count: wrong, hints, slow, last: explain(latest, found[0], found[1]), played: latest.s, score: wrong + hints + slow * 0.5, at: latest.t });
   }
   return out.sort((x, y) => y.score - x.score || y.at - x.at).slice(0, limit).map(({ score: _s, at: _a, ...t }) => t);
 }
