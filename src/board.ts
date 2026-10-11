@@ -5,7 +5,6 @@ import type { Key } from 'chessground/types';
 import type { Shape } from './types.ts';
 import { Chess } from 'chess.js';
 import 'chessground/assets/chessground.base.css';
-import 'chessground/assets/chessground.brown.css';
 import 'chessground/assets/chessground.cburnett.css';
 
 const toDraw = (shapes: Shape[] = []): DrawShape[] =>
