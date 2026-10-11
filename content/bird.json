@@ -48,7 +48,7 @@
         {
           "san": "f4",
           "note": "The Bird: control e5 immediately.",
-          "eval": -0.2,
+          "eval": -0.3,
           "shapes": [
             {
               "from": "e5",
@@ -64,7 +64,7 @@
         {
           "san": "d5",
           "note": "Black takes the center.",
-          "eval": -0.3
+          "eval": -0.2
         },
         {
           "san": "Nf3",
@@ -81,17 +81,17 @@
         {
           "san": "Nf6",
           "note": "Black develops symmetrically.",
-          "eval": -0.3
+          "eval": -0.2
         },
         {
           "san": "e3",
           "note": "Opens the f1 bishop and keeps a solid pawn chain.",
-          "eval": -0.3
+          "eval": -0.2
         },
         {
           "san": "g6",
           "note": "Black fianchettoes, mirroring a Leningrad-style setup.",
-          "eval": -0.1
+          "eval": -0.2
         },
         {
           "san": "b3",
@@ -101,14 +101,14 @@
             {
               "san": "Bb5+",
               "reply": "c6",
-              "eval": -0.4
+              "eval": -0.3
             }
           ]
         },
         {
           "san": "Bg7",
           "note": "Black's bishop eyes the long diagonal too.",
-          "eval": -0.2
+          "eval": -0.3
         },
         {
           "san": "Bb2",
@@ -118,7 +118,7 @@
             {
               "san": "Bb5+",
               "reply": "c6",
-              "eval": -0.6
+              "eval": -0.5
             }
           ],
           "shapes": [
@@ -137,7 +137,7 @@
         {
           "san": "Be2",
           "note": "Finishes development and prepares to castle.",
-          "eval": -0.3,
+          "eval": -0.2,
           "caps": [
             {
               "san": "Bxf6",
@@ -159,7 +159,7 @@
             {
               "san": "Bxf6",
               "reply": "exf6",
-              "eval": -1.5
+              "eval": -1.4
             }
           ],
           "shapes": [
@@ -219,27 +219,27 @@
         {
           "san": "e5",
           "note": "From's Gambit, Black challenges at once.",
-          "eval": 0.2
+          "eval": 0.4
         },
         {
           "san": "fxe5",
           "note": "Take the pawn; it is the principled reply.",
-          "eval": 0.5
+          "eval": 0.3
         },
         {
           "san": "d6",
           "note": "Black offers the pawn back for open lines.",
-          "eval": 0.3
+          "eval": 0.5
         },
         {
           "san": "exd6",
           "note": "Accept; White keeps the extra pawn for now.",
-          "eval": 0.3
+          "eval": 0.4
         },
         {
           "san": "Bxd6",
           "note": "Black recaptures and aims at your kingside.",
-          "eval": 0.2
+          "eval": 0.3
         },
         {
           "san": "Nf3",
@@ -249,24 +249,24 @@
         {
           "san": "g5",
           "note": "Black pushes forward to attack.",
-          "eval": 1
+          "eval": 0.7
         },
         {
           "san": "g3",
           "note": "Stops g4 ideas and gives the king shelter.",
-          "eval": 0.9,
+          "eval": 0.8,
           "caps": [
             {
               "san": "Nxg5",
               "reply": "Qxg5",
-              "eval": -4.4
+              "eval": -5.2
             }
           ]
         },
         {
           "san": "g4",
           "note": "Black gains space and kicks the knight.",
-          "eval": 0.9
+          "eval": 0.8
         },
         {
           "san": "Nh4",
@@ -276,27 +276,27 @@
         {
           "san": "Ne7",
           "note": "Black prepares to challenge the knight.",
-          "eval": 0.8
+          "eval": 0.9
         },
         {
           "san": "d4",
           "note": "Open the center for the pieces.",
-          "eval": 0.8
+          "eval": 0.9
         },
         {
           "san": "Ng6",
           "note": "Black challenges your knight.",
-          "eval": 0.8
+          "eval": 0.9
         },
         {
           "san": "Nxg6",
           "note": "Trade the active knight.",
-          "eval": 0.9
+          "eval": 0.8
         },
         {
           "san": "hxg6",
           "note": "Black opens the h-file for the rook.",
-          "eval": 0.9
+          "eval": 0.7
         }
       ],
       "board": {
@@ -337,7 +337,7 @@
         {
           "san": "Nf6",
           "note": "Black develops flexibly.",
-          "eval": -0.2
+          "eval": -0.1
         },
         {
           "san": "Nf3",
@@ -347,7 +347,7 @@
         {
           "san": "g6",
           "note": "Black fianchettoes the kingside bishop.",
-          "eval": 0
+          "eval": -0.1
         },
         {
           "san": "e3",
@@ -357,22 +357,22 @@
         {
           "san": "Bg7",
           "note": "Black develops the bishop.",
-          "eval": -0.3
+          "eval": -0.2
         },
         {
           "san": "Be2",
           "note": "Prepares to castle.",
-          "eval": -0.2
-        },
-        {
-          "san": "O-O",
-          "note": "Black castles.",
           "eval": -0.3
         },
         {
           "san": "O-O",
+          "note": "Black castles.",
+          "eval": -0.2
+        },
+        {
+          "san": "O-O",
           "note": "Your king is safe.",
-          "eval": -0.4
+          "eval": -0.3
         },
         {
           "san": "d6",
@@ -382,7 +382,7 @@
         {
           "san": "d4",
           "note": "Take the center when you are ready.",
-          "eval": -0.1
+          "eval": -0.3
         }
       ],
       "board": {
@@ -398,6 +398,543 @@
           }
         ]
       }
+    },
+    {
+      "id": "main-d5-c5",
+      "name": "Main line with ...c5: Black hits the center from the side",
+      "strategy": "This is the main setup again, but Black strikes at the center with a side pawn. Stay calm: the bishop on the long diagonal and the knight keep an eye on the key central square, and the solid pawn structure leaves no weakness to attack. Finish development and castle before deciding how to use the center.",
+      "board": {
+        "ply": 13,
+        "shapes": [
+          {
+            "from": "e5",
+            "color": "yellow"
+          },
+          {
+            "from": "f3",
+            "to": "e5",
+            "color": "green"
+          },
+          {
+            "from": "b2",
+            "to": "e5",
+            "color": "blue"
+          }
+        ]
+      },
+      "moves": [
+        {
+          "san": "f4",
+          "note": "The Bird: the f-pawn takes control of the key central square.",
+          "eval": -0.2
+        },
+        {
+          "san": "d5",
+          "note": "Black builds a central pawn.",
+          "eval": -0.2
+        },
+        {
+          "san": "Nf3",
+          "note": "Develops and adds a second guard of the key central square.",
+          "shapes": [
+            {
+              "from": "f3",
+              "to": "e5",
+              "color": "green"
+            }
+          ],
+          "eval": -0.2
+        },
+        {
+          "san": "Nf6",
+          "note": "Black develops and also eyes the center.",
+          "eval": -0.2
+        },
+        {
+          "san": "e3",
+          "note": "Frees the bishop and keeps a solid pawn in front of the king.",
+          "eval": -0.2
+        },
+        {
+          "san": "c5",
+          "note": "Black attacks the center from the side.",
+          "eval": -0.2
+        },
+        {
+          "san": "b3",
+          "note": "Prepares the bishop for the long diagonal.",
+          "caps": [
+            {
+              "san": "Bb5+",
+              "reply": "Nbd7",
+              "eval": -0.2
+            }
+          ],
+          "eval": -0.2
+        },
+        {
+          "san": "Nc6",
+          "note": "Black adds more pressure on the center.",
+          "eval": -0.1
+        },
+        {
+          "san": "Bb2",
+          "note": "The bishop now looks along the long diagonal toward the center.",
+          "shapes": [
+            {
+              "from": "b2",
+              "to": "e5",
+              "color": "blue"
+            }
+          ],
+          "eval": -0.1
+        },
+        {
+          "san": "e6",
+          "note": "Black solidifies the center and opens the bishop.",
+          "eval": 0
+        },
+        {
+          "san": "Be2",
+          "note": "Develops the last minor piece so you can castle.",
+          "caps": [
+            {
+              "san": "Bxf6",
+              "reply": "Qxf6",
+              "eval": -0.9
+            }
+          ],
+          "eval": -0.1
+        },
+        {
+          "san": "Be7",
+          "note": "Black prepares to castle.",
+          "eval": 0
+        },
+        {
+          "san": "O-O",
+          "note": "The king is safe and the rook is ready to join the action.",
+          "shapes": [
+            {
+              "from": "g1",
+              "color": "green"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Bxf6",
+              "reply": "Bxf6",
+              "eval": -0.9
+            }
+          ],
+          "eval": 0
+        },
+        {
+          "san": "O-O",
+          "note": "Both sides are fully developed and the position is level.",
+          "eval": 0
+        }
+      ]
+    },
+    {
+      "id": "vs-c5",
+      "name": "Vs 1...c5: the Sicilian-style reply",
+      "strategy": "Against the side-pawn reply White does not need to rush. Develop the knight, free the bishop with a solid pawn, then place the other bishop on the long diagonal after a pawn move on the queen side. Castle early and decide between a central pawn push or a knight jump once Black commits.",
+      "board": {
+        "ply": 13,
+        "shapes": [
+          {
+            "from": "e5",
+            "color": "yellow"
+          },
+          {
+            "from": "f3",
+            "to": "e5",
+            "color": "green"
+          },
+          {
+            "from": "b2",
+            "to": "e5",
+            "color": "blue"
+          }
+        ]
+      },
+      "moves": [
+        {
+          "san": "f4",
+          "note": "The Bird: the f-pawn takes control of the key central square.",
+          "shapes": [
+            {
+              "from": "e5",
+              "color": "yellow"
+            },
+            {
+              "from": "f4",
+              "to": "e5",
+              "color": "green"
+            }
+          ],
+          "eval": -0.2
+        },
+        {
+          "san": "c5",
+          "note": "Black claims space in the center from the side.",
+          "eval": 0
+        },
+        {
+          "san": "Nf3",
+          "note": "Develops and adds a second guard of the key central square.",
+          "eval": -0.2
+        },
+        {
+          "san": "Nc6",
+          "note": "Black develops a knight toward the center.",
+          "eval": 0
+        },
+        {
+          "san": "e3",
+          "note": "Frees the bishop and keeps a solid pawn in front of the king.",
+          "eval": -0.1
+        },
+        {
+          "san": "d5",
+          "note": "Black builds a central pawn wall.",
+          "eval": -0.1
+        },
+        {
+          "san": "b3",
+          "note": "Prepares the bishop for the long diagonal.",
+          "eval": -0.1
+        },
+        {
+          "san": "Nf6",
+          "note": "Black completes a classical setup.",
+          "eval": -0.1
+        },
+        {
+          "san": "Bb2",
+          "note": "The bishop looks along the long diagonal toward the center.",
+          "shapes": [
+            {
+              "from": "b2",
+              "to": "e5",
+              "color": "blue"
+            }
+          ],
+          "eval": -0.1
+        },
+        {
+          "san": "e6",
+          "note": "Black solidifies the center.",
+          "eval": 0
+        },
+        {
+          "san": "Be2",
+          "note": "Gets the bishop out so you can castle.",
+          "caps": [
+            {
+              "san": "Bxf6",
+              "reply": "Qxf6",
+              "eval": -0.8
+            }
+          ],
+          "eval": 0
+        },
+        {
+          "san": "Be7",
+          "note": "Black prepares to castle.",
+          "eval": 0
+        },
+        {
+          "san": "O-O",
+          "note": "The king is safe and the rook is ready for action.",
+          "shapes": [
+            {
+              "from": "g1",
+              "color": "green"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Bxf6",
+              "reply": "Bxf6",
+              "eval": -1
+            }
+          ],
+          "eval": 0
+        },
+        {
+          "san": "O-O",
+          "note": "Both sides are fully developed and the position is level.",
+          "eval": -0.1
+        }
+      ]
+    },
+    {
+      "id": "vs-g6",
+      "name": "Vs 1...g6: Black copies the fianchetto",
+      "strategy": "Black plans a fianchettoed bishop on the long diagonal of their own. White keeps the compact setup: knight out, solid pawn behind the king, bishop to the near side, castle, and then take the center with the central pawn.",
+      "board": {
+        "ply": 11,
+        "shapes": [
+          {
+            "from": "d4",
+            "color": "green"
+          },
+          {
+            "from": "g1",
+            "color": "green"
+          }
+        ]
+      },
+      "moves": [
+        {
+          "san": "f4",
+          "note": "The Bird: the f-pawn takes control of the key central square.",
+          "shapes": [
+            {
+              "from": "e5",
+              "color": "yellow"
+            },
+            {
+              "from": "f4",
+              "to": "e5",
+              "color": "green"
+            }
+          ],
+          "eval": -0.2
+        },
+        {
+          "san": "g6",
+          "note": "Black prepares to place a bishop on the long diagonal.",
+          "eval": 0
+        },
+        {
+          "san": "Nf3",
+          "note": "Develops and adds a second guard of the key central square.",
+          "eval": -0.1
+        },
+        {
+          "san": "Bg7",
+          "note": "The bishop takes its post on the long diagonal.",
+          "eval": 0.1
+        },
+        {
+          "san": "e3",
+          "note": "Gives the bishop room and keeps the structure solid.",
+          "eval": -0.2
+        },
+        {
+          "san": "d6",
+          "note": "Black supports the center and opens the way for the pieces.",
+          "eval": 0
+        },
+        {
+          "san": "Be2",
+          "note": "Develops the bishop and prepares to castle.",
+          "caps": [
+            {
+              "san": "Bb5+",
+              "reply": "c6",
+              "eval": -0.2
+            }
+          ],
+          "eval": -0.3
+        },
+        {
+          "san": "Nf6",
+          "note": "Black develops the knight.",
+          "eval": -0.2
+        },
+        {
+          "san": "O-O",
+          "note": "The king is safe.",
+          "caps": [
+            {
+              "san": "Bb5+",
+              "reply": "Nbd7",
+              "eval": -0.5
+            }
+          ],
+          "eval": -0.3
+        },
+        {
+          "san": "O-O",
+          "note": "Black castles too.",
+          "eval": -0.1
+        },
+        {
+          "san": "d4",
+          "note": "Now take space in the center with the central pawn.",
+          "shapes": [
+            {
+              "from": "d4",
+              "color": "green"
+            }
+          ],
+          "eval": -0.1
+        },
+        {
+          "san": "c5",
+          "note": "Black challenges the center from the side.",
+          "eval": 0
+        }
+      ]
+    },
+    {
+      "id": "vs-e6",
+      "name": "Vs 1...e6: Black builds a solid, closed structure",
+      "strategy": "Black chooses a sturdy pawn wall. White answers with the same compact setup, but this time one bishop heads to a more active square aimed at Black's king side, and the other takes the long diagonal. Keep the knight ready to jump to the key central square.",
+      "board": {
+        "ply": 13,
+        "shapes": [
+          {
+            "from": "e5",
+            "color": "yellow"
+          },
+          {
+            "from": "f3",
+            "to": "e5",
+            "color": "green"
+          },
+          {
+            "from": "b2",
+            "to": "e5",
+            "color": "blue"
+          },
+          {
+            "from": "d3",
+            "to": "h7",
+            "color": "yellow"
+          }
+        ]
+      },
+      "moves": [
+        {
+          "san": "f4",
+          "note": "The Bird: the f-pawn takes control of the key central square.",
+          "eval": -0.2
+        },
+        {
+          "san": "e6",
+          "note": "Black prepares a solid pawn wall.",
+          "eval": 0
+        },
+        {
+          "san": "Nf3",
+          "note": "Develops and adds a second guard of the key central square.",
+          "shapes": [
+            {
+              "from": "f3",
+              "to": "e5",
+              "color": "green"
+            }
+          ],
+          "eval": -0.2
+        },
+        {
+          "san": "d5",
+          "note": "Black takes the center with a pawn.",
+          "eval": -0.1
+        },
+        {
+          "san": "e3",
+          "note": "Frees the bishop and keeps a solid pawn in front of the king.",
+          "eval": -0.3
+        },
+        {
+          "san": "Nf6",
+          "note": "Black develops the knight.",
+          "eval": -0.2
+        },
+        {
+          "san": "b3",
+          "note": "Prepares the bishop for the long diagonal.",
+          "caps": [
+            {
+              "san": "Bb5+",
+              "reply": "c6",
+              "eval": -0.2
+            }
+          ],
+          "eval": -0.1
+        },
+        {
+          "san": "Be7",
+          "note": "Black prepares to castle.",
+          "eval": -0.1
+        },
+        {
+          "san": "Bb2",
+          "note": "The bishop looks along the long diagonal.",
+          "shapes": [
+            {
+              "from": "b2",
+              "to": "e5",
+              "color": "blue"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Bb5+",
+              "reply": "c6",
+              "eval": -0.2
+            }
+          ],
+          "eval": -0.1
+        },
+        {
+          "san": "O-O",
+          "note": "Black castles.",
+          "eval": -0.1
+        },
+        {
+          "san": "Bd3",
+          "note": "The other bishop aims at Black's king side.",
+          "shapes": [
+            {
+              "from": "d3",
+              "to": "h7",
+              "color": "yellow"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Bxf6",
+              "reply": "Bxf6",
+              "eval": -0.5
+            }
+          ],
+          "eval": -0.2
+        },
+        {
+          "san": "b6",
+          "note": "Black prepares to develop the bishop on the long diagonal.",
+          "eval": 0.1
+        },
+        {
+          "san": "O-O",
+          "note": "The king is safe.",
+          "caps": [
+            {
+              "san": "Bxh7+",
+              "reply": "Nxh7",
+              "eval": -3.2
+            },
+            {
+              "san": "Bxf6",
+              "reply": "Bxf6",
+              "eval": -0.7
+            }
+          ],
+          "eval": -0.1
+        },
+        {
+          "san": "Bb7",
+          "note": "Both sides are fully developed and the position is level.",
+          "eval": 0.3
+        }
+      ]
     }
   ]
 }
