@@ -2369,7 +2369,7 @@
         },
         {
           "san": "Nc3",
-          "note": "White develops and prepares to challenge the knight.",
+          "note": "White develops and defends the extra pawn.",
           "eval": 0.2
         },
         {
@@ -2401,7 +2401,7 @@
         },
         {
           "san": "e6",
-          "note": "Black opens the bishop and keeps the center solid.",
+          "note": "Black opens the dark-squared bishop and keeps the center solid, though the other bishop stays inside.",
           "eval": 0.7,
           "caps": [
             {
@@ -2495,7 +2495,7 @@
         },
         {
           "san": "Bd6",
-          "note": "Black develops the bishop; the position is balanced.",
+          "note": "Black develops the bishop; White is only slightly better.",
           "eval": 0.8,
           "caps": [
             {
@@ -2535,7 +2535,7 @@
     {
       "id": "e5-bf5",
       "name": "2.e5: develop the bishop, then hit the pawn chain",
-      "strategy": "White gains space with an advanced pawn, so Black plays against the pawn chain instead of fighting for the center head-on. Develop the light bishop outside the chain before it gets shut in, then strike at the base of the chain with a pawn break and add pressure on the center pawn with the knights. Black is a little cramped but has a clear plan.",
+      "strategy": "White gains space with an advanced pawn, so Black plays against the pawn chain instead of fighting for the center head-on. Develop the light bishop outside the chain before it gets shut in, then strike at the base of the chain with a pawn break and add pressure on the center pawn with the queenside knight and later the queen. Black is a little cramped but has a clear plan.",
       "moves": [
         {
           "san": "e4",
