@@ -53,27 +53,116 @@
         {
           "san": "d4",
           "note": "White takes the center.",
-          "eval": 0.2
+          "eval": 0.2,
+          "stats": {
+            "total": 445454883,
+            "n": 93374784,
+            "w": 47213646,
+            "d": 3883984,
+            "b": 42277154,
+            "alts": [
+              {
+                "san": "e4",
+                "n": 297593161
+              },
+              {
+                "san": "e3",
+                "n": 12121153
+              },
+              {
+                "san": "Nf3",
+                "n": 10806602
+              },
+              {
+                "san": "c4",
+                "n": 8018742
+              }
+            ]
+          }
         },
         {
           "san": "Nf6",
           "note": "Develop and hold e4.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 93216724,
+            "n": 8563088,
+            "w": 4131496,
+            "d": 333377,
+            "b": 4098215
+          }
         },
         {
           "san": "c4",
           "note": "Gain space.",
-          "eval": 0.2
+          "eval": 0.2,
+          "stats": {
+            "total": 8543185,
+            "n": 1871986,
+            "w": 936891,
+            "d": 66850,
+            "b": 868245,
+            "alts": [
+              {
+                "san": "Bf4",
+                "n": 1811513
+              },
+              {
+                "san": "Nf3",
+                "n": 1374013
+              },
+              {
+                "san": "Nc3",
+                "n": 1150751
+              },
+              {
+                "san": "e3",
+                "n": 953032
+              }
+            ]
+          }
         },
         {
           "san": "e5",
           "note": "The Budapest Gambit.",
-          "eval": 0.8
+          "eval": 0.8,
+          "stats": {
+            "total": 1960326,
+            "n": 65174,
+            "w": 31900,
+            "d": 1857,
+            "b": 31417
+          }
         },
         {
           "san": "dxe5",
           "note": "White takes the pawn.",
-          "eval": 0.8
+          "eval": 0.8,
+          "stats": {
+            "total": 80164,
+            "n": 37911,
+            "w": 19060,
+            "d": 1071,
+            "b": 17780,
+            "alts": [
+              {
+                "san": "e3",
+                "n": 11472
+              },
+              {
+                "san": "d5",
+                "n": 10045
+              },
+              {
+                "san": "Nc3",
+                "n": 8894
+              },
+              {
+                "san": "Nf3",
+                "n": 7512
+              }
+            ]
+          }
         },
         {
           "san": "Ng4",
@@ -96,12 +185,44 @@
               "to": "e5",
               "color": "green"
             }
-          ]
+          ],
+          "stats": {
+            "total": 37755,
+            "n": 25800,
+            "w": 12581,
+            "d": 721,
+            "b": 12498
+          }
         },
         {
           "san": "Bf4",
           "note": "White defends e5.",
-          "eval": 0.5
+          "eval": 0.5,
+          "stats": {
+            "total": 25815,
+            "n": 2623,
+            "w": 1300,
+            "d": 72,
+            "b": 1251,
+            "alts": [
+              {
+                "san": "Nf3",
+                "n": 11576
+              },
+              {
+                "san": "f4",
+                "n": 2081
+              },
+              {
+                "san": "h3",
+                "n": 1726
+              },
+              {
+                "san": "e3",
+                "n": 1612
+              }
+            ]
+          }
         },
         {
           "san": "Nc6",
@@ -135,12 +256,44 @@
               "to": "e5",
               "color": "green"
             }
-          ]
+          ],
+          "stats": {
+            "total": 2626,
+            "n": 1186,
+            "w": 544,
+            "d": 42,
+            "b": 600
+          }
         },
         {
           "san": "Nf3",
           "note": "White develops.",
-          "eval": 0.5
+          "eval": 0.5,
+          "stats": {
+            "total": 1219,
+            "n": 627,
+            "w": 291,
+            "d": 26,
+            "b": 310,
+            "alts": [
+              {
+                "san": "h3",
+                "n": 216
+              },
+              {
+                "san": "e3",
+                "n": 176
+              },
+              {
+                "san": "f3",
+                "n": 43
+              },
+              {
+                "san": "Nc3",
+                "n": 41
+              }
+            ]
+          }
         },
         {
           "san": "Bb4+",
@@ -174,12 +327,40 @@
               "to": "e1",
               "color": "red"
             }
-          ]
+          ],
+          "stats": {
+            "total": 3112,
+            "n": 1831,
+            "w": 812,
+            "d": 65,
+            "b": 954
+          }
         },
         {
           "san": "Nbd2",
           "note": "White blocks.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 1863,
+            "n": 587,
+            "w": 188,
+            "d": 10,
+            "b": 389,
+            "alts": [
+              {
+                "san": "Nc3",
+                "n": 1232
+              },
+              {
+                "san": "Bd2",
+                "n": 38
+              },
+              {
+                "san": "Nfd2",
+                "n": 6
+              }
+            ]
+          }
         },
         {
           "san": "Qe7",
@@ -218,12 +399,44 @@
               "to": "e5",
               "color": "green"
             }
-          ]
+          ],
+          "stats": {
+            "total": 595,
+            "n": 508,
+            "w": 154,
+            "d": 5,
+            "b": 349
+          }
         },
         {
           "san": "e3",
           "note": "White solidifies and prepares to develop the bishop.",
-          "eval": 0.4
+          "eval": 0.4,
+          "stats": {
+            "total": 512,
+            "n": 77,
+            "w": 40,
+            "d": 2,
+            "b": 35,
+            "alts": [
+              {
+                "san": "a3",
+                "n": 298
+              },
+              {
+                "san": "h3",
+                "n": 82
+              },
+              {
+                "san": "Bg5",
+                "n": 16
+              },
+              {
+                "san": "Qb3",
+                "n": 10
+              }
+            ]
+          }
         },
         {
           "san": "Ngxe5",
@@ -266,7 +479,14 @@
               "from": "e5",
               "color": "green"
             }
-          ]
+          ],
+          "stats": {
+            "total": 77,
+            "n": 55,
+            "w": 30,
+            "d": 2,
+            "b": 23
+          }
         }
       ],
       "board": {
@@ -307,27 +527,116 @@
         {
           "san": "d4",
           "note": "White takes the center.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 445454883,
+            "n": 93374784,
+            "w": 47213646,
+            "d": 3883984,
+            "b": 42277154,
+            "alts": [
+              {
+                "san": "e4",
+                "n": 297593161
+              },
+              {
+                "san": "e3",
+                "n": 12121153
+              },
+              {
+                "san": "Nf3",
+                "n": 10806602
+              },
+              {
+                "san": "c4",
+                "n": 8018742
+              }
+            ]
+          }
         },
         {
           "san": "Nf6",
           "note": "Develop and hold e4.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 93216724,
+            "n": 8563088,
+            "w": 4131496,
+            "d": 333377,
+            "b": 4098215
+          }
         },
         {
           "san": "c4",
           "note": "Gain space.",
-          "eval": 0.2
+          "eval": 0.2,
+          "stats": {
+            "total": 8543185,
+            "n": 1871986,
+            "w": 936891,
+            "d": 66850,
+            "b": 868245,
+            "alts": [
+              {
+                "san": "Bf4",
+                "n": 1811513
+              },
+              {
+                "san": "Nf3",
+                "n": 1374013
+              },
+              {
+                "san": "Nc3",
+                "n": 1150751
+              },
+              {
+                "san": "e3",
+                "n": 953032
+              }
+            ]
+          }
         },
         {
           "san": "e5",
           "note": "The Budapest Gambit.",
-          "eval": 0.7
+          "eval": 0.7,
+          "stats": {
+            "total": 1960326,
+            "n": 65174,
+            "w": 31900,
+            "d": 1857,
+            "b": 31417
+          }
         },
         {
           "san": "dxe5",
           "note": "White takes the pawn.",
-          "eval": 0.9
+          "eval": 0.9,
+          "stats": {
+            "total": 80164,
+            "n": 37911,
+            "w": 19060,
+            "d": 1071,
+            "b": 17780,
+            "alts": [
+              {
+                "san": "e3",
+                "n": 11472
+              },
+              {
+                "san": "d5",
+                "n": 10045
+              },
+              {
+                "san": "Nc3",
+                "n": 8894
+              },
+              {
+                "san": "Nf3",
+                "n": 7512
+              }
+            ]
+          }
         },
         {
           "san": "Ng4",
@@ -350,12 +659,44 @@
               "to": "e5",
               "color": "green"
             }
-          ]
+          ],
+          "stats": {
+            "total": 37755,
+            "n": 25800,
+            "w": 12581,
+            "d": 721,
+            "b": 12498
+          }
         },
         {
           "san": "Nf3",
           "note": "White defends e5 with a developing move.",
-          "eval": 0.6
+          "eval": 0.6,
+          "stats": {
+            "total": 25815,
+            "n": 11576,
+            "w": 5608,
+            "d": 319,
+            "b": 5649,
+            "alts": [
+              {
+                "san": "Bf4",
+                "n": 2623
+              },
+              {
+                "san": "f4",
+                "n": 2081
+              },
+              {
+                "san": "h3",
+                "n": 1726
+              },
+              {
+                "san": "e3",
+                "n": 1612
+              }
+            ]
+          }
         },
         {
           "san": "Nc6",
@@ -389,12 +730,44 @@
               "to": "e5",
               "color": "green"
             }
-          ]
+          ],
+          "stats": {
+            "total": 11743,
+            "n": 4956,
+            "w": 2357,
+            "d": 147,
+            "b": 2452
+          }
         },
         {
           "san": "Nc3",
           "note": "White develops.",
-          "eval": 0.6
+          "eval": 0.6,
+          "stats": {
+            "total": 6263,
+            "n": 647,
+            "w": 346,
+            "d": 24,
+            "b": 277,
+            "alts": [
+              {
+                "san": "Bf4",
+                "n": 2477
+              },
+              {
+                "san": "h3",
+                "n": 1318
+              },
+              {
+                "san": "Bg5",
+                "n": 753
+              },
+              {
+                "san": "e3",
+                "n": 398
+              }
+            ]
+          }
         },
         {
           "san": "Ngxe5",
@@ -422,22 +795,86 @@
               "from": "e5",
               "color": "green"
             }
-          ]
+          ],
+          "stats": {
+            "total": 743,
+            "n": 268,
+            "w": 138,
+            "d": 9,
+            "b": 121
+          }
         },
         {
           "san": "Nxe5",
           "note": "White trades knights.",
-          "eval": 0.6
+          "eval": 0.6,
+          "stats": {
+            "total": 290,
+            "n": 185,
+            "w": 101,
+            "d": 8,
+            "b": 76,
+            "alts": [
+              {
+                "san": "e4",
+                "n": 29
+              },
+              {
+                "san": "Bf4",
+                "n": 22
+              },
+              {
+                "san": "e3",
+                "n": 22
+              },
+              {
+                "san": "Bg5",
+                "n": 12
+              }
+            ]
+          }
         },
         {
           "san": "Nxe5",
           "note": "Recapture; the centralised knight is strong.",
-          "eval": 0.6
+          "eval": 0.6,
+          "stats": {
+            "total": 185,
+            "n": 185,
+            "w": 101,
+            "d": 8,
+            "b": 76
+          }
         },
         {
           "san": "e4",
           "note": "White takes space in the center.",
-          "eval": 0.4
+          "eval": 0.4,
+          "stats": {
+            "total": 277,
+            "n": 91,
+            "w": 51,
+            "d": 2,
+            "b": 38,
+            "alts": [
+              {
+                "san": "Bf4",
+                "n": 83
+              },
+              {
+                "san": "e3",
+                "n": 52
+              },
+              {
+                "san": "b3",
+                "n": 12
+              },
+              {
+                "san": "g3",
+                "n": 10
+              }
+            ]
+          }
         }
       ],
       "board": {
@@ -477,27 +914,116 @@
         {
           "san": "d4",
           "note": "White takes the center.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 445454883,
+            "n": 93374784,
+            "w": 47213646,
+            "d": 3883984,
+            "b": 42277154,
+            "alts": [
+              {
+                "san": "e4",
+                "n": 297593161
+              },
+              {
+                "san": "e3",
+                "n": 12121153
+              },
+              {
+                "san": "Nf3",
+                "n": 10806602
+              },
+              {
+                "san": "c4",
+                "n": 8018742
+              }
+            ]
+          }
         },
         {
           "san": "Nf6",
           "note": "Black develops and watches the center.",
-          "eval": 0.2
+          "eval": 0.2,
+          "stats": {
+            "total": 93216724,
+            "n": 8563088,
+            "w": 4131496,
+            "d": 333377,
+            "b": 4098215
+          }
         },
         {
           "san": "c4",
           "note": "White gains more space.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 8543185,
+            "n": 1871986,
+            "w": 936891,
+            "d": 66850,
+            "b": 868245,
+            "alts": [
+              {
+                "san": "Bf4",
+                "n": 1811513
+              },
+              {
+                "san": "Nf3",
+                "n": 1374013
+              },
+              {
+                "san": "Nc3",
+                "n": 1150751
+              },
+              {
+                "san": "e3",
+                "n": 953032
+              }
+            ]
+          }
         },
         {
           "san": "e5",
           "note": "The gambit: Black offers a pawn to open the game for fast development.",
-          "eval": 0.9
+          "eval": 0.9,
+          "stats": {
+            "total": 1960326,
+            "n": 65174,
+            "w": 31900,
+            "d": 1857,
+            "b": 31417
+          }
         },
         {
           "san": "dxe5",
           "note": "White accepts the pawn.",
-          "eval": 0.9
+          "eval": 0.9,
+          "stats": {
+            "total": 80164,
+            "n": 37911,
+            "w": 19060,
+            "d": 1071,
+            "b": 17780,
+            "alts": [
+              {
+                "san": "e3",
+                "n": 11472
+              },
+              {
+                "san": "d5",
+                "n": 10045
+              },
+              {
+                "san": "Nc3",
+                "n": 8894
+              },
+              {
+                "san": "Nf3",
+                "n": 7512
+              }
+            ]
+          }
         },
         {
           "san": "Ng4",
@@ -520,12 +1046,44 @@
               "eval": 2.1
             }
           ],
-          "eval": 0.8
+          "eval": 0.8,
+          "stats": {
+            "total": 37755,
+            "n": 25800,
+            "w": 12581,
+            "d": 721,
+            "b": 12498
+          }
         },
         {
           "san": "Bf4",
           "note": "White defends the pawn with a bishop.",
-          "eval": 0.4
+          "eval": 0.4,
+          "stats": {
+            "total": 25815,
+            "n": 2623,
+            "w": 1300,
+            "d": 72,
+            "b": 1251,
+            "alts": [
+              {
+                "san": "Nf3",
+                "n": 11576
+              },
+              {
+                "san": "f4",
+                "n": 2081
+              },
+              {
+                "san": "h3",
+                "n": 1726
+              },
+              {
+                "san": "e3",
+                "n": 1612
+              }
+            ]
+          }
         },
         {
           "san": "Nc6",
@@ -559,12 +1117,44 @@
               "eval": 4.6
             }
           ],
-          "eval": 0.4
+          "eval": 0.4,
+          "stats": {
+            "total": 2626,
+            "n": 1186,
+            "w": 544,
+            "d": 42,
+            "b": 600
+          }
         },
         {
           "san": "Nf3",
           "note": "White adds a defender.",
-          "eval": 0.4
+          "eval": 0.4,
+          "stats": {
+            "total": 1219,
+            "n": 627,
+            "w": 291,
+            "d": 26,
+            "b": 310,
+            "alts": [
+              {
+                "san": "h3",
+                "n": 216
+              },
+              {
+                "san": "e3",
+                "n": 176
+              },
+              {
+                "san": "f3",
+                "n": 43
+              },
+              {
+                "san": "Nc3",
+                "n": 41
+              }
+            ]
+          }
         },
         {
           "san": "Bb4+",
@@ -598,12 +1188,40 @@
               "eval": 4.7
             }
           ],
-          "eval": 0.5
+          "eval": 0.5,
+          "stats": {
+            "total": 3112,
+            "n": 1831,
+            "w": 812,
+            "d": 65,
+            "b": 954
+          }
         },
         {
           "san": "Nbd2",
           "note": "White blocks with the knight, which is now pinned.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 1863,
+            "n": 587,
+            "w": 188,
+            "d": 10,
+            "b": 389,
+            "alts": [
+              {
+                "san": "Nc3",
+                "n": 1232
+              },
+              {
+                "san": "Bd2",
+                "n": 38
+              },
+              {
+                "san": "Nfd2",
+                "n": 6
+              }
+            ]
+          }
         },
         {
           "san": "Qe7",
@@ -642,12 +1260,44 @@
               "eval": 4.7
             }
           ],
-          "eval": 0.4
+          "eval": 0.4,
+          "stats": {
+            "total": 595,
+            "n": 508,
+            "w": 154,
+            "d": 5,
+            "b": 349
+          }
         },
         {
           "san": "a3",
           "note": "A natural-looking attack on the bishop, but it walks into a trap.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 512,
+            "n": 298,
+            "w": 64,
+            "d": 0,
+            "b": 234,
+            "alts": [
+              {
+                "san": "h3",
+                "n": 82
+              },
+              {
+                "san": "e3",
+                "n": 77
+              },
+              {
+                "san": "Bg5",
+                "n": 16
+              },
+              {
+                "san": "Qb3",
+                "n": 10
+              }
+            ]
+          }
         },
         {
           "san": "Ngxe5",
@@ -695,12 +1345,40 @@
               "eval": 5.7
             }
           ],
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 298,
+            "n": 180,
+            "w": 25,
+            "d": 0,
+            "b": 155
+          }
         },
         {
           "san": "axb4",
           "note": "White grabs the bishop and misses the threat.",
-          "eval": -100
+          "eval": -100,
+          "stats": {
+            "total": 180,
+            "n": 106,
+            "w": 3,
+            "d": 0,
+            "b": 103,
+            "alts": [
+              {
+                "san": "Nxe5",
+                "n": 57
+              },
+              {
+                "san": "Bxe5",
+                "n": 15
+              },
+              {
+                "san": "e3",
+                "n": 2
+              }
+            ]
+          }
         },
         {
           "san": "Nd3#",
@@ -733,7 +1411,14 @@
               "eval": 6.5
             }
           ],
-          "eval": -100
+          "eval": -100,
+          "stats": {
+            "total": 106,
+            "n": 102,
+            "w": 0,
+            "d": 0,
+            "b": 102
+          }
         }
       ]
     },
@@ -759,27 +1444,116 @@
         {
           "san": "d4",
           "note": "White takes the center.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 445454883,
+            "n": 93374784,
+            "w": 47213646,
+            "d": 3883984,
+            "b": 42277154,
+            "alts": [
+              {
+                "san": "e4",
+                "n": 297593161
+              },
+              {
+                "san": "e3",
+                "n": 12121153
+              },
+              {
+                "san": "Nf3",
+                "n": 10806602
+              },
+              {
+                "san": "c4",
+                "n": 8018742
+              }
+            ]
+          }
         },
         {
           "san": "Nf6",
           "note": "Black develops and watches the center.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 93216724,
+            "n": 8563088,
+            "w": 4131496,
+            "d": 333377,
+            "b": 4098215
+          }
         },
         {
           "san": "c4",
           "note": "White gains more space.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 8543185,
+            "n": 1871986,
+            "w": 936891,
+            "d": 66850,
+            "b": 868245,
+            "alts": [
+              {
+                "san": "Bf4",
+                "n": 1811513
+              },
+              {
+                "san": "Nf3",
+                "n": 1374013
+              },
+              {
+                "san": "Nc3",
+                "n": 1150751
+              },
+              {
+                "san": "e3",
+                "n": 953032
+              }
+            ]
+          }
         },
         {
           "san": "e5",
           "note": "The gambit: Black offers a pawn to open the game for fast development.",
-          "eval": 0.8
+          "eval": 0.8,
+          "stats": {
+            "total": 1960326,
+            "n": 65174,
+            "w": 31900,
+            "d": 1857,
+            "b": 31417
+          }
         },
         {
           "san": "e3",
           "note": "White declines and keeps a solid structure.",
-          "eval": 0.1
+          "eval": 0.1,
+          "stats": {
+            "total": 80164,
+            "n": 11472,
+            "w": 5755,
+            "d": 338,
+            "b": 5379,
+            "alts": [
+              {
+                "san": "dxe5",
+                "n": 37911
+              },
+              {
+                "san": "d5",
+                "n": 10045
+              },
+              {
+                "san": "Nc3",
+                "n": 8894
+              },
+              {
+                "san": "Nf3",
+                "n": 7512
+              }
+            ]
+          }
         },
         {
           "san": "exd4",
@@ -797,12 +1571,44 @@
               "eval": 0.1
             }
           ],
-          "eval": 0.1
+          "eval": 0.1,
+          "stats": {
+            "total": 44146,
+            "n": 20421,
+            "w": 9785,
+            "d": 724,
+            "b": 9912
+          }
         },
         {
           "san": "exd4",
           "note": "White recaptures.",
-          "eval": 0.1
+          "eval": 0.1,
+          "stats": {
+            "total": 20742,
+            "n": 16872,
+            "w": 8386,
+            "d": 607,
+            "b": 7879,
+            "alts": [
+              {
+                "san": "Qxd4",
+                "n": 3425
+              },
+              {
+                "san": "Nf3",
+                "n": 198
+              },
+              {
+                "san": "Nc3",
+                "n": 59
+              },
+              {
+                "san": "e4",
+                "n": 42
+              }
+            ]
+          }
         },
         {
           "san": "d5",
@@ -825,12 +1631,44 @@
               "eval": 0.1
             }
           ],
-          "eval": 0.1
+          "eval": 0.1,
+          "stats": {
+            "total": 22642,
+            "n": 5765,
+            "w": 2773,
+            "d": 201,
+            "b": 2791
+          }
         },
         {
           "san": "Nc3",
           "note": "White develops.",
-          "eval": 0.1
+          "eval": 0.1,
+          "stats": {
+            "total": 28058,
+            "n": 7969,
+            "w": 3942,
+            "d": 273,
+            "b": 3754,
+            "alts": [
+              {
+                "san": "cxd5",
+                "n": 7202
+              },
+              {
+                "san": "Nf3",
+                "n": 5001
+              },
+              {
+                "san": "c5",
+                "n": 2532
+              },
+              {
+                "san": "Bg5",
+                "n": 1930
+              }
+            ]
+          }
         },
         {
           "san": "Be7",
@@ -847,12 +1685,44 @@
               "eval": 0.2
             }
           ],
-          "eval": 0.2
+          "eval": 0.2,
+          "stats": {
+            "total": 13849,
+            "n": 440,
+            "w": 205,
+            "d": 17,
+            "b": 218
+          }
         },
         {
           "san": "Nf3",
           "note": "White develops the other knight.",
-          "eval": 0.2
+          "eval": 0.2,
+          "stats": {
+            "total": 597,
+            "n": 291,
+            "w": 145,
+            "d": 11,
+            "b": 135,
+            "alts": [
+              {
+                "san": "cxd5",
+                "n": 95
+              },
+              {
+                "san": "Bg5",
+                "n": 60
+              },
+              {
+                "san": "c5",
+                "n": 28
+              },
+              {
+                "san": "Bd3",
+                "n": 24
+              }
+            ]
+          }
         },
         {
           "san": "O-O",
@@ -864,12 +1734,44 @@
               "eval": 0.6
             }
           ],
-          "eval": 0.2
+          "eval": 0.2,
+          "stats": {
+            "total": 1068,
+            "n": 578,
+            "w": 295,
+            "d": 22,
+            "b": 261
+          }
         },
         {
           "san": "cxd5",
           "note": "White opens the position.",
-          "eval": 0.2
+          "eval": 0.2,
+          "stats": {
+            "total": 674,
+            "n": 127,
+            "w": 67,
+            "d": 5,
+            "b": 55,
+            "alts": [
+              {
+                "san": "Bd3",
+                "n": 147
+              },
+              {
+                "san": "Be2",
+                "n": 125
+              },
+              {
+                "san": "Bg5",
+                "n": 90
+              },
+              {
+                "san": "Bf4",
+                "n": 37
+              }
+            ]
+          }
         },
         {
           "san": "Nxd5",
@@ -892,7 +1794,14 @@
               "eval": 6.6
             }
           ],
-          "eval": 0.2
+          "eval": 0.2,
+          "stats": {
+            "total": 219,
+            "n": 159,
+            "w": 77,
+            "d": 8,
+            "b": 74
+          }
         }
       ]
     },
@@ -918,37 +1827,158 @@
         {
           "san": "d4",
           "note": "White takes the center.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 445454883,
+            "n": 93374784,
+            "w": 47213646,
+            "d": 3883984,
+            "b": 42277154,
+            "alts": [
+              {
+                "san": "e4",
+                "n": 297593161
+              },
+              {
+                "san": "e3",
+                "n": 12121153
+              },
+              {
+                "san": "Nf3",
+                "n": 10806602
+              },
+              {
+                "san": "c4",
+                "n": 8018742
+              }
+            ]
+          }
         },
         {
           "san": "Nf6",
           "note": "Black develops and watches the center.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 93216724,
+            "n": 8563088,
+            "w": 4131496,
+            "d": 333377,
+            "b": 4098215
+          }
         },
         {
           "san": "c4",
           "note": "White gains more space.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 8543185,
+            "n": 1871986,
+            "w": 936891,
+            "d": 66850,
+            "b": 868245,
+            "alts": [
+              {
+                "san": "Bf4",
+                "n": 1811513
+              },
+              {
+                "san": "Nf3",
+                "n": 1374013
+              },
+              {
+                "san": "Nc3",
+                "n": 1150751
+              },
+              {
+                "san": "e3",
+                "n": 953032
+              }
+            ]
+          }
         },
         {
           "san": "e5",
           "note": "The gambit: Black offers a pawn to open the game for fast development.",
-          "eval": 0.9
+          "eval": 0.9,
+          "stats": {
+            "total": 1960326,
+            "n": 65174,
+            "w": 31900,
+            "d": 1857,
+            "b": 31417
+          }
         },
         {
           "san": "Nc3",
           "note": "White develops instead of taking the pawn.",
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 80164,
+            "n": 8894,
+            "w": 4363,
+            "d": 301,
+            "b": 4230,
+            "alts": [
+              {
+                "san": "dxe5",
+                "n": 37911
+              },
+              {
+                "san": "e3",
+                "n": 11472
+              },
+              {
+                "san": "d5",
+                "n": 10045
+              },
+              {
+                "san": "Nf3",
+                "n": 7512
+              }
+            ]
+          }
         },
         {
           "san": "exd4",
           "note": "Black takes the central pawn.",
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 34942,
+            "n": 17583,
+            "w": 7847,
+            "d": 623,
+            "b": 9113
+          }
         },
         {
           "san": "Qxd4",
           "note": "White recaptures with the queen.",
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 17615,
+            "n": 16612,
+            "w": 7537,
+            "d": 596,
+            "b": 8479,
+            "alts": [
+              {
+                "san": "Nd5",
+                "n": 394
+              },
+              {
+                "san": "Nb5",
+                "n": 291
+              },
+              {
+                "san": "Nf3",
+                "n": 51
+              },
+              {
+                "san": "Qd3",
+                "n": 43
+              }
+            ]
+          }
         },
         {
           "san": "Nc6",
@@ -960,12 +1990,44 @@
               "color": "red"
             }
           ],
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 20182,
+            "n": 14437,
+            "w": 6285,
+            "d": 517,
+            "b": 7635
+          }
         },
         {
           "san": "Qd1",
           "note": "The queen retreats.",
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 14471,
+            "n": 6102,
+            "w": 2888,
+            "d": 229,
+            "b": 2985,
+            "alts": [
+              {
+                "san": "Qe3+",
+                "n": 5149
+              },
+              {
+                "san": "Qd3",
+                "n": 1065
+              },
+              {
+                "san": "Qh4",
+                "n": 928
+              },
+              {
+                "san": "Qd2",
+                "n": 698
+              }
+            ]
+          }
         },
         {
           "san": "Bb4",
@@ -977,12 +2039,44 @@
               "color": "red"
             }
           ],
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 20769,
+            "n": 10196,
+            "w": 4571,
+            "d": 406,
+            "b": 5219
+          }
         },
         {
           "san": "Bd2",
           "note": "White unpins by developing the bishop.",
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 11704,
+            "n": 5479,
+            "w": 2541,
+            "d": 237,
+            "b": 2701,
+            "alts": [
+              {
+                "san": "Nf3",
+                "n": 1611
+              },
+              {
+                "san": "a3",
+                "n": 1334
+              },
+              {
+                "san": "Bg5",
+                "n": 911
+              },
+              {
+                "san": "e3",
+                "n": 749
+              }
+            ]
+          }
         },
         {
           "san": "O-O",
@@ -994,12 +2088,44 @@
               "eval": 0
             }
           ],
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 5560,
+            "n": 2465,
+            "w": 1167,
+            "d": 99,
+            "b": 1199
+          }
         },
         {
           "san": "e3",
           "note": "White develops.",
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 2464,
+            "n": 401,
+            "w": 201,
+            "d": 14,
+            "b": 186,
+            "alts": [
+              {
+                "san": "a3",
+                "n": 721
+              },
+              {
+                "san": "Nf3",
+                "n": 581
+              },
+              {
+                "san": "e4",
+                "n": 379
+              },
+              {
+                "san": "Nd5",
+                "n": 132
+              }
+            ]
+          }
         },
         {
           "san": "Re8",
@@ -1011,7 +2137,14 @@
               "eval": 0.1
             }
           ],
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 530,
+            "n": 107,
+            "w": 57,
+            "d": 2,
+            "b": 48
+          }
         }
       ]
     },
@@ -1032,17 +2165,74 @@
         {
           "san": "d4",
           "note": "White takes the center.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 445454883,
+            "n": 93374784,
+            "w": 47213646,
+            "d": 3883984,
+            "b": 42277154,
+            "alts": [
+              {
+                "san": "e4",
+                "n": 297593161
+              },
+              {
+                "san": "e3",
+                "n": 12121153
+              },
+              {
+                "san": "Nf3",
+                "n": 10806602
+              },
+              {
+                "san": "c4",
+                "n": 8018742
+              }
+            ]
+          }
         },
         {
           "san": "Nf6",
           "note": "Black develops and watches the center.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 93216724,
+            "n": 8563088,
+            "w": 4131496,
+            "d": 333377,
+            "b": 4098215
+          }
         },
         {
           "san": "c4",
           "note": "White gains more space.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 8543185,
+            "n": 1871986,
+            "w": 936891,
+            "d": 66850,
+            "b": 868245,
+            "alts": [
+              {
+                "san": "Bf4",
+                "n": 1811513
+              },
+              {
+                "san": "Nf3",
+                "n": 1374013
+              },
+              {
+                "san": "Nc3",
+                "n": 1150751
+              },
+              {
+                "san": "e3",
+                "n": 953032
+              }
+            ]
+          }
         },
         {
           "san": "e5",
@@ -1053,12 +2243,44 @@
               "color": "yellow"
             }
           ],
-          "eval": 0.8
+          "eval": 0.8,
+          "stats": {
+            "total": 1960326,
+            "n": 65174,
+            "w": 31900,
+            "d": 1857,
+            "b": 31417
+          }
         },
         {
           "san": "d5",
           "note": "White gains space and closes the center.",
-          "eval": -0.1
+          "eval": -0.1,
+          "stats": {
+            "total": 80164,
+            "n": 10045,
+            "w": 4878,
+            "d": 261,
+            "b": 4906,
+            "alts": [
+              {
+                "san": "dxe5",
+                "n": 37911
+              },
+              {
+                "san": "e3",
+                "n": 11472
+              },
+              {
+                "san": "Nc3",
+                "n": 8894
+              },
+              {
+                "san": "Nf3",
+                "n": 7512
+              }
+            ]
+          }
         },
         {
           "san": "d6",
@@ -1075,12 +2297,44 @@
               "eval": 5.4
             }
           ],
-          "eval": 0.4
+          "eval": 0.4,
+          "stats": {
+            "total": 65673,
+            "n": 8977,
+            "w": 4701,
+            "d": 292,
+            "b": 3984
+          }
         },
         {
           "san": "Nc3",
           "note": "White develops.",
-          "eval": 0.4
+          "eval": 0.4,
+          "stats": {
+            "total": 32433,
+            "n": 17829,
+            "w": 9527,
+            "d": 566,
+            "b": 7736,
+            "alts": [
+              {
+                "san": "Bg5",
+                "n": 3207
+              },
+              {
+                "san": "e4",
+                "n": 2553
+              },
+              {
+                "san": "Nf3",
+                "n": 2300
+              },
+              {
+                "san": "f3",
+                "n": 1994
+              }
+            ]
+          }
         },
         {
           "san": "Be7",
@@ -1092,12 +2346,44 @@
               "eval": 5.7
             }
           ],
-          "eval": 0.7
+          "eval": 0.7,
+          "stats": {
+            "total": 25783,
+            "n": 4054,
+            "w": 2048,
+            "d": 126,
+            "b": 1880
+          }
         },
         {
           "san": "e4",
           "note": "White takes a big center.",
-          "eval": 0.7
+          "eval": 0.7,
+          "stats": {
+            "total": 4386,
+            "n": 2948,
+            "w": 1489,
+            "d": 86,
+            "b": 1373,
+            "alts": [
+              {
+                "san": "Nf3",
+                "n": 454
+              },
+              {
+                "san": "Bg5",
+                "n": 362
+              },
+              {
+                "san": "e3",
+                "n": 126
+              },
+              {
+                "san": "h3",
+                "n": 97
+              }
+            ]
+          }
         },
         {
           "san": "O-O",
@@ -1114,12 +2400,44 @@
               "eval": 6
             }
           ],
-          "eval": 0.7
+          "eval": 0.7,
+          "stats": {
+            "total": 4401,
+            "n": 2944,
+            "w": 1498,
+            "d": 85,
+            "b": 1361
+          }
         },
         {
           "san": "Nf3",
           "note": "White develops.",
-          "eval": 0.8
+          "eval": 0.8,
+          "stats": {
+            "total": 2961,
+            "n": 1147,
+            "w": 600,
+            "d": 36,
+            "b": 511,
+            "alts": [
+              {
+                "san": "Bd3",
+                "n": 447
+              },
+              {
+                "san": "Bg5",
+                "n": 309
+              },
+              {
+                "san": "h3",
+                "n": 189
+              },
+              {
+                "san": "Be2",
+                "n": 177
+              }
+            ]
+          }
         },
         {
           "san": "Nbd7",
@@ -1136,7 +2454,14 @@
               "eval": 5.8
             }
           ],
-          "eval": 0.9
+          "eval": 0.9,
+          "stats": {
+            "total": 1814,
+            "n": 105,
+            "w": 61,
+            "d": 3,
+            "b": 41
+          }
         }
       ]
     }
