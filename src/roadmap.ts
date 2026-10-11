@@ -11,7 +11,7 @@ export const PHASES: Phase[] = [
     what: 'Goals and strategies are written in plain language with arrows and rings drawn on the board.',
     left: ['A human review of the draft text. Nothing is marked reviewed yet.'] },
   { id: '2', title: 'Content coverage', built: true,
-    what: 'Bird has 13 lines, Budapest 8, Portuguese Gambit 9 and the Solid Defence vs 1.d4 (Black) 9, each checked with Stockfish. Real Lichess numbers now show how common each move is.',
+    what: 'Bird has 13 lines, Budapest 8, Portuguese Gambit 9 and the Modern Defence (Black, rare) 9, each checked with Stockfish. Real Lichess numbers now show how common each move is.',
     left: ['Add lines for the next gaps: Budapest 1.d4 Nf6 2.Nc3 (13.5%) and 2.e3 (11.2%), Portuguese 2.e5 Bf5 3.d4 (11.7%) and 2.Nf3 (6.2%).', 'All lines are still draft until a human reviews them.'] },
   { id: '3', title: 'Mastery levels', built: true,
     what: 'Each line is Learning, Familiar, Solid or Mastered, based on clean recalls on separate days and how long you hold the line in memory.',

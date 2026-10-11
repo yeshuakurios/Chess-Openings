@@ -1,0 +1,894 @@
+{
+  "id": "modern-defence",
+  "name": "Modern Defence (rare)",
+  "color": "black",
+  "status": "draft",
+  "summary": "Black skips the usual central pawn moves, fianchettoes the bishop and lets White build a big center, then attacks it. A rare setup that many players at this level have never faced.",
+  "goal": {
+    "title": "Fianchetto the bishop, let White build, then strike the center",
+    "text": "Black skips the usual central pawn moves. The king-side bishop goes to the long diagonal behind a pawn, the pieces come out in a flexible way, and Black castles early. White often builds a large pawn center in reply, and Black's plan is to attack that center from the side with pawn breaks and the long-range bishop.",
+    "plans": [
+      "Push the g-pawn one step to open the long diagonal and put the king-side bishop there.",
+      "Develop the king-side knight and a modest center pawn, then castle early.",
+      "Let White build the center, then hit it with a side pawn or a central pawn break at the right moment.",
+      "Keep the long-diagonal bishop open; it is your best piece, so do not block it with your own pawns."
+    ],
+    "board": {
+      "variation": "e4-classical",
+      "ply": 12,
+      "shapes": [
+        {
+          "from": "g7",
+          "color": "green"
+        },
+        {
+          "from": "d4",
+          "color": "yellow"
+        },
+        {
+          "from": "e4",
+          "color": "yellow"
+        },
+        {
+          "from": "f6",
+          "to": "e4",
+          "color": "blue"
+        }
+      ]
+    }
+  },
+  "variations": [
+    {
+      "id": "e4-classical",
+      "name": "1.e4 g6 2.d4: the classical setup",
+      "strategy": "White has built a big center and both sides have castled, so the middlegame is about attacking that center. Strike with a pawn break, the c-pawn or the e-pawn push depending on where White's pieces stand, and let the long-diagonal bishop come alive once pawns are traded. Do not be passive: White's space can turn into a king-side attack if you wait too long, so choose your break, prepare it and play it.",
+      "moves": [
+        {
+          "san": "e4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "g6",
+          "note": "Prepare the bishop for the long diagonal. Few players at this level know how to meet it.",
+          "eval": 0.7
+        },
+        {
+          "san": "d4",
+          "note": "White builds a big center.",
+          "eval": 0.6
+        },
+        {
+          "san": "Bg7",
+          "note": "The bishop takes the long diagonal.",
+          "eval": 0.7
+        },
+        {
+          "san": "Nc3",
+          "note": "White develops a knight.",
+          "eval": 0.6
+        },
+        {
+          "san": "d6",
+          "note": "Support the knight and keep your options open.",
+          "eval": 0.7,
+          "caps": [
+            {
+              "san": "Bxd4",
+              "reply": "Qxd4",
+              "eval": 7.4
+            }
+          ]
+        },
+        {
+          "san": "Nf3",
+          "note": "White develops.",
+          "eval": 0.6
+        },
+        {
+          "san": "Nf6",
+          "note": "Hit the e-pawn and develop.",
+          "eval": 0.7,
+          "caps": [
+            {
+              "san": "Bxd4",
+              "reply": "Qxd4",
+              "eval": 7.2
+            }
+          ]
+        },
+        {
+          "san": "Be2",
+          "note": "White defends the e-pawn by developing.",
+          "eval": 0.5
+        },
+        {
+          "san": "O-O",
+          "note": "Castle early.",
+          "eval": 0.7,
+          "caps": [
+            {
+              "san": "Nxe4",
+              "reply": "Nxe4",
+              "eval": 5.5
+            }
+          ]
+        },
+        {
+          "san": "O-O",
+          "note": "White castles.",
+          "eval": 0.4
+        },
+        {
+          "san": "c6",
+          "note": "Stay flexible: this prepares a central break or queen-side expansion.",
+          "eval": 0.6,
+          "caps": [
+            {
+              "san": "Nxe4",
+              "reply": "Nxe4",
+              "eval": 5.2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e4-austrian",
+      "name": "1.e4 g6 2.d4 with f4: the Austrian Attack",
+      "strategy": "White's f-pawn makes the center look huge, but it loosens White's king side. Black hits the center at once and trades off White's d-pawn, so the big center shrinks to two pawns, and the queen already pressures White's position. Castle, develop the queen-side knight, and aim at White's e-pawn. The long-diagonal bishop now sees through the center, and White's loosened king side gives you targets.",
+      "moves": [
+        {
+          "san": "e4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "g6",
+          "note": "Prepare the bishop for the long diagonal.",
+          "eval": 0.7
+        },
+        {
+          "san": "d4",
+          "note": "White builds a big center.",
+          "eval": 0.7
+        },
+        {
+          "san": "Bg7",
+          "note": "The bishop takes the long diagonal.",
+          "eval": 0.6
+        },
+        {
+          "san": "Nc3",
+          "note": "White develops a knight.",
+          "eval": 0.7
+        },
+        {
+          "san": "d6",
+          "note": "Support the knight and keep your options open.",
+          "eval": 0.6,
+          "caps": [
+            {
+              "san": "Bxd4",
+              "reply": "Qxd4",
+              "eval": 7.3
+            }
+          ]
+        },
+        {
+          "san": "f4",
+          "note": "White adds a third center pawn. It looks strong but loosens White's king.",
+          "eval": 0.7
+        },
+        {
+          "san": "Nf6",
+          "note": "Attack the e-pawn.",
+          "eval": 0.6,
+          "caps": [
+            {
+              "san": "Bxd4",
+              "reply": "Qxd4",
+              "eval": 6.4
+            }
+          ]
+        },
+        {
+          "san": "Nf3",
+          "note": "White develops.",
+          "eval": 0.6
+        },
+        {
+          "san": "c5",
+          "note": "Strike at the center right away, before White castles.",
+          "eval": 0.6,
+          "caps": [
+            {
+              "san": "Nxe4",
+              "reply": "Nxe4",
+              "eval": 5
+            }
+          ]
+        },
+        {
+          "san": "dxc5",
+          "note": "White takes the pawn.",
+          "eval": 0.5
+        },
+        {
+          "san": "Qa5",
+          "note": "Pin the knight against the king and win the pawn back.",
+          "eval": 0.6,
+          "caps": [
+            {
+              "san": "dxc5",
+              "reply": "Qxd8+",
+              "eval": 3.4
+            },
+            {
+              "san": "Nxe4",
+              "reply": "Nxe4",
+              "eval": 5.4
+            }
+          ]
+        },
+        {
+          "san": "Bd3",
+          "note": "White develops.",
+          "eval": 0.5
+        },
+        {
+          "san": "Qxc5",
+          "note": "Material is level and White's big center is gone.",
+          "eval": 0.5,
+          "caps": [
+            {
+              "san": "dxc5",
+              "reply": "e5",
+              "eval": 2.1
+            },
+            {
+              "san": "Nxe4",
+              "reply": "Bxe4",
+              "eval": 4.6
+            },
+            {
+              "san": "Qxc3+",
+              "reply": "bxc3",
+              "eval": 6.9
+            },
+            {
+              "san": "Qxa2",
+              "reply": "Rxa2",
+              "eval": 10.2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e4-c4",
+      "name": "1.e4 g6 2.d4 with c4: a big center",
+      "strategy": "This is a King's Indian-style structure where White has a lot of space. Black has castled and keeps the king safe while pressuring White's d-pawn with the knight and the bishop. Break with the e-pawn when your pieces are ready, or with a queen-side pawn push. If White castles on the queen side, a pawn storm against it is Black's plan. Don't trade your long-diagonal bishop without a good reason.",
+      "moves": [
+        {
+          "san": "e4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "g6",
+          "note": "Prepare the bishop for the long diagonal.",
+          "eval": 0.7
+        },
+        {
+          "san": "d4",
+          "note": "White builds a big center.",
+          "eval": 0.7
+        },
+        {
+          "san": "Bg7",
+          "note": "The bishop takes the long diagonal.",
+          "eval": 0.7
+        },
+        {
+          "san": "c4",
+          "note": "White adds the c-pawn for even more space.",
+          "eval": 0.5
+        },
+        {
+          "san": "d6",
+          "note": "Keep a solid base for your pieces.",
+          "eval": 0.5,
+          "caps": [
+            {
+              "san": "Bxd4",
+              "reply": "Qxd4",
+              "eval": 6.5
+            }
+          ]
+        },
+        {
+          "san": "Nc3",
+          "note": "White develops a knight.",
+          "eval": 0.6
+        },
+        {
+          "san": "Nf6",
+          "note": "Attack the e-pawn.",
+          "eval": 0.5,
+          "caps": [
+            {
+              "san": "Bxd4",
+              "reply": "Qxd4",
+              "eval": 6.3
+            }
+          ]
+        },
+        {
+          "san": "f3",
+          "note": "White protects the e-pawn and prepares a queen-side castle.",
+          "eval": 0.3
+        },
+        {
+          "san": "O-O",
+          "note": "Castle early. The king is safe.",
+          "eval": 0.3,
+          "caps": [
+            {
+              "san": "Nxe4",
+              "reply": "fxe4",
+              "eval": 4.8
+            }
+          ]
+        },
+        {
+          "san": "Be3",
+          "note": "White develops the bishop.",
+          "eval": 0.3
+        },
+        {
+          "san": "Nc6",
+          "note": "Pressure the d-pawn.",
+          "eval": 0.6,
+          "caps": [
+            {
+              "san": "Nxe4",
+              "reply": "fxe4",
+              "eval": 4.8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e4-bc4",
+      "name": "1.e4 g6 2.Bc4: the quiet bishop",
+      "strategy": "White has no big center, so the middlegame is quieter and you can take space yourself. Your king is safe and the long-diagonal bishop dominates, so aim for the central pawn push supported by the knights. Watch White's bishop on the king-side diagonal, but it has little to hit once your king is castled. Trade pieces if White gets cramped, and keep the position flexible.",
+      "moves": [
+        {
+          "san": "e4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "g6",
+          "note": "Prepare the bishop for the long diagonal.",
+          "eval": 0.6
+        },
+        {
+          "san": "Bc4",
+          "note": "White develops the bishop toward your king side.",
+          "eval": 0.3
+        },
+        {
+          "san": "Bg7",
+          "note": "The bishop still takes the long diagonal.",
+          "eval": 0.4
+        },
+        {
+          "san": "Nf3",
+          "note": "White develops.",
+          "eval": 0.2
+        },
+        {
+          "san": "d6",
+          "note": "Solid and flexible.",
+          "eval": 0.5,
+          "caps": [
+            {
+              "san": "Bxb2",
+              "reply": "Bxb2",
+              "eval": 7
+            }
+          ]
+        },
+        {
+          "san": "d3",
+          "note": "White chooses a slow setup.",
+          "eval": 0.1
+        },
+        {
+          "san": "Nf6",
+          "note": "Attack the e-pawn.",
+          "eval": 0,
+          "caps": [
+            {
+              "san": "Bc3+",
+              "reply": "Nxc3",
+              "eval": 8.1
+            },
+            {
+              "san": "Bxb2",
+              "reply": "Bxb2",
+              "eval": 6.8
+            }
+          ]
+        },
+        {
+          "san": "O-O",
+          "note": "White castles.",
+          "eval": 0.1
+        },
+        {
+          "san": "O-O",
+          "note": "Castle too.",
+          "eval": 0.1,
+          "caps": [
+            {
+              "san": "Nxe4",
+              "reply": "dxe4",
+              "eval": 5.6
+            }
+          ]
+        },
+        {
+          "san": "Nc3",
+          "note": "White develops.",
+          "eval": 0
+        },
+        {
+          "san": "c6",
+          "note": "Prepare the central pawn push.",
+          "eval": 0.3,
+          "caps": [
+            {
+              "san": "Nxe4",
+              "reply": "dxe4",
+              "eval": 5.6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e4-nc3",
+      "name": "1.e4 g6 2.Nc3: the f-pawn plan",
+      "strategy": "White pushes the f-pawn to build a big center and aims the bishop at your king side. Stay calm: castle early so the bishop has nothing to hit, then bring the queen-side knight out and hit the center with a pawn break. White's f-pawn has loosened the king side, so the long-diagonal bishop and a later central break are your trumps. Trade White's active pieces when you can.",
+      "moves": [
+        {
+          "san": "e4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "g6",
+          "note": "Prepare the bishop for the long diagonal.",
+          "eval": 0.6
+        },
+        {
+          "san": "Nc3",
+          "note": "A flexible move: White waits to see your plan.",
+          "eval": 0.2
+        },
+        {
+          "san": "Bg7",
+          "note": "The bishop takes the long diagonal.",
+          "eval": 0.6
+        },
+        {
+          "san": "f4",
+          "note": "White makes a big center with the f-pawn. The king side may become loose.",
+          "eval": 0.1
+        },
+        {
+          "san": "d6",
+          "note": "Keep a solid base.",
+          "eval": 0.6,
+          "caps": [
+            {
+              "san": "Bxc3",
+              "reply": "dxc3",
+              "eval": 1.2
+            }
+          ]
+        },
+        {
+          "san": "Nf3",
+          "note": "White develops.",
+          "eval": 0.1
+        },
+        {
+          "san": "Nf6",
+          "note": "Attack the e-pawn.",
+          "eval": 0.6,
+          "caps": [
+            {
+              "san": "Bxc3",
+              "reply": "dxc3",
+              "eval": 1.1
+            }
+          ]
+        },
+        {
+          "san": "Bc4",
+          "note": "White aims at the f-pawn.",
+          "eval": 0.1
+        },
+        {
+          "san": "O-O",
+          "note": "Castle early so the bishop has nothing to hit.",
+          "eval": 0.3,
+          "caps": [
+            {
+              "san": "Nxe4",
+              "reply": "Bxf7+",
+              "eval": 0.2
+            }
+          ]
+        },
+        {
+          "san": "O-O",
+          "note": "White castles.",
+          "eval": -0.2
+        },
+        {
+          "san": "Nc6",
+          "note": "Develop with pressure on the center.",
+          "eval": 0.3,
+          "caps": [
+            {
+              "san": "Nxe4",
+              "reply": "Nxe4",
+              "eval": -0.2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d4-c4",
+      "name": "1.d4 g6 2.c4: the King's Indian setup",
+      "strategy": "White has the space and Black has the long diagonal and the e-pawn break. After the central break the tension is in the center: decide whether to trade pawns or keep it closed. If the center locks, White plays on the queen side and Black attacks White's king with the f-pawn push. Keep the long-diagonal bishop flexible, and use the knights on the central outposts.",
+      "moves": [
+        {
+          "san": "d4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "g6",
+          "note": "Prepare the bishop for the long diagonal.",
+          "eval": 0.6
+        },
+        {
+          "san": "c4",
+          "note": "White adds space.",
+          "eval": 0.5
+        },
+        {
+          "san": "Bg7",
+          "note": "The bishop takes the long diagonal.",
+          "eval": 0.5
+        },
+        {
+          "san": "Nc3",
+          "note": "White develops.",
+          "eval": 0.6
+        },
+        {
+          "san": "d6",
+          "note": "Keep a solid base.",
+          "eval": 0.6,
+          "caps": [
+            {
+              "san": "Bxd4",
+              "reply": "Qxd4",
+              "eval": 7
+            }
+          ]
+        },
+        {
+          "san": "e4",
+          "note": "White builds the full classical center.",
+          "eval": 0.6
+        },
+        {
+          "san": "Nf6",
+          "note": "Attack the e-pawn.",
+          "eval": 0.6,
+          "caps": [
+            {
+              "san": "Bxd4",
+              "reply": "Qxd4",
+              "eval": 6.2
+            }
+          ]
+        },
+        {
+          "san": "Nf3",
+          "note": "White develops.",
+          "eval": 0.5
+        },
+        {
+          "san": "O-O",
+          "note": "Castle early.",
+          "eval": 0.5,
+          "caps": [
+            {
+              "san": "Nxe4",
+              "reply": "Nxe4",
+              "eval": 4.6
+            }
+          ]
+        },
+        {
+          "san": "Be2",
+          "note": "White develops.",
+          "eval": 0.6
+        },
+        {
+          "san": "e5",
+          "note": "Hit the d-pawn and fight for the center.",
+          "eval": 0.5,
+          "caps": [
+            {
+              "san": "Nxe4",
+              "reply": "Nxe4",
+              "eval": 4.8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d4-london",
+      "name": "1.d4 g6 2.Nf3 with the London bishop",
+      "strategy": "White has no big center, so both sides develop calmly. You have castled and the long-diagonal bishop is ready. Challenge White's bishop and center with the e-pawn push, or hit the center with the c-pawn push. If White's bishop retreats, take the extra space. Keep the pieces coordinated and don't rush: you are not worse.",
+      "moves": [
+        {
+          "san": "d4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "g6",
+          "note": "Prepare the bishop for the long diagonal.",
+          "eval": 0.6
+        },
+        {
+          "san": "Nf3",
+          "note": "White develops a knight.",
+          "eval": 0.5
+        },
+        {
+          "san": "Bg7",
+          "note": "The bishop takes the long diagonal.",
+          "eval": 0.6
+        },
+        {
+          "san": "Bf4",
+          "note": "White develops the bishop before the pawns.",
+          "eval": 0.1
+        },
+        {
+          "san": "d6",
+          "note": "Keep a solid base.",
+          "eval": 0.5,
+          "caps": [
+            {
+              "san": "Bxd4",
+              "reply": "Qxd4",
+              "eval": 6.3
+            }
+          ]
+        },
+        {
+          "san": "e3",
+          "note": "White supports the center.",
+          "eval": 0.2
+        },
+        {
+          "san": "Nf6",
+          "note": "Develop and watch the center.",
+          "eval": 0.1,
+          "caps": [
+            {
+              "san": "Bxd4",
+              "reply": "exd4",
+              "eval": 6.8
+            }
+          ]
+        },
+        {
+          "san": "Be2",
+          "note": "White develops.",
+          "eval": 0
+        },
+        {
+          "san": "O-O",
+          "note": "Castle early.",
+          "eval": 0.2
+        },
+        {
+          "san": "O-O",
+          "note": "White castles.",
+          "eval": 0
+        },
+        {
+          "san": "Nbd7",
+          "note": "Develop the second knight and prepare the e-pawn push.",
+          "eval": 0.2
+        }
+      ]
+    },
+    {
+      "id": "nf3-g3",
+      "name": "1.Nf3 g6 2.g3: a flexible mirror",
+      "strategy": "Black has claimed the center with the e-pawn while White keeps a flexible setup. Support the center pawns with the knights and the c-pawn, use the long-diagonal bishop, and look for the f-pawn push to expand. White's bishop on the long diagonal also looks at your queen side, so keep your pieces coordinated there.",
+      "moves": [
+        {
+          "san": "Nf3",
+          "note": "White starts with a knight.",
+          "eval": 0.3
+        },
+        {
+          "san": "g6",
+          "note": "Prepare the bishop for the long diagonal.",
+          "eval": 0.7
+        },
+        {
+          "san": "g3",
+          "note": "White prepares the same plan.",
+          "eval": 0.3
+        },
+        {
+          "san": "Bg7",
+          "note": "The bishop takes the long diagonal.",
+          "eval": 0.3
+        },
+        {
+          "san": "Bg2",
+          "note": "White's bishop takes the diagonal.",
+          "eval": 0.1
+        },
+        {
+          "san": "d6",
+          "note": "Solid and flexible.",
+          "eval": 0.5,
+          "caps": [
+            {
+              "san": "Bxb2",
+              "reply": "Bxb2",
+              "eval": 7.6
+            }
+          ]
+        },
+        {
+          "san": "O-O",
+          "note": "White castles.",
+          "eval": 0.2
+        },
+        {
+          "san": "Nf6",
+          "note": "Develop.",
+          "eval": 0.5,
+          "caps": [
+            {
+              "san": "Bxb2",
+              "reply": "Bxb2",
+              "eval": 7.6
+            }
+          ]
+        },
+        {
+          "san": "d3",
+          "note": "White supports the center.",
+          "eval": 0.1
+        },
+        {
+          "san": "O-O",
+          "note": "Castle early.",
+          "eval": 0.1
+        },
+        {
+          "san": "Nbd2",
+          "note": "White develops.",
+          "eval": -0.1
+        },
+        {
+          "san": "e5",
+          "note": "Claim the center now that you are castled.",
+          "eval": 0
+        }
+      ]
+    },
+    {
+      "id": "c4-nc3",
+      "name": "1.c4 g6 2.Nc3: mirror the setup",
+      "strategy": "Both sides are fianchettoed, so the middlegame is about the central break. Develop the knights, castle, and prepare the d-pawn push to claim space in the center. Hit the queen-side with pieces and pawns if White commits there. The long-diagonal bishop is your best piece, so keep it open and trade into a position you understand.",
+      "moves": [
+        {
+          "san": "c4",
+          "note": "White starts with the side pawn.",
+          "eval": 0.3
+        },
+        {
+          "san": "g6",
+          "note": "Prepare the bishop for the long diagonal.",
+          "eval": 0.4
+        },
+        {
+          "san": "Nc3",
+          "note": "White develops.",
+          "eval": 0.3
+        },
+        {
+          "san": "Bg7",
+          "note": "The bishop takes the long diagonal.",
+          "eval": 0.6
+        },
+        {
+          "san": "g3",
+          "note": "White prepares to fianchetto.",
+          "eval": 0.3
+        },
+        {
+          "san": "c5",
+          "note": "Take space on the queen side and mirror White.",
+          "eval": 0.2,
+          "caps": [
+            {
+              "san": "Bxc3",
+              "reply": "bxc3",
+              "eval": 1.1
+            }
+          ]
+        },
+        {
+          "san": "Bg2",
+          "note": "White's bishop takes the diagonal.",
+          "eval": 0.2
+        },
+        {
+          "san": "Nc6",
+          "note": "Develop a knight toward the center.",
+          "eval": 0.2,
+          "caps": [
+            {
+              "san": "Bxc3",
+              "reply": "bxc3",
+              "eval": 1
+            }
+          ]
+        },
+        {
+          "san": "Nf3",
+          "note": "White develops.",
+          "eval": 0.1
+        },
+        {
+          "san": "e6",
+          "note": "Support a later central push.",
+          "eval": 0.1,
+          "caps": [
+            {
+              "san": "Bxc3",
+              "reply": "bxc3",
+              "eval": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
