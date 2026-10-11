@@ -3306,6 +3306,92 @@
           }
         }
       ]
+    },
+    {
+      "id": "vs-nc6",
+      "name": "Vs 1...Nc6: develop first",
+      "strategy": "Black develops a knight instead of taking space, so there is no need to change the plan. Play the same setup: bring out the knight, support the center with a solid pawn, put the bishop on the long diagonal, then castle. Because Black has not claimed the center with pawns, keep an eye out for a chance to take more space yourself.",
+      "moves": [
+        {
+          "san": "f4",
+          "note": "The Bird: control e5 immediately.",
+          "eval": -0.1
+        },
+        {
+          "san": "Nc6",
+          "note": "Black develops a knight and eyes the center.",
+          "eval": 0.1
+        },
+        {
+          "san": "Nf3",
+          "note": "Develop and add a second guard of e5.",
+          "eval": 0.1
+        },
+        {
+          "san": "d5",
+          "note": "Black takes the center.",
+          "eval": 0.2
+        },
+        {
+          "san": "e3",
+          "note": "Opens the f1 bishop and keeps a solid pawn chain.",
+          "eval": 0.2
+        },
+        {
+          "san": "Nf6",
+          "note": "Black develops the other knight.",
+          "eval": 0.1
+        },
+        {
+          "san": "b3",
+          "note": "Prepares the long-diagonal bishop.",
+          "eval": 0.1
+        },
+        {
+          "san": "e6",
+          "note": "Black opens the dark-squared bishop and keeps the center solid.",
+          "eval": 0.1
+        },
+        {
+          "san": "Bb2",
+          "note": "Your bishop now pressures the long diagonal.",
+          "eval": 0.1
+        },
+        {
+          "san": "Be7",
+          "note": "Black prepares to castle.",
+          "eval": 0.2
+        },
+        {
+          "san": "Be2",
+          "note": "Finishes development and prepares to castle.",
+          "eval": 0,
+          "caps": [
+            {
+              "san": "Bxf6",
+              "reply": "gxf6",
+              "eval": -0.5
+            }
+          ]
+        },
+        {
+          "san": "O-O",
+          "note": "Black castles.",
+          "eval": 0
+        },
+        {
+          "san": "O-O",
+          "note": "Your king is safe and your pieces are ready.",
+          "eval": 0,
+          "caps": [
+            {
+              "san": "Bxf6",
+              "reply": "Bxf6",
+              "eval": -0.2
+            }
+          ]
+        }
+      ]
     }
   ]
 }
