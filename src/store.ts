@@ -1,12 +1,24 @@
 import { createEmptyCard, fsrs, Rating, type Card } from 'ts-fsrs';
-import { mergeProgress } from './merge.ts';
+import { MAX_ATTEMPTS, mergeProgress } from './merge.ts';
 
+/** One user move in a line. Short field names on purpose: the log is synced and the Worker caps the body at 256 KB. */
+export interface Attempt {
+  id: string;
+  k: string;       // variation key, same as the FSRS card key
+  p: number;       // index of the move in the line (0 = first ply)
+  ok: 0 | 1;       // 1 if the move was the line's move
+  h: 0 | 1;        // 1 if Hint was pressed at this position first
+  ms: number;      // time from the position appearing to this move
+  t: number;       // epoch ms
+  m: 'p' | 'd';    // practice or drill
+}
 export interface Progress {
   learned: Record<string, true>;
   cards: Record<string, Card>;
   bestCombo: number;
+  attempts: Attempt[];
 }
-const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0 });
+const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [] });
 const DB = 'openings', STORE = 'kv', KEY = 'progress', TOKEN_KEY = 'syncToken';
 const scheduler = fsrs();
 
@@ -69,6 +81,13 @@ export function review(k: string, mistakes: number) {
 }
 export function dueKeys(now = new Date()): string[] {
   return Object.entries(progress.cards).filter(([, c]) => c.due <= now).sort((a, b) => +a[1].due - +b[1].due).map(([k]) => k);
+}
+/** Append one attempt. FSRS scheduling is unchanged; this feeds mastery and mistake tracking later. */
+export function logAttempt(a: Omit<Attempt, 'id' | 't'>) {
+  const t = Date.now();
+  progress.attempts.push({ ...a, id: t.toString(36) + Math.random().toString(36).slice(2, 6), t });
+  if (progress.attempts.length > MAX_ATTEMPTS) progress.attempts.splice(0, progress.attempts.length - MAX_ATTEMPTS);
+  void save();
 }
 export function setBestCombo(n: number) {
   if (n > progress.bestCombo) { progress.bestCombo = n; void save(); }
