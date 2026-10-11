@@ -9,15 +9,27 @@ Start a new session by reading `CLAUDE.md`, then this file. Update this file at 
 - Known issue: the Cloudflare "Workers Builds" check fails instantly on pull-request (non-main) branches. Cause unknown; the same steps (`npm ci`, `npm run build`, `npx wrangler deploy --dry-run`) pass locally from a clean clone. The `main` branch deploys fine. Needs the build log from the Cloudflare dashboard.
 - Not yet tested on a real iPhone end to end: follow `docs/pwa-ios-checklist.md`.
 
-## Roadmap (owner's order)
-1. Visual goals: show positional and strategy goals on the board (arrows, highlights, pawn shapes).
-2. Goals and strategy in high-level, simple language, with no chess notation.
-3. Mastery measure: unaided, flawless, on 3 separate days, with FSRS stability above a threshold, plus out-of-order positions and "why" questions. Levels New → Learning → Familiar → Solid → Mastered, per variation.
-4. Mistakes tracker (wrong move, hint, slow move, per position), then a root-cause explanation: rule-based first; then optionally Cloudflare Workers AI (free 10,000 neurons/day, no overage on the free plan) rephrasing verified facts only, cached in D1, with a rule-based fallback. Not confirmed: whether signup needs a card; some newer models need a paid method.
-5. Gamification: XP, streaks, daily goal, levels, badges.
-6. Optimize at $0: position-level scoring, per-opening lazy loading, "new version" notice, accessibility, review caps.
+## Roadmap (agreed; nothing below is built yet)
+**Phase 0, foundations:** per-position attempt log (correct/wrong, hint, time, date, variation); schema fields for board `shapes` and plain-language goal/strategy; per-opening content files loaded on demand; `storage.persist()` plus JSON export/import; CI (validate, test, build) on every PR.
+**Phase 1, visual goals + plain language** (owner items 1+2): prove the schema on one opening first, then the rest. No chess notation in goal/strategy text.
+**Phase 2, content coverage:** pick about 5-8 main lines per opening from the Lichess explorer (build time only), check each with `npm run try`, add as linear variations (still `draft`). Today each opening has only 2-3 single lines, so this is a real gap.
+**Phase 3, mastery levels:** see "Mastery definition" below.
+**Phase 4, mistakes tracker:** rule-based classifier first (wrong capture/check, move-order slip, confusion between lines). Then Workers AI called from the Worker only: default `@cf/google/gemma-4-26b-a4b-it` (free plan, about 6 neurons per call), `@cf/nvidia/nemotron-3-120b-a12b` for occasional pattern summaries. Rules supply verified facts; the model only rephrases; cache in D1; rule-based text is the fallback (offline, over the 10,000 neurons/day, or error 3040). Model name is one config value. Label output as AI-generated. Before building, test about 20 real wrong moves in Cloudflare's LLM Playground. Reword the "no API at runtime" rule in `CLAUDE.md` first.
+**Phase 5, gamification:** XP, streaks, daily goal, levels, badges, computed from the attempt log. No push reminders (badge count at most).
+**Phase 6, polish at $0:** review caps, "new version" notice, accessibility, optional Lichess puzzles per opening.
+Parallel, not blocking: the real-iPhone test and the Workers Builds log.
 
-Next up: items 1 + 2.
+Next up: Phase 0, then Phase 1.
+
+## Mastery definition (decided; thresholds are placeholders to tune with real data)
+- Mastery is per position; a line is capped by its weakest few positions, not the average.
+- Position strength comes from FSRS stability in days: under 3, 3-14, 14-45, over 45 map to the upper levels.
+- A correct recall counts only if unaided (no hint) and at a normal speed.
+- Each level step needs correct recalls on separate days (3 for Mastered).
+- Solid and Mastered also need out-of-order starts and a short "why" question.
+- Soft slip (owner decision): a mistake lowers that position's strength through FSRS and flags it. It does not reset the whole line or its day count.
+- No decay penalty while away; the level shows what was proven, and reviews come due as normal.
+- Research notes: FSRS defines no "mastered" threshold (each app picks one). Chessbook scores mastery from review intervals (about 100 days = full credit). Successive relearning (correct to criterion across spaced sessions) is the supported idea; evidence on interleaving is mixed.
 
 ## Working agreement
 - Everything stays $0, no card-on-file services, and it stays a PWA.
