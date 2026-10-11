@@ -19,7 +19,9 @@ Start a new session by reading `CLAUDE.md`, then this file. Update this file at 
 **Phase 6, polish at $0:** review caps, "new version" notice, accessibility, optional Lichess puzzles per opening.
 Parallel, not blocking: the real-iPhone test and the Workers Builds log.
 
-Next up: Phase 0, then Phase 1.
+Phase 0 progress: 0.1 per-move attempt log (PR #7: `Progress.attempts`, capped at 1500, merged by id). Not yet tried on a real device; check via export. Remaining in Phase 0: `storage.persist()`, per-opening lazy loading, schema fields for shapes and plain-language text, CI.
+
+Next up: `storage.persist()`, then the rest of Phase 0, then Phase 1.
 
 ## Mastery definition (decided; thresholds are placeholders to tune with real data)
 - Mastery is per position; a line is capped by its weakest few positions, not the average.
@@ -34,7 +36,7 @@ Next up: Phase 0, then Phase 1.
 ## Working agreement
 - Everything stays $0, no card-on-file services, and it stays a PWA.
 - The owner wants ONE short, clear step at a time.
-- Work on a branch and open a PR; the owner says when to merge.
+- Work on a branch and open a PR. The owner has authorized Claude to merge its own PRs without review (stated in session 2026-10-11); still run the local checks first and report what was merged. The Workers Builds check is red on every non-main branch (known issue), so it is not a merge blocker until the cause is found.
 - Update this file at turn 20 of every session (count the owner's messages), and say so when doing it.
 - Decisions: no push reminders (badge count at most). Workers AI is approved for mistake explanations (Worker-side, free plan, cached in D1, rule-based fallback); reword the "no API at runtime" rule in `CLAUDE.md` when that work starts.
 - Never mark content `reviewed`. Check candidate lines with `npm run try`, then `npm run validate`.
