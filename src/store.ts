@@ -109,6 +109,7 @@ export type SyncStatus = 'off' | 'ok' | 'unauthorized' | 'offline';
 let token = '';
 let timer: ReturnType<typeof setTimeout> | undefined;
 export const hasToken = () => !!token;
+export const authHeader = () => ({ authorization: `Bearer ${token}` });
 export async function setToken(t: string) {
   token = t.trim();
   try { await kvSet(TOKEN_KEY, token); } catch { /* ignore */ }

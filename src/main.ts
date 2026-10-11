@@ -6,6 +6,7 @@ import { playLine, walkLine, type Ui } from './play.ts';
 import { fenAfter, staticBoard } from './board.ts';
 import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery.ts';
 import { troubleSpots } from './mistakes.ts';
+import { aiExplain } from './ai.ts';
 import { esc, screenShell } from './ui.ts';
 import type { Opening, PlanBoard, Variation } from './types.ts';
 
@@ -92,12 +93,22 @@ function mistakesPage() {
     ${spots.length ? spots.map((t, i) => { const [o, v] = lookup(t.k)!; return `<div class="card">
       <div class="tag">${esc(o.name)} · ${esc(v.name)}</div><b>Move ${Math.floor(t.p / 2) + 1}</b>
       ${boardSlot('trouble-' + i, { ply: t.p, shapes: [] })}
-      <p>${esc(t.last.text)}</p>
+      <p id="trouble-text-${i}">${esc(t.last.text)}</p><span class="tag" id="trouble-ai-${i}" hidden>AI-generated explanation</span>
       <div class="muted">${[times(t.count, 'Wrong'), times(t.hints, 'Hint'), times(t.slow, 'Slow')].filter(Boolean).join(' · ')}</div>
       <div class="row"><a class="btn primary" href="${href('practice', o.id, v.id)}">Practice this line</a></div></div>`; }).join('')
       : `<div class="card"><b>No trouble spots right now.</b><p class="muted">Mistakes, hints and slow moves from Practice and Drill show up here.</p></div>`}
   </main>`;
   spots.forEach((t, i) => { const [o, v] = lookup(t.k)!; drawBoard('trouble-' + i, o, v, { ply: t.p, shapes: [] }); });
+  // Optional: rephrase the rule-based text with Workers AI (only when sync is set up, so the Worker accepts us). Any failure keeps the rule-based text.
+  if (!hasToken() || !navigator.onLine) return;
+  const my = token;
+  spots.forEach(async (t, i) => {
+    const [o, v] = lookup(t.k)!;
+    const text = await aiExplain({ opening: o.name, line: v.name, plan: o.goal.title, side: o.color, moveNumber: Math.floor(t.p / 2) + 1,
+      kind: t.last.kind, ...(t.played ? { played: t.played } : {}), wrong: t.count, hints: t.hints, slow: t.slow, rule: t.last.text });
+    const el = document.getElementById(`trouble-text-${i}`), tag = document.getElementById(`trouble-ai-${i}`);
+    if (text && el && tag && my === token) { el.textContent = text; tag.hidden = false; }
+  });
 }
 
 function openingPage(o: Opening) {
