@@ -3,22 +3,37 @@
   "name": "Portuguese Gambit (Scandinavian)",
   "color": "black",
   "status": "draft",
-  "summary": "Against 1.e4, Black plays ...d5 and ...Bg4 to develop quickly and win back the pawn on d5 with active pieces.",
+  "summary": "Against the king-pawn opening, Black gives a pawn for rapid development and wins it back with active pieces.",
   "goal": {
-    "title": "Win back the pawn with fast development",
-    "text": "After 1.e4 d5 2.exd5 Nf6 3.d4 Bg4 Black has given a pawn to develop pieces quickly. The goal is to recover the pawn on d5, keep the light-squared bishop active and pose problems before White is fully developed. Avoid retreating passively: every move should add a piece to the fight.",
+    "title": "Win the pawn back by developing fast",
+    "text": "Black is a pawn down on purpose. The plan is to bring pieces out with threats: the bishop jumps to the side of the board and hits White's queen, a knight attacks the extra pawn, and soon Black regains it with more active pieces. Do not waste time retreating; every move should develop a piece or hit something.",
     "plans": [
-      "Recover the d5 pawn with ...Nxd5 or ...Qxd5",
-      "Keep the bishop active outside the pawn chain (...Bf5 or ...Bg4)",
-      "Develop the rest of the pieces quickly: ...e6, ...Nc6, ...Be7",
-      "Castle early and avoid wasting time with the queen"
-    ]
+      "Win back the extra pawn quickly with a knight or the queen.",
+      "Keep the bishop outside the pawn chain, where it stays active.",
+      "Bring out the rest of the pieces at once: a pawn move to free the bishop, the knight, then castle.",
+      "Do not spend moves chasing with the queen."
+    ],
+    "board": {
+      "variation": "nf3-nxd5",
+      "ply": 8,
+      "shapes": [
+        {
+          "from": "d5",
+          "color": "green"
+        },
+        {
+          "from": "g4",
+          "to": "f3",
+          "color": "red"
+        }
+      ]
+    }
   },
   "variations": [
     {
       "id": "f3-bf5",
       "name": "4.f3: kick the bishop, drop back to f5",
-      "strategy": "After 4.f3 the bishop retreats to f5 and Black plays ...e6 to open lines. White's f3 weakens the king, so look for quick development with ...Nc6, ...Bb4 and pressure on the e-file.",
+      "strategy": "White kicks the bishop with a pawn move, which weakens White's own king side. The bishop drops back to a good square and Black opens the center with a side pawn, then recaptures with a developing move. Look for quick development and pressure on the central pawn while White's king is still in the middle.",
       "moves": [
         {
           "san": "e4",
@@ -28,147 +43,181 @@
         {
           "san": "d5",
           "note": "Challenge the center right away.",
-          "eval": 0.6
+          "eval": 0.8
         },
         {
           "san": "exd5",
           "note": "White takes the pawn.",
-          "eval": 0.6
+          "eval": 0.8
         },
         {
           "san": "Nf6",
           "note": "Attack the pawn on d5 with a developing move.",
-          "eval": 0.7,
           "caps": [
             {
               "san": "Qxd5",
               "reply": "Nc3",
-              "eval": 0.6
+              "eval": 0.8
             }
-          ]
+          ],
+          "eval": 0.7
         },
         {
           "san": "d4",
           "note": "White builds a big center.",
-          "eval": 0.8
+          "eval": 0.5
         },
         {
           "san": "Bg4",
           "note": "The Portuguese idea: develop and pin the knight's future square.",
-          "eval": 0.6,
           "why": {
             "Nxd5": "It is the main-line Scandinavian, but this gambit develops the bishop first, with tempo, before taking back. After c4 your knight would be driven away and you would lose time."
           },
+          "shapes": [
+            {
+              "from": "g4",
+              "to": "d1",
+              "color": "red"
+            }
+          ],
           "caps": [
             {
               "san": "Qxd5",
-              "reply": "c4",
+              "reply": "Nc3",
               "eval": 0.8
             },
             {
               "san": "Nxd5",
-              "reply": "c4",
-              "eval": 0.8
+              "reply": "Nf3",
+              "eval": 0.6
             }
-          ]
+          ],
+          "eval": 0.8
         },
         {
           "san": "f3",
           "note": "White tries to kick the bishop.",
-          "eval": 0.7
+          "eval": 0.9
         },
         {
           "san": "Bf5",
           "note": "Retreat but stay active.",
-          "eval": 0.6,
+          "shapes": [
+            {
+              "from": "f5",
+              "color": "green"
+            }
+          ],
           "caps": [
             {
               "san": "Qxd5",
-              "reply": "fxg4",
-              "eval": 4.1
-            },
-            {
-              "san": "Nxd5",
               "reply": "fxg4",
               "eval": 4.9
             },
             {
+              "san": "Nxd5",
+              "reply": "fxg4",
+              "eval": 5.4
+            },
+            {
               "san": "Bxf3",
               "reply": "Nxf3",
-              "eval": 6
+              "eval": 6.5
             }
-          ]
+          ],
+          "eval": 0.9
         },
         {
           "san": "c4",
-          "note": "White supports the pawn on d5.",
+          "note": "White gains space and attacks the center.",
           "eval": 0.5
         },
         {
-          "san": "e6",
-          "note": "Open lines for the pieces.",
-          "eval": 0.5,
+          "san": "c6",
+          "note": "Black hits the center with a side pawn to open lines for the pieces.",
           "caps": [
             {
               "san": "Qxd5",
               "reply": "cxd5",
-              "eval": 7.3
+              "eval": 7.5
             },
             {
               "san": "Nxd5",
               "reply": "cxd5",
-              "eval": 4.7
-            },
-            {
-              "san": "Bxb1",
-              "reply": "Rxb1",
-              "eval": 1.6
-            }
-          ]
-        },
-        {
-          "san": "dxe6",
-          "note": "White takes.",
-          "eval": 0.1
-        },
-        {
-          "san": "Bxe6",
-          "note": "Recapture and develop with tempo.",
-          "eval": 1,
-          "caps": [
-            {
-              "san": "Qxd4",
-              "reply": "Qxd4",
-              "eval": 5.4
-            },
-            {
-              "san": "Bb4+",
-              "reply": "Bd2",
-              "eval": 1
-            },
-            {
-              "san": "fxe6",
-              "reply": "Nc3",
-              "eval": 0.6
+              "eval": 4.6
             },
             {
               "san": "Bxb1",
               "reply": "Rxb1",
               "eval": 1.5
             }
-          ]
+          ],
+          "eval": 0.8
+        },
+        {
+          "san": "dxc6",
+          "note": "White takes the pawn.",
+          "eval": 0.7
+        },
+        {
+          "san": "Nxc6",
+          "note": "Black recaptures with a developing move and eyes the central pawn.",
+          "shapes": [
+            {
+              "from": "c6",
+              "to": "d4",
+              "color": "yellow"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Qxd4",
+              "reply": "cxb7",
+              "eval": 9
+            },
+            {
+              "san": "Qa5+",
+              "reply": "Bd2",
+              "eval": 2.9
+            },
+            {
+              "san": "bxc6",
+              "reply": "Nc3",
+              "eval": 1.6
+            },
+            {
+              "san": "Bxb1",
+              "reply": "cxb7",
+              "eval": 6.5
+            }
+          ],
+          "eval": 0.7
         }
-      ]
+      ],
+      "board": {
+        "ply": 12,
+        "shapes": [
+          {
+            "from": "e1",
+            "color": "red"
+          },
+          {
+            "from": "c6",
+            "to": "d4",
+            "color": "yellow"
+          }
+        ]
+      }
     },
     {
       "id": "nf3-nxd5",
       "name": "4.Nf3: recapture on d5",
-      "strategy": "When White develops with 4.Nf3, simply take back on d5 with the knight and complete development with ...e6, ...Be7 and ...O-O. Black's structure is healthy and White's center is a target.",
+      "strategy": "When White develops the knight, it can be pinned against the queen. Simply take the pawn back with the knight, then finish development: a pawn move to open the bishop, the bishop out, and castle. Black's pieces are healthy and White's central pawn becomes a target.",
       "moves": [
         {
           "san": "e4",
           "note": "White takes the center.",
-          "eval": 0.3
+          "eval": 0.4
         },
         {
           "san": "d5",
@@ -178,24 +227,24 @@
         {
           "san": "exd5",
           "note": "White takes the pawn.",
-          "eval": 0.6
+          "eval": 0.7
         },
         {
           "san": "Nf6",
           "note": "Attack the pawn on d5.",
-          "eval": 0.6,
+          "eval": 0.7,
           "caps": [
             {
               "san": "Qxd5",
               "reply": "Nc3",
-              "eval": 0.7
+              "eval": 0.8
             }
           ]
         },
         {
           "san": "d4",
           "note": "White builds a big center.",
-          "eval": 0.6
+          "eval": 0.7
         },
         {
           "san": "Bg4",
@@ -208,34 +257,47 @@
             {
               "san": "Qxd5",
               "reply": "Nc3",
-              "eval": 0.8
+              "eval": 0.7
             },
             {
               "san": "Nxd5",
               "reply": "c4",
-              "eval": 0.6
+              "eval": 0.7
+            }
+          ],
+          "shapes": [
+            {
+              "from": "g4",
+              "to": "d1",
+              "color": "red"
             }
           ]
         },
         {
           "san": "Nf3",
           "note": "White develops.",
-          "eval": 0.5
+          "eval": 0.6
         },
         {
           "san": "Nxd5",
           "note": "Win the pawn back.",
-          "eval": 0.8,
+          "eval": 1,
           "caps": [
             {
               "san": "Qxd5",
               "reply": "Be2",
-              "eval": 0.6
+              "eval": 0.5
             },
             {
               "san": "Bxf3",
               "reply": "Qxf3",
-              "eval": 0.5
+              "eval": 0.6
+            }
+          ],
+          "shapes": [
+            {
+              "from": "d5",
+              "color": "green"
             }
           ]
         },
@@ -247,12 +309,12 @@
         {
           "san": "e6",
           "note": "Solid and opens the bishop.",
-          "eval": 0.7,
+          "eval": 0.8,
           "caps": [
             {
               "san": "Bxf3",
               "reply": "Bxf3",
-              "eval": 1.3
+              "eval": 1.2
             }
           ]
         },
@@ -264,7 +326,7 @@
         {
           "san": "Be7",
           "note": "Prepare to castle too.",
-          "eval": 0.7,
+          "eval": 0.9,
           "caps": [
             {
               "san": "Bxf3",
@@ -272,6 +334,417 @@
               "eval": 1.2
             }
           ]
+        }
+      ],
+      "board": {
+        "ply": 8,
+        "shapes": [
+          {
+            "from": "d5",
+            "color": "green"
+          },
+          {
+            "from": "g4",
+            "to": "f3",
+            "color": "red"
+          }
+        ]
+      }
+    },
+    {
+      "id": "be2-bxe2",
+      "name": "4.Be2: trade the bishop and take back the pawn",
+      "strategy": "White blocks the bishop's diagonal with a bishop. Accept the trade, take the pawn back with the queen, and develop with a threat on White's central pawn. The queen on the central square is safe because a knight supports it, and Black has equalized with easy development.",
+      "board": {
+        "ply": 12,
+        "shapes": [
+          {
+            "from": "d5",
+            "color": "green"
+          },
+          {
+            "from": "c6",
+            "to": "d4",
+            "color": "yellow"
+          }
+        ]
+      },
+      "moves": [
+        {
+          "san": "e4",
+          "note": "White takes the center.",
+          "eval": 0.4
+        },
+        {
+          "san": "d5",
+          "note": "Black strikes at the center at once.",
+          "eval": 0.7
+        },
+        {
+          "san": "exd5",
+          "note": "White takes the pawn.",
+          "eval": 0.8
+        },
+        {
+          "san": "Nf6",
+          "note": "Black attacks the extra pawn and develops.",
+          "caps": [
+            {
+              "san": "Qxd5",
+              "reply": "Nc3",
+              "eval": 0.7
+            }
+          ],
+          "eval": 0.7
+        },
+        {
+          "san": "d4",
+          "note": "White builds a big center and defends the pawn.",
+          "eval": 0.7
+        },
+        {
+          "san": "Bg4",
+          "note": "The bishop comes out with an attack on the queen.",
+          "shapes": [
+            {
+              "from": "g4",
+              "to": "d1",
+              "color": "red"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Qxd5",
+              "reply": "Nc3",
+              "eval": 0.7
+            },
+            {
+              "san": "Nxd5",
+              "reply": "c4",
+              "eval": 0.7
+            }
+          ],
+          "eval": 0.8
+        },
+        {
+          "san": "Be2",
+          "note": "White blocks the diagonal with the bishop.",
+          "eval": 0.5
+        },
+        {
+          "san": "Bxe2",
+          "note": "Black trades off the bishop.",
+          "caps": [
+            {
+              "san": "Qxd5",
+              "reply": "Bxg4",
+              "eval": 5.9
+            },
+            {
+              "san": "Nxd5",
+              "reply": "Bxg4",
+              "eval": 6.5
+            }
+          ],
+          "eval": 0.6
+        },
+        {
+          "san": "Qxe2",
+          "note": "White recaptures with the queen.",
+          "eval": 0.5
+        },
+        {
+          "san": "Qxd5",
+          "note": "Black wins the pawn back and puts the queen in the center.",
+          "shapes": [
+            {
+              "from": "d5",
+              "color": "green"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Nxd5",
+              "reply": "c4",
+              "eval": 1
+            }
+          ],
+          "eval": 0.4
+        },
+        {
+          "san": "Nf3",
+          "note": "White develops the knight.",
+          "eval": 0.4
+        },
+        {
+          "san": "Nc6",
+          "note": "Black develops with a threat against the central pawn.",
+          "shapes": [
+            {
+              "from": "c6",
+              "to": "d4",
+              "color": "yellow"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Qxf3",
+              "reply": "Qxf3",
+              "eval": 6.5
+            },
+            {
+              "san": "Qxd4",
+              "reply": "Nxd4",
+              "eval": 7.7
+            },
+            {
+              "san": "Qxa2",
+              "reply": "Rxa2",
+              "eval": 8
+            },
+            {
+              "san": "Qa5+",
+              "reply": "Bd2",
+              "eval": 0.9
+            }
+          ],
+          "eval": 0.9
+        },
+        {
+          "san": "O-O",
+          "note": "White castles.",
+          "eval": 0.4
+        },
+        {
+          "san": "O-O-O",
+          "note": "Black castles long, bringing the rook to the central files.",
+          "caps": [
+            {
+              "san": "Nxd4",
+              "reply": "Nxd4",
+              "eval": 1.5
+            },
+            {
+              "san": "Qxf3",
+              "reply": "Qxf3",
+              "eval": 6.3
+            },
+            {
+              "san": "Qxd4",
+              "reply": "Nxd4",
+              "eval": 6.1
+            },
+            {
+              "san": "Qxa2",
+              "reply": "Rxa2",
+              "eval": 8.2
+            }
+          ],
+          "eval": 0.5
+        }
+      ]
+    },
+    {
+      "id": "nf3-bxf3",
+      "name": "4.Nf3: trade the bishop for the knight",
+      "strategy": "Black trades the bishop for White's knight to wreck White's pawn structure, then takes the pawn back with the queen. White ends up with doubled pawns and an open king side, which are long-term weaknesses. Do not rush; play for the better structure.",
+      "board": {
+        "ply": 9,
+        "shapes": [
+          {
+            "from": "f2",
+            "color": "yellow"
+          },
+          {
+            "from": "f3",
+            "color": "yellow"
+          }
+        ]
+      },
+      "moves": [
+        {
+          "san": "e4",
+          "note": "White takes the center.",
+          "eval": 0.4
+        },
+        {
+          "san": "d5",
+          "note": "Black strikes at the center at once.",
+          "eval": 0.8
+        },
+        {
+          "san": "exd5",
+          "note": "White takes the pawn.",
+          "eval": 0.7
+        },
+        {
+          "san": "Nf6",
+          "note": "Black attacks the extra pawn and develops.",
+          "caps": [
+            {
+              "san": "Qxd5",
+              "reply": "Nc3",
+              "eval": 0.7
+            }
+          ],
+          "eval": 0.8
+        },
+        {
+          "san": "d4",
+          "note": "White builds a big center and defends the pawn.",
+          "eval": 0.7
+        },
+        {
+          "san": "Bg4",
+          "note": "The bishop comes out with an attack on the queen.",
+          "shapes": [
+            {
+              "from": "g4",
+              "to": "d1",
+              "color": "red"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Qxd5",
+              "reply": "c4",
+              "eval": 0.7
+            },
+            {
+              "san": "Nxd5",
+              "reply": "Nf3",
+              "eval": 0.7
+            }
+          ],
+          "eval": 0.9
+        },
+        {
+          "san": "Nf3",
+          "note": "White develops and blocks the bishop, but the knight can be taken.",
+          "eval": 0.5
+        },
+        {
+          "san": "Bxf3",
+          "note": "Black trades the bishop for the knight to damage White's pawns.",
+          "shapes": [
+            {
+              "from": "g4",
+              "to": "f3",
+              "color": "yellow"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Qxd5",
+              "reply": "Be2",
+              "eval": 0.5
+            },
+            {
+              "san": "Nxd5",
+              "reply": "c4",
+              "eval": 0.9
+            }
+          ],
+          "eval": 0.6
+        },
+        {
+          "san": "gxf3",
+          "note": "White recaptures, leaving doubled pawns and an open king side.",
+          "shapes": [
+            {
+              "from": "f2",
+              "color": "yellow"
+            },
+            {
+              "from": "f3",
+              "color": "yellow"
+            }
+          ],
+          "eval": 0.5
+        },
+        {
+          "san": "Qxd5",
+          "note": "Black wins the pawn back.",
+          "shapes": [
+            {
+              "from": "d5",
+              "color": "green"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Nxd5",
+              "reply": "c4",
+              "eval": 0.8
+            }
+          ],
+          "eval": 0.6
+        },
+        {
+          "san": "Be3",
+          "note": "White develops and defends the central pawn.",
+          "eval": 0.1
+        },
+        {
+          "san": "e6",
+          "note": "Black opens the other bishop and keeps the queen safe.",
+          "caps": [
+            {
+              "san": "Qxf3",
+              "reply": "Qxf3",
+              "eval": 8.3
+            },
+            {
+              "san": "Qxd4",
+              "reply": "Qxd4",
+              "eval": 7.2
+            },
+            {
+              "san": "Qxa2",
+              "reply": "Rxa2",
+              "eval": 7.4
+            },
+            {
+              "san": "Qa5+",
+              "reply": "Nd2",
+              "eval": 0.4
+            }
+          ],
+          "eval": 0.4
+        },
+        {
+          "san": "Nc3",
+          "note": "White attacks the queen.",
+          "eval": 0
+        },
+        {
+          "san": "Qa5",
+          "note": "The queen steps aside and pins the knight to the king.",
+          "shapes": [
+            {
+              "from": "a5",
+              "to": "e1",
+              "color": "red"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Qxf3",
+              "reply": "Qxf3",
+              "eval": 8.4
+            },
+            {
+              "san": "Qxd4",
+              "reply": "Qxd4",
+              "eval": 7.7
+            },
+            {
+              "san": "Qxa2",
+              "reply": "Nxa2",
+              "eval": 7.4
+            }
+          ],
+          "eval": 0
         }
       ]
     }

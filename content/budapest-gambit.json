@@ -3,22 +3,52 @@
   "name": "Budapest Gambit",
   "color": "black",
   "status": "draft",
-  "summary": "Against 1.d4 Black sacrifices a pawn with 2...e5 for quick piece activity and chances to win the pawn back.",
+  "summary": "Against the queen-pawn opening, Black gives a pawn for fast piece play, then wins it back with active knights and a bishop check.",
   "goal": {
-    "title": "Trade a pawn for fast piece play and recover it",
-    "text": "After 1.d4 Nf6 2.c4 e5 Black wants active pieces and a quick lead in development. The knight on g4 hits the e5 pawn and the bishop comes to b4 to disturb White. Black usually wins the pawn back and gets an easy game with natural moves. Do not push pawns early; develop pieces and aim at the weak squares in White's position.",
+    "title": "Give a pawn for quick piece play, then win it back",
+    "text": "Black lets White keep an extra pawn at first. In return Black's pieces jump out fast: a knight attacks the extra pawn from the edge of the board, the other knight joins it, and a bishop comes out with check. Within a few moves Black wins the pawn back and enjoys the more active pieces.",
     "plans": [
-      "Win back the e5 pawn with ...Nc6 and ...Ng4",
-      "Develop the bishop to b4 with check (...Bb4+) and the queen to e7",
-      "Castle quickly and use the open lines for rooks and pieces",
-      "Watch for tactical tricks against loose pieces on the e-file"
-    ]
+      "Attack the extra white pawn with a knight from the edge of the board, and bring the other knight to help.",
+      "Give a check with the dark-squared bishop to drag White's pieces onto awkward squares.",
+      "Put the queen next to the king to add pressure on the same pawn.",
+      "Take the pawn back as soon as it is safe, then castle."
+    ],
+    "board": {
+      "variation": "bf4-rubinstein",
+      "ply": 12,
+      "shapes": [
+        {
+          "from": "e5",
+          "color": "yellow"
+        },
+        {
+          "from": "g4",
+          "to": "e5",
+          "color": "green"
+        },
+        {
+          "from": "c6",
+          "to": "e5",
+          "color": "green"
+        },
+        {
+          "from": "e7",
+          "to": "e5",
+          "color": "green"
+        },
+        {
+          "from": "b4",
+          "to": "d2",
+          "color": "red"
+        }
+      ]
+    }
   },
   "variations": [
     {
       "id": "bf4-rubinstein",
       "name": "4.Bf4: Rubinstein variation",
-      "strategy": "After 4.Bf4 Black develops with ...Nc6, ...Bb4+ and ...Qe7, aiming at the pawn on e5 and the loose knight on d2. Take back the pawn with ...Ngxe5 once the pieces are ready.",
+      "strategy": "White protects the extra pawn with a bishop. Black brings out a knight, then checks with the bishop so White must block with an awkward knight that is now pinned. The queen joins on the open file. Once Black has more attackers than White has defenders, take the pawn back.",
       "moves": [
         {
           "san": "d4",
@@ -33,7 +63,7 @@
         {
           "san": "c4",
           "note": "Gain space.",
-          "eval": 0.3
+          "eval": 0.2
         },
         {
           "san": "e5",
@@ -43,81 +73,106 @@
         {
           "san": "dxe5",
           "note": "White takes the pawn.",
-          "eval": 0.9
+          "eval": 1
         },
         {
           "san": "Ng4",
           "note": "Attack the pawn on e5.",
-          "eval": 0.9,
+          "eval": 0.8,
           "caps": [
             {
               "san": "Bb4+",
               "reply": "Bd2",
-              "eval": 1.7
+              "eval": 1.9
+            }
+          ],
+          "shapes": [
+            {
+              "from": "e5",
+              "color": "yellow"
+            },
+            {
+              "from": "g4",
+              "to": "e5",
+              "color": "green"
             }
           ]
         },
         {
           "san": "Bf4",
           "note": "White defends e5.",
-          "eval": 0.6
+          "eval": 0.7
         },
         {
           "san": "Nc6",
           "note": "Attack the pawn again.",
-          "eval": 0.8,
+          "eval": 0.5,
           "caps": [
             {
               "san": "Bb4+",
-              "reply": "Nd2",
-              "eval": 0.7
+              "reply": "Nc3",
+              "eval": 0.6
             },
             {
               "san": "Nxe5",
               "reply": "Bxe5",
-              "eval": 6.3
+              "eval": 6.6
             },
             {
               "san": "Nxh2",
               "reply": "Bxh2",
-              "eval": 6.3
+              "eval": 6.5
             },
             {
               "san": "Nxf2",
               "reply": "Kxf2",
-              "eval": 4.3
+              "eval": 4.1
+            }
+          ],
+          "shapes": [
+            {
+              "from": "c6",
+              "to": "e5",
+              "color": "green"
             }
           ]
         },
         {
           "san": "Nf3",
           "note": "White develops.",
-          "eval": 0.7
+          "eval": 0.6
         },
         {
           "san": "Bb4+",
           "note": "Check and pin the knight.",
-          "eval": 0.7,
+          "eval": 0.4,
           "caps": [
             {
               "san": "Ncxe5",
               "reply": "Bxe5",
-              "eval": 5
+              "eval": 5.7
             },
             {
               "san": "Ngxe5",
-              "reply": "Nxe5",
-              "eval": 5.7
+              "reply": "Bxe5",
+              "eval": 5.8
             },
             {
               "san": "Nxh2",
               "reply": "Bxh2",
-              "eval": 7
+              "eval": 6.6
             },
             {
               "san": "Nxf2",
               "reply": "Kxf2",
-              "eval": 5
+              "eval": 4.7
+            }
+          ],
+          "shapes": [
+            {
+              "from": "b4",
+              "to": "e1",
+              "color": "red"
             }
           ]
         },
@@ -134,7 +189,7 @@
             {
               "san": "Ncxe5",
               "reply": "Bxe5",
-              "eval": 6.2
+              "eval": 5.8
             },
             {
               "san": "Bxd2+",
@@ -144,68 +199,110 @@
             {
               "san": "Ngxe5",
               "reply": "Bxe5",
-              "eval": 5.7
+              "eval": 5.9
             },
             {
               "san": "Nxh2",
               "reply": "Bxh2",
-              "eval": 6.7
+              "eval": 6.2
             },
             {
               "san": "Nxf2",
               "reply": "Kxf2",
-              "eval": 5.1
+              "eval": 4.5
+            }
+          ],
+          "shapes": [
+            {
+              "from": "e7",
+              "to": "e5",
+              "color": "green"
             }
           ]
         },
         {
           "san": "e3",
           "note": "White solidifies and prepares to develop the bishop.",
-          "eval": 0.2
+          "eval": 0.4
         },
         {
           "san": "Ngxe5",
           "note": "Win the pawn back; Black is fully developed.",
-          "eval": 0.3,
+          "eval": 0.4,
           "caps": [
             {
               "san": "Qxe5",
               "reply": "Nxe5",
-              "eval": 6.9
+              "eval": 7.1
             },
             {
               "san": "Ncxe5",
-              "reply": "Nd4",
+              "reply": "a3",
               "eval": 0.5
             },
             {
               "san": "Bxd2+",
               "reply": "Qxd2",
-              "eval": 1.1
+              "eval": 0.8
             },
             {
               "san": "Nxh2",
-              "reply": "Bxh2",
-              "eval": 6.9
+              "reply": "Rxh2",
+              "eval": 6.3
             },
             {
               "san": "Nxf2",
               "reply": "Kxf2",
-              "eval": 6.4
+              "eval": 5.3
             },
             {
               "san": "Nxe3",
-              "reply": "fxe3",
-              "eval": 5.3
+              "reply": "Bxe3",
+              "eval": 5.6
+            }
+          ],
+          "shapes": [
+            {
+              "from": "e5",
+              "color": "green"
             }
           ]
         }
-      ]
+      ],
+      "board": {
+        "ply": 12,
+        "shapes": [
+          {
+            "from": "e5",
+            "color": "yellow"
+          },
+          {
+            "from": "g4",
+            "to": "e5",
+            "color": "green"
+          },
+          {
+            "from": "c6",
+            "to": "e5",
+            "color": "green"
+          },
+          {
+            "from": "e7",
+            "to": "e5",
+            "color": "green"
+          },
+          {
+            "from": "b4",
+            "to": "d2",
+            "color": "red"
+          }
+        ]
+      }
     },
     {
       "id": "nf3-adler",
       "name": "4.Nf3: Adler variation",
-      "strategy": "With 4.Nf3 Black develops the knight to c6 and, after 5.Nc3, simply takes the pawn back with the g4-knight. The knights trade on e5 and Black has equalised the material with active pieces and no weaknesses.",
+      "strategy": "White protects the extra pawn with a knight, but Black's two knights soon win it back through a trade: take with the knight from the edge, swap the knights, and recapture. Material is level, Black's knight sits strongly in the center, and Black has no weaknesses. Be ready for White to grab the center with a pawn push.",
       "moves": [
         {
           "san": "d4",
@@ -215,7 +312,7 @@
         {
           "san": "Nf6",
           "note": "Develop and hold e4.",
-          "eval": 0.3
+          "eval": 0.2
         },
         {
           "san": "c4",
@@ -230,24 +327,35 @@
         {
           "san": "dxe5",
           "note": "White takes the pawn.",
-          "eval": 0.9
+          "eval": 1
         },
         {
           "san": "Ng4",
           "note": "Attack the pawn on e5.",
-          "eval": 0.9,
+          "eval": 0.7,
           "caps": [
             {
               "san": "Bb4+",
               "reply": "Bd2",
-              "eval": 1.6
+              "eval": 2.2
+            }
+          ],
+          "shapes": [
+            {
+              "from": "e5",
+              "color": "yellow"
+            },
+            {
+              "from": "g4",
+              "to": "e5",
+              "color": "green"
             }
           ]
         },
         {
           "san": "Nf3",
           "note": "White defends e5 with a developing move.",
-          "eval": 0.6
+          "eval": 0.5
         },
         {
           "san": "Nc6",
@@ -257,22 +365,29 @@
             {
               "san": "Bb4+",
               "reply": "Nc3",
-              "eval": 1.1
+              "eval": 1.3
             },
             {
               "san": "Nxe5",
               "reply": "Nxe5",
-              "eval": 6.6
+              "eval": 6.3
             },
             {
               "san": "Nxh2",
               "reply": "Rxh2",
-              "eval": 7
+              "eval": 6.2
             },
             {
               "san": "Nxf2",
               "reply": "Kxf2",
-              "eval": 4.6
+              "eval": 5.2
+            }
+          ],
+          "shapes": [
+            {
+              "from": "c6",
+              "to": "e5",
+              "color": "green"
             }
           ]
         },
@@ -284,22 +399,28 @@
         {
           "san": "Ngxe5",
           "note": "Win the pawn back right away; the gambit has done its job.",
-          "eval": 0.6,
+          "eval": 0.7,
           "caps": [
             {
               "san": "Ncxe5",
               "reply": "h3",
-              "eval": 1
+              "eval": 1.1
             },
             {
               "san": "Nxh2",
-              "reply": "Nxh2",
+              "reply": "Rxh2",
               "eval": 6.3
             },
             {
               "san": "Nxf2",
               "reply": "Kxf2",
-              "eval": 5.2
+              "eval": 5.4
+            }
+          ],
+          "shapes": [
+            {
+              "from": "e5",
+              "color": "green"
             }
           ]
         },
@@ -311,12 +432,308 @@
         {
           "san": "Nxe5",
           "note": "Recapture; the centralised knight is strong.",
-          "eval": 0.6
+          "eval": 0.5
         },
         {
           "san": "e4",
           "note": "White takes space in the center.",
+          "eval": 0.5
+        }
+      ],
+      "board": {
+        "ply": 12,
+        "shapes": [
+          {
+            "from": "e5",
+            "color": "green"
+          },
+          {
+            "from": "e5",
+            "to": "c4",
+            "color": "yellow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "a3-trap",
+      "name": "7.a3? Ngxe5!: the Budapest trap",
+      "strategy": "Here White makes a natural-looking mistake: attacking the pinned bishop. Black ignores it, takes the pawn with the knight and threatens a mating knight jump. It is the most famous trap in the Budapest; if White plays accurately the position is still fine for Black, but knowing the trap wins games.",
+      "board": {
+        "ply": 14,
+        "shapes": [
+          {
+            "from": "e5",
+            "to": "d3",
+            "color": "red"
+          },
+          {
+            "from": "e1",
+            "color": "red"
+          }
+        ]
+      },
+      "moves": [
+        {
+          "san": "d4",
+          "note": "White takes the center.",
           "eval": 0.3
+        },
+        {
+          "san": "Nf6",
+          "note": "Black develops and watches the center.",
+          "eval": 0.2
+        },
+        {
+          "san": "c4",
+          "note": "White gains more space.",
+          "eval": 0.3
+        },
+        {
+          "san": "e5",
+          "note": "The gambit: Black offers a pawn to open the game for fast development.",
+          "eval": 0.7
+        },
+        {
+          "san": "dxe5",
+          "note": "White accepts the pawn.",
+          "eval": 0.7
+        },
+        {
+          "san": "Ng4",
+          "note": "The knight attacks the extra pawn from the edge of the board.",
+          "shapes": [
+            {
+              "from": "e5",
+              "color": "yellow"
+            },
+            {
+              "from": "g4",
+              "to": "e5",
+              "color": "green"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Bb4+",
+              "reply": "Bd2",
+              "eval": 2
+            }
+          ],
+          "eval": 0.6
+        },
+        {
+          "san": "Bf4",
+          "note": "White defends the pawn with a bishop.",
+          "eval": 0.6
+        },
+        {
+          "san": "Nc6",
+          "note": "A second attacker joins the fight for the pawn.",
+          "shapes": [
+            {
+              "from": "c6",
+              "to": "e5",
+              "color": "green"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Bb4+",
+              "reply": "Bd2",
+              "eval": 0.4
+            },
+            {
+              "san": "Nxe5",
+              "reply": "Bxe5",
+              "eval": 6.6
+            },
+            {
+              "san": "Nxh2",
+              "reply": "Rxh2",
+              "eval": 6.5
+            },
+            {
+              "san": "Nxf2",
+              "reply": "Kxf2",
+              "eval": 4.8
+            }
+          ],
+          "eval": 0.5
+        },
+        {
+          "san": "Nf3",
+          "note": "White adds a defender.",
+          "eval": 0.4
+        },
+        {
+          "san": "Bb4+",
+          "note": "The check forces White to block.",
+          "shapes": [
+            {
+              "from": "b4",
+              "to": "e1",
+              "color": "red"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Ncxe5",
+              "reply": "Bxe5",
+              "eval": 5.9
+            },
+            {
+              "san": "Ngxe5",
+              "reply": "Bxe5",
+              "eval": 5.9
+            },
+            {
+              "san": "Nxh2",
+              "reply": "Rxh2",
+              "eval": 6.5
+            },
+            {
+              "san": "Nxf2",
+              "reply": "Kxf2",
+              "eval": 5.1
+            }
+          ],
+          "eval": 0.4
+        },
+        {
+          "san": "Nbd2",
+          "note": "White blocks with the knight, which is now pinned.",
+          "eval": 0.3
+        },
+        {
+          "san": "Qe7",
+          "note": "The queen adds a third attacker on the same pawn.",
+          "shapes": [
+            {
+              "from": "e7",
+              "to": "e5",
+              "color": "green"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Ncxe5",
+              "reply": "Nxe5",
+              "eval": 6.2
+            },
+            {
+              "san": "Bxd2+",
+              "reply": "Qxd2",
+              "eval": 2.1
+            },
+            {
+              "san": "Ngxe5",
+              "reply": "Bxe5",
+              "eval": 6
+            },
+            {
+              "san": "Nxh2",
+              "reply": "Bxh2",
+              "eval": 6.2
+            },
+            {
+              "san": "Nxf2",
+              "reply": "Kxf2",
+              "eval": 4.7
+            }
+          ],
+          "eval": 0.3
+        },
+        {
+          "san": "a3",
+          "note": "A natural-looking attack on the bishop, but it walks into a trap.",
+          "eval": 0.4
+        },
+        {
+          "san": "Ngxe5",
+          "note": "Black ignores the attack, takes the pawn and threatens a mating knight jump.",
+          "shapes": [
+            {
+              "from": "e5",
+              "to": "d3",
+              "color": "red"
+            },
+            {
+              "from": "e1",
+              "color": "red"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Qxe5",
+              "reply": "Nxe5",
+              "eval": 7.7
+            },
+            {
+              "san": "Ncxe5",
+              "reply": "e3",
+              "eval": 0.5
+            },
+            {
+              "san": "Bxd2+",
+              "reply": "Qxd2",
+              "eval": 0.8
+            },
+            {
+              "san": "Bxa3",
+              "reply": "Rxa3",
+              "eval": 6.6
+            },
+            {
+              "san": "Nxh2",
+              "reply": "Rxh2",
+              "eval": 7.4
+            },
+            {
+              "san": "Nxf2",
+              "reply": "Kxf2",
+              "eval": 5.7
+            }
+          ],
+          "eval": 0.4
+        },
+        {
+          "san": "axb4",
+          "note": "White grabs the bishop and misses the threat.",
+          "eval": -100
+        },
+        {
+          "san": "Nd3#",
+          "note": "Checkmate: the knight gives check and White's own pieces block every escape square.",
+          "shapes": [
+            {
+              "from": "e1",
+              "color": "red"
+            }
+          ],
+          "caps": [
+            {
+              "san": "Qxb4",
+              "reply": "Bxe5",
+              "eval": 8.4
+            },
+            {
+              "san": "Nxb4",
+              "reply": "Nxe5",
+              "eval": 6
+            },
+            {
+              "san": "Nxf3+",
+              "reply": "Nxf3",
+              "eval": 5.6
+            },
+            {
+              "san": "Nxc4",
+              "reply": "Nxc4",
+              "eval": 6.4
+            }
+          ],
+          "eval": -100
         }
       ]
     }

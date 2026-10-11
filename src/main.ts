@@ -3,14 +3,22 @@ import { registerSW } from 'virtual:pwa-register';
 import { openings, findOpening, findVariation, key } from './content.ts';
 import { dueKeys, exportProgress, getProgress, hasToken, importProgress, isLearned, loadProgress, logAttempt, markLearned, review, setBestCombo, setToken, syncNow, type SyncStatus } from './store.ts';
 import { playLine, walkLine, type Ui } from './play.ts';
+import { fenAfter, staticBoard } from './board.ts';
 import { esc, screenShell } from './ui.ts';
-import type { Opening, Variation } from './types.ts';
+import type { Opening, PlanBoard, Variation } from './types.ts';
 
 registerSW({ immediate: true });
 const app = document.getElementById('app')!;
 let token = 0; // cancels in-flight line playback when the screen changes
 
 const href = (...p: string[]) => `#/${p.join('/')}`;
+/** Placeholder markup for a shapes board; call drawBoard afterwards. */
+const boardSlot = (id: string, b?: PlanBoard) => (b ? `<div class="board-wrap small"><div id="${id}" class="cg-wrap"></div></div>` : '');
+function drawBoard(id: string, o: Opening, v: Variation, b?: PlanBoard) {
+  const el = document.getElementById(id);
+  if (el && b) staticBoard(el, o.color, fenAfter(v.moves.map(m => m.san), b.ply), b.shapes);
+}
+const goalVariation = (o: Opening) => o.variations.find(v => v.id === o.goal.board?.variation);
 const goalKey = (o: Opening) => `goal:${o.id}`;
 const lookup = (k: string): [Opening, Variation] | undefined => {
   const [oid, vid] = k.split('/'); const o = findOpening(oid); const v = o && findVariation(o, vid);
@@ -72,6 +80,7 @@ function openingPage(o: Opening) {
   <main class="page"><a class="back" href="#/">← Openings</a>
     <h1>${esc(o.name)}</h1>
     <div class="card"><div class="tag">Positional goal</div><h3>${esc(o.goal.title)}</h3><p>${esc(o.goal.text)}</p>
+      ${boardSlot('goal-board', o.goal.board)}
       <ul>${o.goal.plans.map(p => `<li>${esc(p)}</li>`).join('')}</ul></div>
     <h2>Variations</h2>
     ${o.variations.map(v => `<div class="card"><b>${esc(v.name)}</b>
@@ -80,12 +89,13 @@ function openingPage(o: Opening) {
       <a class="btn" href="${href('practice', o.id, v.id)}">Practice</a>
       <span class="tag">${isLearned(key(o, v)) ? '✓ learned' : 'new'}</span></div></div>`).join('')}
   </main>`;
+  const gv = goalVariation(o); if (gv) drawBoard('goal-board', o, gv, o.goal.board);
 }
 
 function learn(o: Opening, v: Variation) {
   const steps = [
-    ...(isLearned(goalKey(o)) ? [] : [{ tag: 'Step 1 · Positional goal', title: o.goal.title, body: o.goal.text, list: o.goal.plans }]),
-    { tag: 'Strategy for this variation', title: v.name, body: v.strategy, list: [] as string[] }
+    ...(isLearned(goalKey(o)) ? [] : [{ tag: 'Step 1 · Positional goal', title: o.goal.title, body: o.goal.text, list: o.goal.plans, board: o.goal.board, from: goalVariation(o) }]),
+    { tag: 'Strategy for this variation', title: v.name, body: v.strategy, list: [] as string[], board: v.board, from: v }
   ];
   let i = 0;
   const showStep = () => {
@@ -93,8 +103,10 @@ function learn(o: Opening, v: Variation) {
     const s = steps[i];
     app.innerHTML = `<main class="page"><a class="back" href="${href('o', o.id)}">← ${esc(o.name)}</a>
       <div class="card big"><div class="tag">${s.tag}</div><h2>${esc(s.title)}</h2><p>${esc(s.body)}</p>
+      ${boardSlot('step-board', s.board)}
       ${s.list.length ? `<ul>${s.list.map(p => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}</div>
       <button class="btn primary big" id="go">${i === steps.length - 1 ? 'Show me the line' : 'Next: the strategy'}</button></main>`;
+    if (s.from) drawBoard('step-board', o, s.from, s.board);
     document.getElementById('go')!.onclick = () => {
       if (i === 0 && steps.length === 2) markLearned(goalKey(o));
       if (i < steps.length - 1) { i++; showStep(); } else walk();

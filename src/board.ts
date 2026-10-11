@@ -1,10 +1,21 @@
 import { Chessground } from 'chessground';
 import type { Api } from 'chessground/api';
+import type { DrawShape } from 'chessground/draw';
 import type { Key } from 'chessground/types';
+import type { Shape } from './types.ts';
 import { Chess } from 'chess.js';
 import 'chessground/assets/chessground.base.css';
 import 'chessground/assets/chessground.brown.css';
 import 'chessground/assets/chessground.cburnett.css';
+
+const toDraw = (shapes: Shape[] = []): DrawShape[] =>
+  shapes.map(s => ({ orig: s.from as Key, dest: s.to as Key | undefined, brush: s.color ?? 'green' }));
+
+/** Read-only board showing one position with shapes on it. */
+export function staticBoard(el: HTMLElement, orientation: 'white' | 'black', fen: string, shapes: Shape[]): Api {
+  return Chessground(el, { fen, orientation, coordinates: true, viewOnly: true, animation: { enabled: false }, drawable: { autoShapes: toDraw(shapes) } });
+}
+export const fenAfter = (sans: string[], ply: number) => { const c = new Chess(); sans.slice(0, ply).forEach(m => c.move(m)); return c.fen(); };
 
 export interface Board {
   cg: Api;
@@ -13,6 +24,7 @@ export interface Board {
   lock(): void;
   arrow(from: Key, to: Key): void;
   clearArrow(): void;
+  shapes(list?: Shape[]): void;
 }
 
 const dests = (chess: Chess) => {
@@ -45,6 +57,7 @@ export function createBoard(el: HTMLElement, orientation: 'white' | 'black'): Bo
     },
     lock() { cg.set({ movable: { color: undefined, dests: new Map() } }); },
     arrow(from, to) { cg.setAutoShapes([{ orig: from, dest: to, brush: 'green' }]); },
-    clearArrow() { cg.setAutoShapes([]); }
+    clearArrow() { cg.setAutoShapes([]); },
+    shapes(list) { cg.setAutoShapes(toDraw(list)); }
   };
 }
