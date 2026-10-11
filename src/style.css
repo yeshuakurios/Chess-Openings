@@ -90,3 +90,7 @@ cg-board square.oc.move-dest{background:radial-gradient(transparent 0%,transpare
 .more p{color:#c3c8d6;margin:10px 0 0;font-size:15.5px}
 .more ul{color:#c3c8d6;font-size:15.5px}
 .learn .btn.big{margin-top:18px}
+
+.head{margin-top:0;flex-wrap:nowrap}.head h1{margin:6px 0 0}
+.gear{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);flex:none;transition:transform .12s}
+.gear:active{transform:scale(.93)}
