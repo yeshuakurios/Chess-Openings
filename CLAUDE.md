@@ -13,7 +13,8 @@ Vite + TypeScript (no UI framework), Chessground (board), chess.js (rules), ts-f
 
 ## Rules
 - Content is static JSON in `content/` (one file per opening). The schema lives in `src/types.ts`. Never call Claude or any API at runtime; no engine ships to the client.
-- The user's side has exactly one accepted move per position. Any other legal move shows "That move isn't part of this line." Do not add per-move wrong-move text.
+- The user's side has exactly one accepted move per position. Any other legal move shows "<move> isn't part of this line." For captures and checks it adds a reason: a hand-written `why[<san>]` on the move if present, otherwise text built from the generated `caps` (engine's best reply and eval). Never name the line's own move in that text (it would give the answer away in Drill). `caps` is written by `npm run evals`; do not edit it by hand.
+- The message card has a fixed height on purpose: a taller message would shift the board and break Chessground's cached tap positions.
 - Keep it a PWA on free tiers only. No card-on-file services, no secrets in client code. The sync token is a Worker secret and the user's own copy in IndexedDB; never commit `.dev.vars`.
 - Content `status: "draft"` means a human has not reviewed the strategy text. Never mark `reviewed` yourself.
 - GPL: Chessground is GPL-3.0, so keep the repo's source open if the site is published.

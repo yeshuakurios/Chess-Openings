@@ -110,8 +110,8 @@ function learn(o: Opening, v: Variation) {
 }
 
 const btn = (id: string) => document.getElementById(id) as HTMLButtonElement;
-const ui = (): Ui => ({ board: document.getElementById('board')!, hint: document.getElementById('hint') as HTMLButtonElement });
-const hintBtn = `<button class="ctl" id="hint">Hint</button>`;
+const ui = (): Ui => ({ board: document.getElementById('board')!, hint: btn('hint'), prev: btn('prev'), fwd: btn('fwd') });
+const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</button><button class="ctl" id="hint">Hint</button><button class="ctl" id="fwd" aria-label="Forward one move">›</button>`;
 
 async function practice(o: Opening, v: Variation) {
   const my = ++token;

@@ -9,7 +9,7 @@ import 'chessground/assets/chessground.cburnett.css';
 export interface Board {
   cg: Api;
   show(chess: Chess, last?: [Key, Key]): void;
-  allowMoves(chess: Chess, color: 'white' | 'black', onMove: (from: Key, to: Key) => void): void;
+  allowMoves(chess: Chess, color: 'white' | 'black', onMove: (from: Key, to: Key) => void, last?: [Key, Key]): void;
   lock(): void;
   arrow(from: Key, to: Key): void;
   clearArrow(): void;
@@ -36,9 +36,10 @@ export function createBoard(el: HTMLElement, orientation: 'white' | 'black'): Bo
     show(chess, last) {
       cg.set({ fen: chess.fen(), turnColor: colorOf(chess), check: chess.inCheck(), lastMove: last, movable: { color: undefined, dests: new Map() } });
     },
-    allowMoves(chess, color, onMove) {
+    allowMoves(chess, color, onMove, last) {
+      cg.cancelMove(); // drop any leftover selection from a rejected move
       cg.set({
-        fen: chess.fen(), turnColor: colorOf(chess), check: chess.inCheck(),
+        fen: chess.fen(), turnColor: colorOf(chess), check: chess.inCheck(), lastMove: last,
         movable: { color, dests: dests(chess), free: false, events: { after: (from, to) => onMove(from, to) } }
       });
     },
