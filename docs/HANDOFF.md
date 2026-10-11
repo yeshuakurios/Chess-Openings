@@ -23,6 +23,8 @@ Next up: items 1 + 2.
 - Everything stays $0, no card-on-file services, and it stays a PWA.
 - The owner wants ONE short, clear step at a time.
 - Work on a branch and open a PR; the owner says when to merge.
+- Update this file at turn 20 of every session (count the owner's messages), and say so when doing it.
+- Decisions: no push reminders (badge count at most). Workers AI is approved for mistake explanations (Worker-side, free plan, cached in D1, rule-based fallback); reword the "no API at runtime" rule in `CLAUDE.md` when that work starts.
 - Never mark content `reviewed`. Check candidate lines with `npm run try`, then `npm run validate`.
 
 ## Lessons
