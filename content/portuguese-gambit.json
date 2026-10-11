@@ -33,7 +33,7 @@
     {
       "id": "f3-bf5",
       "name": "4.f3: kick the bishop, drop back to f5",
-      "strategy": "White kicks the bishop with a pawn move, which weakens White's own king side. The bishop drops back to a good square and Black opens the center with a side pawn, then recaptures with a developing move. Look for quick development and pressure on the central pawn while White's king is still in the middle.",
+      "strategy": "You are a pawn down but ahead in development, and White's pawn move has weakened the king side and the dark squares near the king. The middlegame is about speed: attack the center pawn, open the e-file by pushing the e-pawn, and keep your pieces active rather than trading. If White consolidates, your compensation fades, so strike while the king is still in the center.",
       "moves": [
         {
           "san": "e4",
@@ -404,7 +404,7 @@
     {
       "id": "nf3-nxd5",
       "name": "4.Nf3: recapture on d5",
-      "strategy": "When White develops the knight, it can be pinned against the queen. Simply take the pawn back with the knight, then finish development: a pawn move to open the bishop, the bishop out, and castle. Black's pieces are healthy and White's central pawn becomes a target.",
+      "strategy": "Material is level and your pieces are healthy. White has more space, but the central pawn becomes a target. Trade the light-squared bishop for a knight if it helps, castle, then pressure the center pawn with a knight and bishop and prepare a side-pawn break to challenge it. Keep your position solid and wait for White to overextend.",
       "moves": [
         {
           "san": "e4",
@@ -738,7 +738,7 @@
     {
       "id": "be2-bxe2",
       "name": "4.Be2: trade the bishop and take back the pawn",
-      "strategy": "White blocks the bishop's diagonal with a bishop. Accept the trade, take the pawn back with the queen, and develop with a threat on White's central pawn. The queen on the central square is safe because a knight supports it, and Black has equalized with easy development.",
+      "strategy": "The bishop trade has left Black with a queen in the center and a lead in development. The kings have castled on opposite sides, so this becomes a race of pawn storms: push the king-side pawns toward White's king while White pushes toward yours. Meanwhile pressure the central pawn with the knight and rook, and keep the queen safe from tempo-gaining attacks.",
       "board": {
         "ply": 12,
         "shapes": [
@@ -1147,7 +1147,7 @@
     {
       "id": "nf3-bxf3",
       "name": "4.Nf3: trade the bishop for the knight",
-      "strategy": "Black trades the bishop for White's knight to wreck White's pawn structure, then takes the pawn back with the queen. White ends up with doubled pawns and an open king side, which are long-term weaknesses. Do not rush; play for the better structure.",
+      "strategy": "White's pawns are doubled and the king side is open, which are long-term weaknesses, and Black's queen is already well placed. Play for the better structure: keep pieces on, restrain the doubled pawns, aim knights at the weak squares in front of them, and avoid a quick trade of queens. White has the bishop pair, so close the position when you can and avoid letting the bishops open up.",
       "board": {
         "ply": 9,
         "shapes": [
@@ -1550,7 +1550,7 @@
     {
       "id": "nc3-nxd5",
       "name": "3.Nc3: take the pawn back with the knight",
-      "strategy": "Black takes the pawn back at once, so material is level. Then develop calmly: a knight to the center, a bishop to the side with a pin, a pawn move to open the other bishop, and castle. There is no hurry; the structure is healthy and White's central pawn becomes the target.",
+      "strategy": "Black has a solid, healthy position against White's bigger center. Your goal is to trade a pair of knights to relieve the space problem, castle, and then put pressure on White's central pawn with your pieces. Keep your pieces compact, watch for the right moment to break in the center, and play patiently: White has more room, but Black has no weaknesses.",
       "board": {
         "ply": 10,
         "shapes": [
@@ -1950,7 +1950,7 @@
     {
       "id": "c4-c6",
       "name": "3.c4: strike back with the side pawn",
-      "strategy": "Black hits the extra pawn from the side and recaptures with a developing move, then grabs space in the center. If White answers with the natural-looking knight move, the central pawn push attacks it and White's knight jump loses a piece. A good example of why fast development beats a pawn.",
+      "strategy": "Black has recaptured with a developing move and built a strong pawn center, with the e-pawn gaining time against White's knight. The middlegame idea is to keep gaining tempo: advance the center pawns to hit the knights, keep pieces active, and exploit White's uncoordinated pieces. This line is a lesson in why fast development and tempo-gaining pawn pushes beat a pawn; in the final position White's knight has stepped into a trade that loses material.",
       "board": {
         "ply": 14,
         "shapes": [
@@ -2338,7 +2338,7 @@
     {
       "id": "nxd5-qxd5",
       "name": "3.Nc3 Nxd5 4.Nxd5: recapture with the queen",
-      "strategy": "Black takes the pawn back and then recaptures with the queen after the knights trade, so material is level at once. The queen comes out early, so keep it safe: take space with calm pawn moves, develop the knight and bishop, and watch for any push that would chase the queen. The pawn structure is healthy and Black has no weaknesses.",
+      "strategy": "Black has a healthy structure with no weaknesses and a queen in the center. The knight that could have chased the queen is already traded, so the queen is stable. Castle, build behind the queen, then challenge the center with a pawn break and the knights. Keep the queen safe from bishop and pawn attacks, and avoid placing it where a pawn push gains a tempo.",
       "moves": [
         {
           "san": "e4",
@@ -2759,7 +2759,7 @@
     {
       "id": "e5-bf5",
       "name": "2.e5: develop the bishop, then hit the pawn chain",
-      "strategy": "White gains space with an advanced pawn, so Black plays against the pawn chain instead of fighting for the center head-on. Develop the light bishop outside the chain before it gets shut in, then strike at the base of the chain with a pawn break and add pressure on the center pawn with the queenside knight and later the queen. Black is a little cramped but has a clear plan.",
+      "strategy": "White has space and a pawn chain, so Black's plan is to attack it at the base and at the head. Hit the base with the side pawn and knights, then challenge the head with an f-pawn break. Black's light bishop stays outside the chain where it is active, and the knight heading to the center supports the break. Black is a little cramped, but the plan is clear and the pieces can trade off freely.",
       "moves": [
         {
           "san": "e4",
@@ -3071,7 +3071,7 @@
     {
       "id": "nc3-d4",
       "name": "2.Nc3: gain space and kick the knight",
-      "strategy": "White ignores the center pawn and develops, so Black takes space with a pawn push that attacks the knight. After the knight retreats, Black builds a strong pawn center and develops pieces behind it. The plan is simple: develop the knight and the bishop, castle, and keep the center pawns safe.",
+      "strategy": "Black has gained space with the advanced central pawn and built a strong pawn duo. The middlegame is about keeping the center locked so that White's pieces have less room, bringing the knights to good squares, and choosing a break such as a side pawn push or the f-pawn. Keep the f-pawn defended against White's bishop aimed at it, and do not trade the advanced pawn away without a reason.",
       "moves": [
         {
           "san": "e4",

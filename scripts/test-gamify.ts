@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { BADGES, DAILY_GOAL, earnedNow, streaks, totalXp, xpForAttempt } from '../src/gamify.ts';
+import { BADGES, DAILY_GOAL, TITLES, earnedNow, levelFor, streaks, totalXp, xpForAttempt } from '../src/gamify.ts';
 
 assert.equal(xpForAttempt({ ok: 1, h: 0 }), 2);
 assert.equal(xpForAttempt({ ok: 1, h: 1 }), 1);
@@ -28,4 +28,13 @@ assert.ok(ids({ xp: {}, levels: ['New', 'Solid'] }).includes('solid'));
 assert.ok(!ids({ xp: {}, levels: ['Familiar'] }).includes('solid'));
 assert.ok(ids({ xp: {}, levels: ['Mastered'] }).includes('mastered'));
 assert.equal(new Set(BADGES.map(b => b.id)).size, BADGES.length);                           // unique ids
+
+// levels
+assert.deepEqual(levelFor(0), { n: 1, title: 'Pawn Pusher', into: 0, span: 150, next: 'Gambit Rookie' });
+assert.equal(levelFor(149).n, 1);
+assert.equal(levelFor(150).title, 'Gambit Rookie');
+assert.deepEqual(levelFor(200), { n: 2, title: 'Gambit Rookie', into: 50, span: 250, next: 'Coffeehouse Hustler' });
+assert.deepEqual(levelFor(99_999), { n: TITLES.length, title: 'World Champion', into: 99_999 - 50000, span: 0 });
+for (let i = 2; i < TITLES.length; i++) assert.ok(TITLES[i].xp - TITLES[i - 1].xp > TITLES[i - 1].xp - TITLES[i - 2].xp, 'each level costs more than the last');
+assert.equal(new Set(TITLES.map(t => t.title)).size, TITLES.length);
 console.log('✓ gamify ok');

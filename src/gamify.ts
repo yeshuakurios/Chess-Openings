@@ -11,6 +11,34 @@ export const xpForAttempt = (a: { ok: 0 | 1; h: 0 | 1 }) => (a.ok ? (a.h ? 1 : 2
 
 export const totalXp = (xp: Record<string, number>) => Object.values(xp).reduce((s, n) => s + n, 0);
 
+/** Player titles earned by total XP. Placeholder thresholds; each step costs clearly more than the last (a flawless 10-move line is about 30 XP, the daily goal 50). */
+export const TITLES: { xp: number; title: string }[] = [
+  { xp: 0, title: 'Pawn Pusher' },
+  { xp: 150, title: 'Gambit Rookie' },
+  { xp: 400, title: 'Coffeehouse Hustler' },
+  { xp: 800, title: 'Club Regular' },
+  { xp: 1400, title: 'Fianchetto Fan' },
+  { xp: 2200, title: 'Tactician' },
+  { xp: 3300, title: 'Positional Player' },
+  { xp: 4800, title: 'Candidate Master' },
+  { xp: 6800, title: 'Endgame Wizard' },
+  { xp: 9500, title: 'FIDE Master' },
+  { xp: 13000, title: 'International Master' },
+  { xp: 18000, title: 'Grandmaster' },
+  { xp: 25000, title: 'Super Grandmaster' },
+  { xp: 35000, title: 'World Challenger' },
+  { xp: 50000, title: 'World Champion' }
+];
+
+export interface LevelInfo { n: number; title: string; into: number; span: number; next?: string }
+/** Level (1-based) and title for a total XP, plus progress toward the next title. `span` is 0 at the top level. */
+export function levelFor(xp: number): LevelInfo {
+  let i = 0;
+  while (i + 1 < TITLES.length && xp >= TITLES[i + 1].xp) i++;
+  const next = TITLES[i + 1];
+  return { n: i + 1, title: TITLES[i].title, into: xp - TITLES[i].xp, span: next ? next.xp - TITLES[i].xp : 0, ...(next ? { next: next.title } : {}) };
+}
+
 const dayNumber = (key: string) => Math.round(Date.parse(`${key}T00:00:00Z`) / 86_400_000);
 
 /** Streaks count consecutive days with any XP. The current streak survives until the end of today if today has no XP yet. */
