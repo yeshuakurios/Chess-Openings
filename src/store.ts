@@ -12,6 +12,7 @@ export interface Attempt {
   t: number;       // epoch ms
   m: 'p' | 'd';    // practice or drill
   o?: 1;           // 1 if the line was started from the middle (spot check)
+  s?: string;      // the move played, kept only for wrong attempts
 }
 export interface Progress {
   learned: Record<string, true>;

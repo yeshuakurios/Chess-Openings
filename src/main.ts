@@ -5,6 +5,7 @@ import { dueKeys, exportProgress, getProgress, hasToken, importProgress, isLearn
 import { playLine, walkLine, type Ui } from './play.ts';
 import { fenAfter, staticBoard } from './board.ts';
 import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery.ts';
+import { troubleSpots } from './mistakes.ts';
 import { esc, screenShell } from './ui.ts';
 import type { Opening, PlanBoard, Variation } from './types.ts';
 
@@ -44,11 +45,13 @@ async function runSync(rerender: boolean) {
 
 function home() {
   const due = dueKeys().filter(k => lookup(k)).length;
+  const trouble = troubleSpots(getProgress().attempts, lookup).length;
   app.innerHTML = `
   <main class="page">
     <h1>Opening Goals</h1>
     <p class="muted">Learn the plan first, then the line.</p>
     <a class="btn primary big" href="${href('drill')}">Drill ${due ? `· ${due} due` : '· nothing due'}</a>
+    <a class="btn big" href="${href('mistakes')}">Mistakes${trouble ? ` · ${trouble}` : ''}</a>
     <h2>Openings</h2>
     ${openings.map(o => {
       const done = o.variations.filter(v => isLearned(key(o, v))).length;
@@ -79,6 +82,22 @@ function home() {
     const raw = prompt('Paste exported progress:');
     if (raw) { try { importProgress(raw); route(); } catch { alert('That is not valid progress data.'); } }
   };
+}
+
+function mistakesPage() {
+  const spots = troubleSpots(getProgress().attempts, lookup);
+  const times = (n: number, what: string) => (n ? `${what} ${n}×` : '');
+  app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>Mistakes</h1>
+    <p class="muted">The positions that cost you the most in the last 30 days. The explanations come from the line itself and never show the answer.</p>
+    ${spots.length ? spots.map((t, i) => { const [o, v] = lookup(t.k)!; return `<div class="card">
+      <div class="tag">${esc(o.name)} · ${esc(v.name)}</div><b>Move ${Math.floor(t.p / 2) + 1}</b>
+      ${boardSlot('trouble-' + i, { ply: t.p, shapes: [] })}
+      <p>${esc(t.last.text)}</p>
+      <div class="muted">${[times(t.count, 'Wrong'), times(t.hints, 'Hint'), times(t.slow, 'Slow')].filter(Boolean).join(' · ')}</div>
+      <div class="row"><a class="btn primary" href="${href('practice', o.id, v.id)}">Practice this line</a></div></div>`; }).join('')
+      : `<div class="card"><b>No trouble spots right now.</b><p class="muted">Mistakes, hints and slow moves from Practice and Drill show up here.</p></div>`}
+  </main>`;
+  spots.forEach((t, i) => { const [o, v] = lookup(t.k)!; drawBoard('trouble-' + i, o, v, { ply: t.p, shapes: [] }); });
 }
 
 function openingPage(o: Opening) {
@@ -188,6 +207,7 @@ function route() {
   else if (a === 'learn' && o && v) learn(o, v);
   else if (a === 'practice' && o && v) void practice(o, v);
   else if (a === 'drill') void drill();
+  else if (a === 'mistakes') mistakesPage();
   else home();
   window.scrollTo(0, 0);
 }
