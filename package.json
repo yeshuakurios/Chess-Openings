@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "validate": "tsx scripts/validate-content.ts",
     "evals": "tsx scripts/add-evals.ts",
+    "stats": "tsx scripts/stats.ts",
     "try": "tsx scripts/try-line.ts",
     "test": "tsx scripts/test-merge.ts && tsx scripts/test-mastery.ts && tsx scripts/test-mistakes.ts && tsx scripts/test-explain.ts && tsx worker/test-explain.ts && tsx scripts/test-gamify.ts"
   },
