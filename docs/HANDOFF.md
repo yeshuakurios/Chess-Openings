@@ -9,7 +9,20 @@ Start a new session by reading `CLAUDE.md`, then this file. Update this file at 
 - Known issue: the Cloudflare "Workers Builds" check fails instantly on pull-request (non-main) branches. Cause unknown; the same steps (`npm ci`, `npm run build`, `npx wrangler deploy --dry-run`) pass locally from a clean clone. The `main` branch deploys fine. Needs the build log from the Cloudflare dashboard.
 - Not yet tested on a real iPhone end to end: follow `docs/pwa-ios-checklist.md`.
 
-## Roadmap (agreed; Phase 0 and Phase 1 are built, see the progress notes below)
+## Roadmap (agreed; Phases 0-6 are all built, see the status table and the progress notes below)
+
+| Phase | Status | What is left (not code unless stated) |
+|---|---|---|
+| 0 Foundations | Built | Attempt log not yet tried on a real device (check via export) |
+| 1 Visual goals + plain language | Built | Human review of the draft text |
+| 2 Content coverage | Built and growing: Bird 10 lines, Budapest 6, Portuguese 6 | Gaps ranked from real Lichess stats (see "Lichess stats"); chosen lines are still `draft` |
+| 3 Mastery levels | Built | "Why" question gate deferred; per-position FSRS deferred; thresholds are placeholders |
+| 4 Mistakes tracker | Built (4a rule-based, 4b Workers AI) | First real `/api/explain` call on the live Worker; Playground model comparison |
+| 5 Gamification | Built | Numbers are placeholders |
+| 6 Polish | Built | Check the "new version" bar after the next deploy; Lichess puzzles optional |
+| Lichess stats (added) | Built and merged | Optional "x% play this" display in the app |
+| Parallel | Open | Real-iPhone test; Cloudflare Workers Builds log for non-main failures |
+
 **Phase 0, foundations:** per-position attempt log (correct/wrong, hint, time, date, variation); schema fields for board `shapes` and plain-language goal/strategy; per-opening content files loaded on demand; `storage.persist()` plus JSON export/import; CI (validate, test, build) on every PR.
 **Phase 1, visual goals + plain language** (owner items 1+2): prove the schema on one opening first, then the rest. No chess notation in goal/strategy text.
 **Phase 2, content coverage:** pick about 5-8 main lines per opening from the Lichess explorer (build time only), check each with `npm run try`, add as linear variations (still `draft`). Today each opening has only 2-3 single lines, so this is a real gap.
