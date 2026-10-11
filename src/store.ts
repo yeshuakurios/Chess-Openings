@@ -11,6 +11,7 @@ export interface Attempt {
   ms: number;      // time from the position appearing to this move
   t: number;       // epoch ms
   m: 'p' | 'd';    // practice or drill
+  o?: 1;           // 1 if the line was started from the middle (spot check)
 }
 export interface Progress {
   learned: Record<string, true>;

@@ -4,6 +4,7 @@ import { openings, findOpening, findVariation, key } from './content.ts';
 import { dueKeys, exportProgress, getProgress, hasToken, importProgress, isLearned, loadProgress, logAttempt, markLearned, review, setBestCombo, setToken, syncNow, type SyncStatus } from './store.ts';
 import { playLine, walkLine, type Ui } from './play.ts';
 import { fenAfter, staticBoard } from './board.ts';
+import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery.ts';
 import { esc, screenShell } from './ui.ts';
 import type { Opening, PlanBoard, Variation } from './types.ts';
 
@@ -19,6 +20,10 @@ function drawBoard(id: string, o: Opening, v: Variation, b?: PlanBoard) {
   if (el && b) staticBoard(el, o.color, fenAfter(v.moves.map(m => m.san), b.ply), b.shapes);
 }
 const goalVariation = (o: Opening) => o.variations.find(v => v.id === o.goal.board?.variation);
+const masteryOf = (o: Opening, v: Variation) => {
+  const p = getProgress(), k = key(o, v);
+  return lineMastery(k, o.color, v.moves.length, p.attempts, p.cards[k]);
+};
 const goalKey = (o: Opening) => `goal:${o.id}`;
 const lookup = (k: string): [Opening, Variation] | undefined => {
   const [oid, vid] = k.split('/'); const o = findOpening(oid); const v = o && findVariation(o, vid);
@@ -47,10 +52,11 @@ function home() {
     <h2>Openings</h2>
     ${openings.map(o => {
       const done = o.variations.filter(v => isLearned(key(o, v))).length;
+      const solid = o.variations.filter(v => LEVELS.indexOf(masteryOf(o, v).level) >= 3).length;
       return `<a class="card link" href="${href('o', o.id)}">
         <span class="dot ${o.color}"></span><div><b>${esc(o.name)}</b>
         <div class="muted">${esc(o.summary)}</div>
-        <div class="tag">${o.color === 'white' ? 'White' : 'Black'} · ${done}/${o.variations.length} learned${o.status === 'draft' ? ' · draft' : ''}</div></div></a>`;
+        <div class="tag">${o.color === 'white' ? 'White' : 'Black'} · ${done}/${o.variations.length} learned${solid ? ` · ${solid} solid` : ''}${o.status === 'draft' ? ' · draft' : ''}</div></div></a>`;
     }).join('')}
     <h2>Backup &amp; sync</h2>
     <div class="row"><button class="btn" id="sync">${hasToken() ? 'Sync now' : 'Set up sync'}</button><span class="muted" id="sync-msg">${esc(syncText)}</span></div>
@@ -83,11 +89,12 @@ function openingPage(o: Opening) {
       ${boardSlot('goal-board', o.goal.board)}
       <ul>${o.goal.plans.map(p => `<li>${esc(p)}</li>`).join('')}</ul></div>
     <h2>Variations</h2>
-    ${o.variations.map(v => `<div class="card"><b>${esc(v.name)}</b>
+    ${o.variations.map(v => { const m = masteryOf(o, v); return `<div class="card"><b>${esc(v.name)}</b>
       <p class="muted">${esc(v.strategy)}</p>
       <div class="row"><a class="btn primary" href="${href('learn', o.id, v.id)}">Learn</a>
       <a class="btn" href="${href('practice', o.id, v.id)}">Practice</a>
-      <span class="tag">${isLearned(key(o, v)) ? '✓ learned' : 'new'}</span></div></div>`).join('')}
+      <span class="tag">${m.level}</span></div>
+      <p class="muted">${m.hint}</p></div>`; }).join('')}
   </main>`;
   const gv = goalVariation(o); if (gv) drawBoard('goal-board', o, gv, o.goal.board);
 }
@@ -159,6 +166,15 @@ async function drill() {
     combo = mistakes === 0 ? combo + 1 : 0; setBestCombo(combo);
     await new Promise<void>(res => { const b = btn('nextline'); b.hidden = false; b.onclick = () => res(); });
     if (my !== token) return;
+    // Once a line is familiar, check it from the middle once a day. This feeds mastery only; it does not reschedule the line.
+    const m = masteryOf(o, v), from = pickSpotCheck(m);
+    if (LEVELS.indexOf(m.level) >= 2 && from !== undefined && !hadSpotCheckToday(k, getProgress().attempts)) {
+      app.innerHTML = screenShell('Spot check', esc(o.name), `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button>`);
+      await playLine(ui(), o, v, { stopped: () => my !== token, startPly: from, onAttempt: a => logAttempt({ ...a, k, m: 'd', o: 1 }) });
+      if (my !== token) return;
+      await new Promise<void>(res => { const b = btn('nextline'); b.hidden = false; b.onclick = () => res(); });
+      if (my !== token) return;
+    }
   }
   app.innerHTML = `<main class="page"><h1>Drill complete</h1><div class="card"><b>Best combo: ×${getProgress().bestCombo}</b></div>
     <a class="btn primary big" href="#/">Done</a></main>`;
