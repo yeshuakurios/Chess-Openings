@@ -3310,7 +3310,7 @@
     {
       "id": "vs-nc6",
       "name": "Vs 1...Nc6: develop first",
-      "strategy": "Black develops a knight instead of taking space, so there is no need to change the plan. Play the same setup: bring out the knight, support the center with a solid pawn, put the bishop on the long diagonal, then castle. Because Black has not claimed the center with pawns, keep an eye out for a chance to take more space yourself.",
+      "strategy": "Black develops a knight and will usually follow with the center pawn anyway, so there is no need to change the plan. Play the same setup: bring out the knight, support the center with a solid pawn, put the bishop on the long diagonal, then castle. If Black delays the center pawn, look for a chance to take more space yourself.",
       "moves": [
         {
           "san": "f4",
@@ -3484,7 +3484,7 @@
     {
       "id": "d5-e6",
       "name": "Vs 1...d5 2.Nf3 e6: the solid setup",
-      "strategy": "Black builds a solid center with pawns and keeps the light-squared bishop inside the chain. Play the usual setup: knight out, solid pawn, bishop on the long diagonal, then castle. Black's bishop is a little passive, so keep the position closed and wait for the right moment to strike in the center.",
+      "strategy": "Black builds a solid center with pawns and keeps the light-squared bishop inside the chain. This is the same setup as in the line where Black plays the e-pawn first, reached by a different move order, so play it the same way: knight out, solid pawn, bishops developed, then castle. Black's bishop is a little passive, so finish development and then use the knight on the key square or a central pawn break.",
       "moves": [
         {
           "san": "f4",
@@ -3551,9 +3551,9 @@
           "eval": -0.2
         },
         {
-          "san": "Be2",
-          "note": "Finishes development and prepares to castle.",
-          "eval": -0.2,
+          "san": "Bd3",
+          "note": "The other bishop aims at Black's king side.",
+          "eval": -0.3,
           "caps": [
             {
               "san": "Bxf6",
@@ -3564,8 +3564,8 @@
         },
         {
           "san": "c5",
-          "note": "Black gains space on the queenside.",
-          "eval": -0.2
+          "note": "Black hits the center from the side.",
+          "eval": -0.3
         },
         {
           "san": "O-O",
@@ -3573,9 +3573,14 @@
           "eval": -0.2,
           "caps": [
             {
+              "san": "Bxh7+",
+              "reply": "Nxh7",
+              "eval": -4.4
+            },
+            {
               "san": "Bxf6",
               "reply": "Bxf6",
-              "eval": -0.7
+              "eval": -1
             }
           ]
         }
