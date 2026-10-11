@@ -8,11 +8,11 @@ import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery
 import { troubleSpots } from './mistakes.ts';
 import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
-import { OPEN_ITEMS, PHASES, ROADMAP_UPDATED } from './roadmap.ts';
 import { BADGES, DAILY_GOAL, dayKey, earnedNow, levelFor, streaks, totalXp } from './gamify.ts';
 import { esc, screenShell } from './ui.ts';
 import type { Opening, PlanBoard, Variation } from './types.ts';
 
+const GEAR = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
 const DRILL_CAP = 10; // lines per Drill session; the rest stay due for the next one
 /** Tell the user a new version is ready instead of reloading under them; applying it is their tap. */
 const updateSW = registerSW({
@@ -65,7 +65,8 @@ async function runSync(rerender: boolean) {
   const status = await syncNow();
   syncText = SYNC_TEXT[status];
   if (status === 'unauthorized') await setToken('');
-  if (rerender && !location.hash.slice(2)) route();
+  const screen = location.hash.slice(2);
+  if (rerender && (!screen || screen === 'settings')) route();
   else { const el = document.getElementById('sync-msg'); if (el) el.textContent = syncText; }
 }
 
@@ -88,12 +89,11 @@ function home() {
     ${next ? `<div class="muted">Next badge: ${esc(next.name)}. ${esc(next.hint)}</div>` : ''}</div>`;
   app.innerHTML = `
   <main class="page">
-    <h1>Opening Goals</h1>
+    <div class="row between head"><h1>Opening Goals</h1><a class="gear" href="${href('settings')}" aria-label="Settings">${GEAR}</a></div>
     <p class="muted">Learn the plan first, then the line.</p>
     ${progressCard}
     <a class="btn primary big" href="${href('drill')}">Drill ${due ? `· ${due} due` : '· nothing due'}</a>
     <a class="btn big" href="${href('mistakes')}">Mistakes${trouble ? ` · ${trouble}` : ''}</a>
-    <a class="btn big" href="${href('roadmap')}">Roadmap · ${PHASES.filter(p => p.built).length}/${PHASES.length} built</a>
     <h2>Openings</h2>
     ${openings.map(o => {
       const done = o.variations.filter(v => isLearned(key(o, v))).length;
@@ -103,9 +103,15 @@ function home() {
         <div class="muted">${esc(o.summary)}</div>
         <div class="tag">${o.color === 'white' ? 'White' : 'Black'} · ${done}/${o.variations.length} learned${solid ? ` · ${solid} solid` : ''}${o.status === 'draft' ? ' · draft' : ''}</div></div></a>`;
     }).join('')}
+  </main>`;
+}
+
+function settingsPage() {
+  app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>Settings</h1>
     <h2>Backup &amp; sync</h2>
+    <div class="card"><p class="muted">Your progress lives on this device. Sync copies it to your own Cloudflare Worker so another device can pick it up; export keeps a copy you can paste somewhere safe.</p>
     <div class="row"><button class="btn" id="sync">${hasToken() ? 'Sync now' : 'Set up sync'}</button><span class="muted" id="sync-msg">${esc(syncText)}</span></div>
-    <div class="row"><button class="btn" id="exp">Export progress</button><button class="btn" id="imp">Import</button></div>
+    <div class="row"><button class="btn" id="exp">Export progress</button><button class="btn" id="imp">Import</button></div></div>
   </main>`;
   document.getElementById('sync')!.onclick = async () => {
     if (!hasToken()) {
@@ -150,18 +156,6 @@ function mistakesPage() {
     const el = document.getElementById(`trouble-text-${i}`), tag = document.getElementById(`trouble-ai-${i}`);
     if (text && el && tag && my === token) { el.textContent = text; tag.hidden = false; }
   });
-}
-
-function roadmapPage() {
-  app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>Roadmap</h1>
-    <p class="muted">Every phase of the plan and what is still open. Updated ${ROADMAP_UPDATED}.</p>
-    ${PHASES.map(p => `<div class="card"><div class="row between"><b>${p.id === 'L' ? 'Extra' : 'Phase ' + p.id} · ${esc(p.title)}</b>
-      <span class="status ${p.built ? 'built' : 'open'}">${p.built ? 'Built' : 'Open'}</span></div>
-      <p>${esc(p.what)}</p>
-      ${p.left.length ? `<div class="tag">Still open</div><ul>${p.left.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}</div>`).join('')}
-    <h2>Open items outside the app</h2>
-    <div class="card"><ul>${OPEN_ITEMS.map(l => `<li>${esc(l)}</li>`).join('')}</ul></div>
-  </main>`;
 }
 
 function openingPage(o: Opening) {
@@ -284,7 +278,7 @@ function route() {
   else if (a === 'practice' && o && v) void practice(o, v);
   else if (a === 'drill') void drill();
   else if (a === 'mistakes') mistakesPage();
-  else if (a === 'roadmap') roadmapPage();
+  else if (a === 'settings') settingsPage();
   else home();
   window.scrollTo(0, 0);
 }
