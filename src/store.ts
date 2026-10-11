@@ -1,5 +1,6 @@
 import { createEmptyCard, fsrs, Rating, type Card } from 'ts-fsrs';
 import { MAX_ATTEMPTS, mergeProgress } from './merge.ts';
+import { LINE_BONUS, dayKey, xpForAttempt } from './gamify.ts';
 
 /** One user move in a line. Short field names on purpose: the log is synced and the Worker caps the body at 256 KB. */
 export interface Attempt {
@@ -19,8 +20,12 @@ export interface Progress {
   cards: Record<string, Card>;
   bestCombo: number;
   attempts: Attempt[];
+  /** XP per local day. Kept as a per-day total (merged by max) so it survives the attempt log being capped and re-syncs without double counting. */
+  xp: Record<string, number>;
+  /** Earned badge id -> day earned. Never removed. */
+  badges: Record<string, string>;
 }
-const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [] });
+const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {} });
 const DB = 'openings', STORE = 'kv', KEY = 'progress', TOKEN_KEY = 'syncToken';
 const scheduler = fsrs();
 
@@ -95,8 +100,20 @@ export function dueKeys(now = new Date()): string[] {
 export function logAttempt(a: Omit<Attempt, 'id' | 't'>) {
   const t = Date.now();
   progress.attempts.push({ ...a, id: t.toString(36) + Math.random().toString(36).slice(2, 6), t });
+  addXp(xpForAttempt(a));
   if (progress.attempts.length > MAX_ATTEMPTS) progress.attempts.splice(0, progress.attempts.length - MAX_ATTEMPTS);
   void save();
+}
+function addXp(n: number) {
+  if (n > 0) { const d = dayKey(); progress.xp[d] = (progress.xp[d] ?? 0) + n; }
+}
+/** XP for finishing a line with no mistakes and no hints. */
+export function awardLineBonus() { addXp(LINE_BONUS); void save(); }
+/** Record newly qualified badges; returns the ids that were new. */
+export function grantBadges(ids: string[]): string[] {
+  const fresh = ids.filter(id => !progress.badges[id]);
+  if (fresh.length) { const d = dayKey(); for (const id of fresh) progress.badges[id] = d; void save(); }
+  return fresh;
 }
 export function setBestCombo(n: number) {
   if (n > progress.bestCombo) { progress.bestCombo = n; void save(); }
