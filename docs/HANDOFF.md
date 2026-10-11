@@ -19,9 +19,9 @@ Start a new session by reading `CLAUDE.md`, then this file. Update this file at 
 **Phase 6, polish at $0:** review caps, "new version" notice, accessibility, optional Lichess puzzles per opening.
 Parallel, not blocking: the real-iPhone test and the Workers Builds log.
 
-Phase 0 progress: 0.1 per-move attempt log (PR #7: `Progress.attempts`, capped at 1500, merged by id). Not yet tried on a real device; check via export. Remaining in Phase 0: `storage.persist()`, per-opening lazy loading, schema fields for shapes and plain-language text, CI.
+Phase 0 progress: 0.1 per-move attempt log (PR #7: `Progress.attempts`, capped at 1500, merged by id). Not yet tried on a real device; check via export. 0.2 `navigator.storage.persist()` requested on load (best effort; iOS may decline, so JSON export stays the real backup). Remaining in Phase 0: per-opening lazy loading, schema fields for shapes and plain-language text, CI.
 
-Next up: `storage.persist()`, then the rest of Phase 0, then Phase 1.
+Next up: the rest of Phase 0 (CI first, since it also helps with the Workers Builds mystery), then Phase 1.
 
 ## Mastery definition (decided; thresholds are placeholders to tune with real data)
 - Mastery is per position; a line is capped by its weakest few positions, not the average.
