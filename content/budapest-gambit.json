@@ -48,7 +48,7 @@
     {
       "id": "bf4-rubinstein",
       "name": "4.Bf4: Rubinstein variation",
-      "strategy": "White protects the extra pawn with a bishop. Black brings out a knight, then checks with the bishop so White must block with an awkward knight that is now pinned. The queen joins on the open file. Once Black has more attackers than White has defenders, take the pawn back.",
+      "strategy": "You have won the pawn back and Black's pieces are the more active: both knights are in the center and White's knight is pinned against the king. The middlegame plan is to castle, bring a rook to the center file, and keep the pin going so White cannot complete development comfortably. If White breaks the pin, trade the bishop for the knight to disturb White's setup. White has the bishop pair, so avoid opening the position for it without a reason.",
       "moves": [
         {
           "san": "d4",
@@ -522,7 +522,7 @@
     {
       "id": "nf3-adler",
       "name": "4.Nf3: Adler variation",
-      "strategy": "White protects the extra pawn with a knight, but Black's two knights soon win it back through a trade: take with the knight from the edge, swap the knights, and recapture. Material is level, Black's knight sits strongly in the center, and Black has no weaknesses. Be ready for White to grab the center with a pawn push.",
+      "strategy": "Material is level and Black has no weaknesses, but White has a bigger pawn center, so the middlegame is about whether that center is strong or just a target. Develop, castle, and undermine it with pawn breaks like the d-pawn and c-pawn pushes. If White kicks the knight with a pawn, retreat it to a good square instead of letting it be trapped. Black's pieces are well placed and White's space can become a liability.",
       "moves": [
         {
           "san": "d4",
@@ -895,7 +895,7 @@
     {
       "id": "a3-trap",
       "name": "7.a3? Ngxe5!: the Budapest trap",
-      "strategy": "Here White makes a natural-looking mistake: attacking the pinned bishop. Black ignores it, takes the pawn with the knight and threatens a mating knight jump. It is the most famous trap in the Budapest; if White plays accurately the position is still fine for Black, but knowing the trap wins games.",
+      "strategy": "This line is about a tactic rather than a long plan: when the opponent's king is stuck in the center with an open file and a knight is pinned, a piece sacrifice can open the file and deliver a double check. If White never falls for it, the normal Budapest plans apply: active knights, a healthy center and quick development. Use this as a pattern to remember: the unpinned knight moves away with check, the file opens, and the king has no squares.",
       "board": {
         "ply": 14,
         "shapes": [
@@ -1425,7 +1425,7 @@
     {
       "id": "e3-declined",
       "name": "3.e3: White declines the gambit",
-      "strategy": "If White does not take the pawn there is nothing to win back. Take the central pawn, build a central pawn of your own and develop calmly. The goal is the same: active pieces and a healthy center, and the position ends level.",
+      "strategy": "White has declined the gambit, so there is no pawn to win back. The middlegame has a classic structure: White ends up with an isolated central pawn. Your plan is to trade pieces, since fewer pieces mean fewer attacking chances for White, and to place a knight directly in front of the isolated pawn as a blockade. Then target that pawn with your other pieces and look for a favorable endgame.",
       "board": {
         "ply": 14,
         "shapes": [
@@ -1808,7 +1808,7 @@
     {
       "id": "nc3-declined",
       "name": "3.Nc3: White develops instead of taking",
-      "strategy": "White ignores the gambit and develops. Take the center pawn, chase the queen with a developing move and pin the knight with the dark-squared bishop. Black's pieces come out with tempo and the position stays level.",
+      "strategy": "White has more space but is behind in development, so use that. Pressure the center pawn along the open file with a rook, keep the pin on the knight, and open the center with a pawn push while White's king is still in the middle. Black's pieces come out with tempo and the position stays level, so aim for activity and pressure rather than a quick trade.",
       "board": {
         "ply": 10,
         "shapes": [
@@ -2151,7 +2151,7 @@
     {
       "id": "d5-declined",
       "name": "3.d5: White closes the center",
-      "strategy": "The center is closed, so the fight moves to the wings. Develop, castle and prepare to break open the position later with a side pawn move, or aim for a strong knight outpost. Keep your pieces flexible and do not hurry.",
+      "strategy": "The center is closed, so the fight moves to the wings. White has more space on the queen side, so place your knights well, perhaps with one heading to an outpost, and prepare a break: either a side pawn push to challenge the space, or a king-side pawn push to create play against White's king. Keep your pieces flexible and do not hurry; the position will not be decided by a single pawn move.",
       "board": {
         "ply": 12,
         "shapes": [
@@ -2468,7 +2468,7 @@
     {
       "id": "bf4-declined",
       "name": "2.Bf4: no gambit, take the center",
-      "strategy": "White develops the bishop and avoids the gambit, so Black simply takes the center. Take space with a pawn, hit the center from the side with another pawn, and develop the knights and bishops. Look for a trade of White's active bishop and a chance to open the center.",
+      "strategy": "White's active bishop is the main target. Offer to trade it with your own bishop so that White's recapture opens a file and pulls a pawn off the center. Pressure the center with a pawn and a knight, castle, and use the queen on the side to pressure the queen-side. Black can open the center with a pawn break once the pieces are developed.",
       "moves": [
         {
           "san": "d4",
@@ -2758,7 +2758,7 @@
     {
       "id": "nf3-declined",
       "name": "2.Nf3: no gambit, take the center",
-      "strategy": "White avoids the gambit with a quiet knight move, so Black simply takes the center. Claim space with a pawn, hit the center from the side, and develop with tempo. The queen can come out early to add pressure, and Black can gain space on the queenside.",
+      "strategy": "Black has taken space and developed with tempo. After the queen comes out, the pawn advance on the queen side gains more space and locks that wing, so White's natural break is a push in the center. Black's plan is to keep the queens on, or trade them for an open file on the side, develop the remaining pieces calmly, and use the extra space on the queen side for a later pawn break. The position is level, so play for a healthy structure rather than hurrying.",
       "moves": [
         {
           "san": "d4",

@@ -9,7 +9,7 @@ import { troubleSpots } from './mistakes.ts';
 import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
 import { OPEN_ITEMS, PHASES, ROADMAP_UPDATED } from './roadmap.ts';
-import { BADGES, DAILY_GOAL, dayKey, earnedNow, streaks, totalXp } from './gamify.ts';
+import { BADGES, DAILY_GOAL, dayKey, earnedNow, levelFor, streaks, totalXp } from './gamify.ts';
 import { esc, screenShell } from './ui.ts';
 import type { Opening, PlanBoard, Variation } from './types.ts';
 
@@ -67,7 +67,13 @@ function home() {
   const trouble = troubleSpots(getProgress().attempts, lookup).length;
   const fresh = refreshBadges(), prog = getProgress();
   const streak = streaks(prog.xp), today = prog.xp[dayKey()] ?? 0, next = BADGES.find(b => !prog.badges[b.id]);
+  const lv = levelFor(totalXp(prog.xp));
+  let levelUp = false; // best effort: the last level shown is kept on this device only
+  try { const seen = Number(localStorage.getItem('level-seen') ?? 0); levelUp = seen > 0 && lv.n > seen; localStorage.setItem('level-seen', String(lv.n)); } catch { /* storage unavailable */ }
   const progressCard = `<div class="card">
+    <div class="row between"><b>Level ${lv.n} · ${esc(lv.title)}</b>${levelUp ? '<span class="tag">Level up!</span>' : ''}</div>
+    <div class="goal"><i style="width:${lv.span ? Math.round((lv.into / lv.span) * 100) : 100}%"></i></div>
+    <div class="muted">${lv.next ? `${lv.span - lv.into} XP to ${esc(lv.next)}` : 'Top title reached'}</div>
     <div class="row between"><b>${streak.current}-day streak</b><span class="muted">Best ${streak.best} · ${totalXp(prog.xp)} XP</span></div>
     <div class="goal"><i style="width:${Math.min(100, Math.round((today / DAILY_GOAL) * 100))}%"></i></div>
     <div class="muted">Today ${today} / ${DAILY_GOAL} XP${today >= DAILY_GOAL ? ' · goal reached' : ''}</div>
@@ -203,16 +209,19 @@ const btn = (id: string) => document.getElementById(id) as HTMLButtonElement;
 const ui = (): Ui => ({ board: document.getElementById('board')!, hint: btn('hint'), prev: btn('prev'), fwd: btn('fwd') });
 const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</button><button class="ctl" id="hint">Hint</button><button class="ctl" id="fwd" aria-label="Forward one move">›</button>`;
 
+const endBtns = `<button class="btn primary" id="again" hidden>Again</button><button class="btn" id="done" hidden>Done</button>`;
+
 async function practice(o: Opening, v: Variation) {
   const my = ++token;
-  app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}<button class="btn primary" id="again" hidden>Again</button>`);
+  app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`);
   const run = async () => {
-    btn('again').hidden = true;
+    btn('again').hidden = true; btn('done').hidden = true;
     const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, onAttempt: a => logAttempt({ ...a, k: key(o, v), m: 'p' }) });
     if (my !== token) return;
     if (mistakes === 0) { markLearned(key(o, v)); awardLineBonus(); }
-    btn('again').hidden = false;
-    btn('again').onclick = () => { app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}<button class="btn primary" id="again" hidden>Again</button>`); void run(); };
+    btn('again').hidden = false; btn('done').hidden = false;
+    btn('done').onclick = () => { location.hash = href('o', o.id); };
+    btn('again').onclick = () => { app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`); void run(); };
   };
   void run();
 }

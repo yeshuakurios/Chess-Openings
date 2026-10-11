@@ -39,7 +39,7 @@ h1{font-size:28px;margin:8px 0 4px} h2{font-size:18px;margin:22px 0 8px;color:va
 .board-wrap.small{max-width:340px;margin:10px auto}
 .board-wrap{width:100%;max-width:min(100vw,calc(100dvh - 390px));margin:0 auto}
 .cg-wrap{width:100%;aspect-ratio:1;position:relative}
-.controls{display:flex;gap:12px;justify-content:center;align-items:center;padding:12px 16px}
+.controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;padding:12px 16px}
 .ctl{appearance:none;background:none;border:0;color:var(--muted);font:inherit;font-weight:600;padding:10px 18px;font-size:18px}
 .ctl:disabled{opacity:.3} [hidden]{display:none!important}
 
