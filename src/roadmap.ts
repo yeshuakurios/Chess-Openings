@@ -33,5 +33,6 @@ export const PHASES: Phase[] = [
 export const OPEN_ITEMS = [
   'Test the app end to end on a real iPhone.',
   'Find out why Cloudflare builds fail on branches other than main (the log is in the Cloudflare dashboard).',
-  'Have a human review the draft content.'
+  'Have a human review the draft content.',
+  'Two Portuguese lines expect different Black moves at the same position (after 3.d4 Bg4 4.Nf3: Nxd5 in one, Bxf3 in the other), but the app accepts one move per position. One of them needs to change.'
 ];

@@ -21,7 +21,8 @@ const e2 = explain(att('bird/main-d5', 4, { s: 'b3' }), bird, main);
 assert.equal(e2.kind, 'move-order');
 assert.ok(!e2.text.includes('e3'), 'must not name the line move');
 // tactical: a capture that is not in the line
-const por = op('portuguese-gambit'), nf3 = va(por, 'nf3-nxd5');
+// (the opening is cut down to this one line so that adding sibling lines to the content never changes what this case tests)
+const nf3 = va(op('portuguese-gambit'), 'nf3-nxd5'), por = { ...op('portuguese-gambit'), variations: [nf3] };
 const e3 = explain(att('portuguese-gambit/nf3-nxd5', 7, { s: 'Qxd5' }), por, nf3);
 assert.equal(e3.kind, 'tactical');
 assert.ok(e3.text.startsWith("Qxd5 isn't part of this line."));
