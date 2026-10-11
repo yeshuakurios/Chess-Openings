@@ -3,6 +3,7 @@ import type { Key } from 'chessground/types';
 import { createBoard } from './board.ts';
 import { setEval, setMessage, setProgress } from './ui.ts';
 import { whyNot } from './why.ts';
+import { movePopularity } from './stats.ts';
 import type { Opening, Variation } from './types.ts';
 
 export const START_EVAL = 0.2;
@@ -103,7 +104,8 @@ export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTM
     board.show(chess, last); board.shapes(idx ? v.moves[idx - 1].shapes : []);
     setEval(idx ? v.moves[idx - 1].eval : START_EVAL); setProgress(idx / v.moves.length);
     const m = v.moves[idx - 1];
-    setMessage(idx ? `<b>${moveLabel(idx - 1, m.san)}</b> ${m.note}` : 'Press next to step through the line.');
+    const pop = idx ? movePopularity(m, (idx - 1) % 2 === 0 === (o.color === 'white')) : '';
+    setMessage(idx ? `<b>${moveLabel(idx - 1, m.san)}</b> ${m.note}${pop ? `<div class="stat">${pop}</div>` : ''}` : 'Press next to step through the line.');
     controls.prev.disabled = idx === 0;
     controls.next.textContent = idx === v.moves.length ? 'Finish' : 'Next';
   };

@@ -7,6 +7,8 @@ import { fenAfter, staticBoard } from './board.ts';
 import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery.ts';
 import { troubleSpots } from './mistakes.ts';
 import { aiExplain } from './ai.ts';
+import { lineReach, reachText } from './stats.ts';
+import { OPEN_ITEMS, PHASES, ROADMAP_UPDATED } from './roadmap.ts';
 import { BADGES, DAILY_GOAL, dayKey, earnedNow, streaks, totalXp } from './gamify.ts';
 import { esc, screenShell } from './ui.ts';
 import type { Opening, PlanBoard, Variation } from './types.ts';
@@ -78,6 +80,7 @@ function home() {
     ${progressCard}
     <a class="btn primary big" href="${href('drill')}">Drill ${due ? `· ${due} due` : '· nothing due'}</a>
     <a class="btn big" href="${href('mistakes')}">Mistakes${trouble ? ` · ${trouble}` : ''}</a>
+    <a class="btn big" href="${href('roadmap')}">Roadmap · ${PHASES.filter(p => p.built).length}/${PHASES.length} built</a>
     <h2>Openings</h2>
     ${openings.map(o => {
       const done = o.variations.filter(v => isLearned(key(o, v))).length;
@@ -136,6 +139,18 @@ function mistakesPage() {
   });
 }
 
+function roadmapPage() {
+  app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>Roadmap</h1>
+    <p class="muted">Every phase of the plan and what is still open. Updated ${ROADMAP_UPDATED}.</p>
+    ${PHASES.map(p => `<div class="card"><div class="row between"><b>${p.id === 'L' ? 'Extra' : 'Phase ' + p.id} · ${esc(p.title)}</b>
+      <span class="status ${p.built ? 'built' : 'open'}">${p.built ? 'Built' : 'Open'}</span></div>
+      <p>${esc(p.what)}</p>
+      ${p.left.length ? `<div class="tag">Still open</div><ul>${p.left.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}</div>`).join('')}
+    <h2>Open items outside the app</h2>
+    <div class="card"><ul>${OPEN_ITEMS.map(l => `<li>${esc(l)}</li>`).join('')}</ul></div>
+  </main>`;
+}
+
 function openingPage(o: Opening) {
   app.innerHTML = `
   <main class="page"><a class="back" href="#/">← Openings</a>
@@ -146,6 +161,7 @@ function openingPage(o: Opening) {
     <h2>Variations</h2>
     ${o.variations.map(v => { const m = masteryOf(o, v); return `<div class="card"><b>${esc(v.name)}</b>
       <p class="muted">${esc(v.strategy)}</p>
+      ${lineReach(o, v) !== undefined ? `<p class="muted">${esc(reachText(lineReach(o, v)))}</p>` : ''}
       <div class="row"><a class="btn primary" href="${href('learn', o.id, v.id)}">Learn</a>
       <a class="btn" href="${href('practice', o.id, v.id)}">Practice</a>
       <span class="tag">${m.level}</span></div>
@@ -247,6 +263,7 @@ function route() {
   else if (a === 'practice' && o && v) void practice(o, v);
   else if (a === 'drill') void drill();
   else if (a === 'mistakes') mistakesPage();
+  else if (a === 'roadmap') roadmapPage();
   else home();
   window.scrollTo(0, 0);
 }
