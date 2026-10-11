@@ -1,0 +1,168 @@
+{
+  "id": "budapest-gambit",
+  "name": "Budapest Gambit",
+  "color": "black",
+  "status": "draft",
+  "summary": "Against 1.d4 Black sacrifices a pawn with 2...e5 for quick piece activity and chances to win the pawn back.",
+  "goal": {
+    "title": "Trade a pawn for fast piece play and recover it",
+    "text": "After 1.d4 Nf6 2.c4 e5 Black wants active pieces and a quick lead in development. The knight on g4 hits the e5 pawn and the bishop comes to b4 to disturb White. Black usually wins the pawn back and gets an easy game with natural moves. Do not push pawns early; develop pieces and aim at the weak squares in White's position.",
+    "plans": [
+      "Win back the e5 pawn with ...Nc6 and ...Ng4",
+      "Develop the bishop to b4 with check (...Bb4+) and the queen to e7",
+      "Castle quickly and use the open lines for rooks and pieces",
+      "Watch for tactical tricks against loose pieces on the e-file"
+    ]
+  },
+  "variations": [
+    {
+      "id": "bf4-rubinstein",
+      "name": "4.Bf4: Rubinstein variation",
+      "strategy": "After 4.Bf4 Black develops with ...Nc6, ...Bb4+ and ...Qe7, aiming at the pawn on e5 and the loose knight on d2. Take back the pawn with ...Ngxe5 once the pieces are ready.",
+      "moves": [
+        {
+          "san": "d4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "Nf6",
+          "note": "Develop and hold e4.",
+          "eval": 0.3
+        },
+        {
+          "san": "c4",
+          "note": "Gain space.",
+          "eval": 0.3
+        },
+        {
+          "san": "e5",
+          "note": "The Budapest Gambit.",
+          "eval": 0.7
+        },
+        {
+          "san": "dxe5",
+          "note": "White takes the pawn.",
+          "eval": 0.7
+        },
+        {
+          "san": "Ng4",
+          "note": "Attack the pawn on e5.",
+          "eval": 0.9
+        },
+        {
+          "san": "Bf4",
+          "note": "White defends e5.",
+          "eval": 0.5
+        },
+        {
+          "san": "Nc6",
+          "note": "Attack the pawn again.",
+          "eval": 0.5
+        },
+        {
+          "san": "Nf3",
+          "note": "White develops.",
+          "eval": 0.6
+        },
+        {
+          "san": "Bb4+",
+          "note": "Check and pin the knight.",
+          "eval": 0.5
+        },
+        {
+          "san": "Nbd2",
+          "note": "White blocks.",
+          "eval": 0.3
+        },
+        {
+          "san": "Qe7",
+          "note": "Add pressure on e5.",
+          "eval": 0.3
+        },
+        {
+          "san": "e3",
+          "note": "White solidifies and prepares to develop the bishop.",
+          "eval": 0.3
+        },
+        {
+          "san": "Ngxe5",
+          "note": "Win the pawn back; Black is fully developed.",
+          "eval": 0.3
+        }
+      ]
+    },
+    {
+      "id": "nf3-adler",
+      "name": "4.Nf3: Adler variation",
+      "strategy": "With 4.Nf3 Black develops the knight to c6 and, after 5.Nc3, simply takes the pawn back with the g4-knight. The knights trade on e5 and Black has equalised the material with active pieces and no weaknesses.",
+      "moves": [
+        {
+          "san": "d4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "Nf6",
+          "note": "Develop and hold e4.",
+          "eval": 0.2
+        },
+        {
+          "san": "c4",
+          "note": "Gain space.",
+          "eval": 0.2
+        },
+        {
+          "san": "e5",
+          "note": "The Budapest Gambit.",
+          "eval": 0.8
+        },
+        {
+          "san": "dxe5",
+          "note": "White takes the pawn.",
+          "eval": 0.8
+        },
+        {
+          "san": "Ng4",
+          "note": "Attack the pawn on e5.",
+          "eval": 0.7
+        },
+        {
+          "san": "Nf3",
+          "note": "White defends e5 with a developing move.",
+          "eval": 0.6
+        },
+        {
+          "san": "Nc6",
+          "note": "Attack the pawn again.",
+          "eval": 0.6
+        },
+        {
+          "san": "Nc3",
+          "note": "White develops.",
+          "eval": 0.5
+        },
+        {
+          "san": "Ngxe5",
+          "note": "Win the pawn back right away; the gambit has done its job.",
+          "eval": 0.4
+        },
+        {
+          "san": "Nxe5",
+          "note": "White trades knights.",
+          "eval": 0.4
+        },
+        {
+          "san": "Nxe5",
+          "note": "Recapture; the centralised knight is strong.",
+          "eval": 0.5
+        },
+        {
+          "san": "e4",
+          "note": "White takes space in the center.",
+          "eval": 0.5
+        }
+      ]
+    }
+  ]
+}

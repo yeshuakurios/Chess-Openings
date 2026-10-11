@@ -1,0 +1,245 @@
+{
+  "id": "bird",
+  "name": "Bird's Opening",
+  "color": "white",
+  "status": "draft",
+  "summary": "1.f4 stakes a claim on e5 and aims for a flexible, solid setup with the bishop on the long diagonal.",
+  "goal": {
+    "title": "Control e5 and build a compact kingside",
+    "text": "White's f-pawn and knight team up to control e5, the key central square. Behind that, White castles early, fianchettoes the queen's bishop on b2 to eye the long diagonal toward g7, and keeps a solid pawn on e3. The aim is a safe king, a grip on the center from the flank, and the choice of when to strike with d4, c4 or Ne5.",
+    "plans": [
+      "Control e5 with the f-pawn and the knight on f3",
+      "Fianchetto the queen's bishop (b3 and Bb2) to pressure the long diagonal",
+      "Castle early; keep the pawn on e3 and the bishop on e2",
+      "Expand in the center with d3/d4 or c4 once development is complete"
+    ]
+  },
+  "variations": [
+    {
+      "id": "main-d5",
+      "name": "Main line: 1...d5 (Black builds a classical center)",
+      "strategy": "Against 1...d5 White develops quietly and aims for a reversed-Dutch structure. Play Nf3, e3, b3 and Bb2, then Be2 and castle. Keep control of e5 and wait for the right moment for Ne5 or d3/Nbd2.",
+      "moves": [
+        {
+          "san": "f4",
+          "note": "The Bird: control e5 immediately.",
+          "eval": -0.3
+        },
+        {
+          "san": "d5",
+          "note": "Black takes the center.",
+          "eval": -0.3
+        },
+        {
+          "san": "Nf3",
+          "note": "Develop and add a second guard of e5.",
+          "eval": -0.2
+        },
+        {
+          "san": "Nf6",
+          "note": "Black develops symmetrically.",
+          "eval": -0.1
+        },
+        {
+          "san": "e3",
+          "note": "Opens the f1 bishop and keeps a solid pawn chain.",
+          "eval": -0.2
+        },
+        {
+          "san": "g6",
+          "note": "Black fianchettoes, mirroring a Leningrad-style setup.",
+          "eval": -0.1
+        },
+        {
+          "san": "b3",
+          "note": "Prepares the long-diagonal bishop.",
+          "eval": -0.2
+        },
+        {
+          "san": "Bg7",
+          "note": "Black's bishop eyes the long diagonal too.",
+          "eval": -0.2
+        },
+        {
+          "san": "Bb2",
+          "note": "Your bishop now pressures the long diagonal.",
+          "eval": -0.2
+        },
+        {
+          "san": "O-O",
+          "note": "Black castles.",
+          "eval": -0.2
+        },
+        {
+          "san": "Be2",
+          "note": "Finishes development and prepares to castle.",
+          "eval": -0.2
+        },
+        {
+          "san": "c5",
+          "note": "Black expands on the queenside.",
+          "eval": -0.3
+        },
+        {
+          "san": "O-O",
+          "note": "Your king is safe and your pieces are ready.",
+          "eval": -0.3
+        },
+        {
+          "san": "Nc6",
+          "note": "Black develops the last minor piece.",
+          "eval": -0.2
+        }
+      ]
+    },
+    {
+      "id": "froms-gambit",
+      "name": "From's Gambit: 1...e5 (Black offers a pawn)",
+      "strategy": "Accept the gambit with 2.fxe5, take back on d6 and develop with Nf3. The structure is open and Black will have quick piece play, so stay calm, develop and use the extra pawn and the half-open f-file once the attack runs out of steam.",
+      "moves": [
+        {
+          "san": "f4",
+          "note": "The Bird: control e5.",
+          "eval": -0.3
+        },
+        {
+          "san": "e5",
+          "note": "From's Gambit, Black challenges at once.",
+          "eval": 0.3
+        },
+        {
+          "san": "fxe5",
+          "note": "Take the pawn; it is the principled reply.",
+          "eval": 0.2
+        },
+        {
+          "san": "d6",
+          "note": "Black offers the pawn back for open lines.",
+          "eval": 0.3
+        },
+        {
+          "san": "exd6",
+          "note": "Accept; White keeps the extra pawn for now.",
+          "eval": 0.1
+        },
+        {
+          "san": "Bxd6",
+          "note": "Black recaptures and aims at your kingside.",
+          "eval": 0.2
+        },
+        {
+          "san": "Nf3",
+          "note": "Develop and cover g5 and h4 squares.",
+          "eval": 0.5
+        },
+        {
+          "san": "g5",
+          "note": "Black pushes forward to attack.",
+          "eval": 0.7
+        },
+        {
+          "san": "g3",
+          "note": "Stops g4 ideas and gives the king shelter.",
+          "eval": 0.5
+        },
+        {
+          "san": "g4",
+          "note": "Black gains space and kicks the knight.",
+          "eval": 0.8
+        },
+        {
+          "san": "Nh4",
+          "note": "The knight eyes g6 and f5.",
+          "eval": 0.8
+        },
+        {
+          "san": "Ne7",
+          "note": "Black prepares to challenge the knight.",
+          "eval": 0.8
+        },
+        {
+          "san": "d4",
+          "note": "Open the center for the pieces.",
+          "eval": 0.7
+        },
+        {
+          "san": "Ng6",
+          "note": "Black challenges your knight.",
+          "eval": 0.8
+        },
+        {
+          "san": "Nxg6",
+          "note": "Trade the active knight.",
+          "eval": 0.7
+        },
+        {
+          "san": "hxg6",
+          "note": "Black opens the h-file for the rook.",
+          "eval": 0.8
+        }
+      ]
+    },
+    {
+      "id": "vs-nf6",
+      "name": "Vs 1...Nf6: a flexible kingside setup",
+      "strategy": "Against 1...Nf6 White keeps a compact setup with Nf3, e3, Be2 and short castling, then strikes with d4. Avoid committing the queenside until you see Black's plan.",
+      "moves": [
+        {
+          "san": "f4",
+          "note": "The Bird: control e5.",
+          "eval": -0.1
+        },
+        {
+          "san": "Nf6",
+          "note": "Black develops flexibly.",
+          "eval": -0.2
+        },
+        {
+          "san": "Nf3",
+          "note": "Develop and keep an eye on e5.",
+          "eval": -0.1
+        },
+        {
+          "san": "g6",
+          "note": "Black fianchettoes the kingside bishop.",
+          "eval": 0
+        },
+        {
+          "san": "e3",
+          "note": "Solid and opens the bishop.",
+          "eval": -0.2
+        },
+        {
+          "san": "Bg7",
+          "note": "Black develops the bishop.",
+          "eval": -0.2
+        },
+        {
+          "san": "Be2",
+          "note": "Prepares to castle.",
+          "eval": -0.2
+        },
+        {
+          "san": "O-O",
+          "note": "Black castles.",
+          "eval": -0.2
+        },
+        {
+          "san": "O-O",
+          "note": "Your king is safe.",
+          "eval": -0.2
+        },
+        {
+          "san": "d6",
+          "note": "Black prepares ...e5 or ...c5.",
+          "eval": -0.1
+        },
+        {
+          "san": "d4",
+          "note": "Take the center when you are ready.",
+          "eval": 0
+        }
+      ]
+    }
+  ]
+}

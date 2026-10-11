@@ -1,14 +1,10 @@
 # Copilot instructions
 
-A single-file static site (`index.html` only) — no framework, no build step,
-no other tooling in this repo.
-
-## Deploy
-- No CI or deploy config exists here. Don't run any deploy command; if a task seems to need one, say so in the PR instead of guessing.
+Vite + TypeScript PWA (opening trainer). See `CLAUDE.md` for the stack, commands and rules.
 
 ## Coding rules
-- Keep everything in `index.html` unless a task explicitly asks to split it out.
 - Never hardcode secrets or API keys.
+- Run `npm run validate` and `npm run build` before proposing changes; content edits also need `npm run evals`.
 - Keep changes small and scoped to exactly what the task asks for.
 - One branch per task, one focused PR.
 
