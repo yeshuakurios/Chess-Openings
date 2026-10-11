@@ -11,7 +11,18 @@ import { BADGES, DAILY_GOAL, dayKey, earnedNow, streaks, totalXp } from './gamif
 import { esc, screenShell } from './ui.ts';
 import type { Opening, PlanBoard, Variation } from './types.ts';
 
-registerSW({ immediate: true });
+const DRILL_CAP = 10; // lines per Drill session; the rest stay due for the next one
+/** Tell the user a new version is ready instead of reloading under them; applying it is their tap. */
+const updateSW = registerSW({
+  immediate: true,
+  onNeedRefresh() {
+    const bar = document.createElement('div');
+    bar.className = 'update'; bar.setAttribute('role', 'status');
+    bar.innerHTML = '<span>A new version is ready.</span><button class="btn primary" type="button">Reload</button>';
+    bar.querySelector('button')!.onclick = () => void updateSW(true);
+    document.body.append(bar);
+  }
+});
 const app = document.getElementById('app')!;
 let token = 0; // cancels in-flight line playback when the screen changes
 
@@ -192,7 +203,8 @@ async function practice(o: Opening, v: Variation) {
 
 async function drill() {
   const my = ++token;
-  const queue = dueKeys().filter(k => lookup(k));
+  const allDue = dueKeys().filter(k => lookup(k));
+  const queue = allDue.slice(0, DRILL_CAP);
   if (!queue.length) {
     const learned = Object.keys(getProgress().cards).length;
     app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>Drill</h1>
@@ -221,7 +233,8 @@ async function drill() {
       if (my !== token) return;
     }
   }
-  app.innerHTML = `<main class="page"><h1>Drill complete</h1><div class="card"><b>Best combo: ×${getProgress().bestCombo}</b></div>
+  app.innerHTML = `<main class="page"><h1>Drill complete</h1><div class="card"><b>Best combo: ×${getProgress().bestCombo}</b>
+    ${allDue.length > queue.length ? `<p class="muted">${allDue.length - queue.length} more ${allDue.length - queue.length === 1 ? 'line is' : 'lines are'} still due. Drill again when you are ready.</p>` : ''}</div>
     <a class="btn primary big" href="#/">Done</a></main>`;
 }
 

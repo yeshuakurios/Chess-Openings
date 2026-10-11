@@ -39,7 +39,7 @@ const colorOf = (chess: Chess) => (chess.turn() === 'w' ? 'white' : 'black') as 
 
 export function createBoard(el: HTMLElement, orientation: 'white' | 'black'): Board {
   const cg = Chessground(el, {
-    orientation, coordinates: true, animation: { duration: 180 },
+    orientation, coordinates: true, animation: { enabled: !matchMedia('(prefers-reduced-motion: reduce)').matches, duration: 180 },
     movable: { free: false, showDests: true }, draggable: { showGhost: true },
     highlight: { lastMove: true, check: true }
   });

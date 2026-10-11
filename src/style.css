@@ -41,3 +41,7 @@ h1{font-size:28px;margin:8px 0 4px} h2{font-size:18px;margin:22px 0 8px;color:va
 .controls{display:flex;gap:12px;justify-content:center;align-items:center;padding:12px 16px}
 .ctl{appearance:none;background:none;border:0;color:var(--muted);font:inherit;font-weight:600;padding:10px 18px;font-size:18px}
 .ctl:disabled{opacity:.3} [hidden]{display:none!important}
+
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.update{position:fixed;left:12px;right:12px;bottom:calc(12px + var(--safe-b));display:flex;gap:12px;align-items:center;justify-content:space-between;background:var(--panel);border:1px solid var(--orange);border-radius:12px;padding:10px 14px;z-index:10}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
