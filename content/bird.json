@@ -23,7 +23,7 @@
         {
           "san": "f4",
           "note": "The Bird: control e5 immediately.",
-          "eval": -0.3
+          "eval": -0.2
         },
         {
           "san": "d5",
@@ -33,17 +33,17 @@
         {
           "san": "Nf3",
           "note": "Develop and add a second guard of e5.",
-          "eval": -0.2
+          "eval": -0.3
         },
         {
           "san": "Nf6",
           "note": "Black develops symmetrically.",
-          "eval": -0.1
+          "eval": -0.3
         },
         {
           "san": "e3",
           "note": "Opens the f1 bishop and keeps a solid pawn chain.",
-          "eval": -0.2
+          "eval": -0.3
         },
         {
           "san": "g6",
@@ -53,7 +53,14 @@
         {
           "san": "b3",
           "note": "Prepares the long-diagonal bishop.",
-          "eval": -0.2
+          "eval": -0.2,
+          "caps": [
+            {
+              "san": "Bb5+",
+              "reply": "c6",
+              "eval": -0.4
+            }
+          ]
         },
         {
           "san": "Bg7",
@@ -63,7 +70,14 @@
         {
           "san": "Bb2",
           "note": "Your bishop now pressures the long diagonal.",
-          "eval": -0.2
+          "eval": -0.3,
+          "caps": [
+            {
+              "san": "Bb5+",
+              "reply": "c6",
+              "eval": -0.6
+            }
+          ]
         },
         {
           "san": "O-O",
@@ -73,17 +87,31 @@
         {
           "san": "Be2",
           "note": "Finishes development and prepares to castle.",
-          "eval": -0.2
+          "eval": -0.3,
+          "caps": [
+            {
+              "san": "Bxf6",
+              "reply": "exf6",
+              "eval": -1.3
+            }
+          ]
         },
         {
           "san": "c5",
           "note": "Black expands on the queenside.",
-          "eval": -0.3
+          "eval": -0.2
         },
         {
           "san": "O-O",
           "note": "Your king is safe and your pieces are ready.",
-          "eval": -0.3
+          "eval": -0.2,
+          "caps": [
+            {
+              "san": "Bxf6",
+              "reply": "exf6",
+              "eval": -1.5
+            }
+          ]
         },
         {
           "san": "Nc6",
@@ -105,12 +133,12 @@
         {
           "san": "e5",
           "note": "From's Gambit, Black challenges at once.",
-          "eval": 0.3
+          "eval": 0.2
         },
         {
           "san": "fxe5",
           "note": "Take the pawn; it is the principled reply.",
-          "eval": 0.2
+          "eval": 0.5
         },
         {
           "san": "d6",
@@ -120,7 +148,7 @@
         {
           "san": "exd6",
           "note": "Accept; White keeps the extra pawn for now.",
-          "eval": 0.1
+          "eval": 0.3
         },
         {
           "san": "Bxd6",
@@ -130,27 +158,34 @@
         {
           "san": "Nf3",
           "note": "Develop and cover g5 and h4 squares.",
-          "eval": 0.5
+          "eval": 0.3
         },
         {
           "san": "g5",
           "note": "Black pushes forward to attack.",
-          "eval": 0.7
+          "eval": 1
         },
         {
           "san": "g3",
           "note": "Stops g4 ideas and gives the king shelter.",
-          "eval": 0.5
+          "eval": 0.9,
+          "caps": [
+            {
+              "san": "Nxg5",
+              "reply": "Qxg5",
+              "eval": -4.4
+            }
+          ]
         },
         {
           "san": "g4",
           "note": "Black gains space and kicks the knight.",
-          "eval": 0.8
+          "eval": 0.9
         },
         {
           "san": "Nh4",
           "note": "The knight eyes g6 and f5.",
-          "eval": 0.8
+          "eval": 0.9
         },
         {
           "san": "Ne7",
@@ -160,7 +195,7 @@
         {
           "san": "d4",
           "note": "Open the center for the pieces.",
-          "eval": 0.7
+          "eval": 0.8
         },
         {
           "san": "Ng6",
@@ -170,12 +205,12 @@
         {
           "san": "Nxg6",
           "note": "Trade the active knight.",
-          "eval": 0.7
+          "eval": 0.9
         },
         {
           "san": "hxg6",
           "note": "Black opens the h-file for the rook.",
-          "eval": 0.8
+          "eval": 0.9
         }
       ]
     },
@@ -187,7 +222,7 @@
         {
           "san": "f4",
           "note": "The Bird: control e5.",
-          "eval": -0.1
+          "eval": -0.2
         },
         {
           "san": "Nf6",
@@ -197,7 +232,7 @@
         {
           "san": "Nf3",
           "note": "Develop and keep an eye on e5.",
-          "eval": -0.1
+          "eval": -0.2
         },
         {
           "san": "g6",
@@ -207,12 +242,12 @@
         {
           "san": "e3",
           "note": "Solid and opens the bishop.",
-          "eval": -0.2
+          "eval": -0.3
         },
         {
           "san": "Bg7",
           "note": "Black develops the bishop.",
-          "eval": -0.2
+          "eval": -0.3
         },
         {
           "san": "Be2",
@@ -222,22 +257,22 @@
         {
           "san": "O-O",
           "note": "Black castles.",
-          "eval": -0.2
+          "eval": -0.3
         },
         {
           "san": "O-O",
           "note": "Your king is safe.",
-          "eval": -0.2
+          "eval": -0.4
         },
         {
           "san": "d6",
           "note": "Black prepares ...e5 or ...c5.",
-          "eval": -0.1
+          "eval": -0.2
         },
         {
           "san": "d4",
           "note": "Take the center when you are ready.",
-          "eval": 0
+          "eval": -0.1
         }
       ]
     }

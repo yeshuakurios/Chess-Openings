@@ -38,57 +38,167 @@
         {
           "san": "e5",
           "note": "The Budapest Gambit.",
-          "eval": 0.7
+          "eval": 0.9
         },
         {
           "san": "dxe5",
           "note": "White takes the pawn.",
-          "eval": 0.7
+          "eval": 0.9
         },
         {
           "san": "Ng4",
           "note": "Attack the pawn on e5.",
-          "eval": 0.9
+          "eval": 0.9,
+          "caps": [
+            {
+              "san": "Bb4+",
+              "reply": "Bd2",
+              "eval": 1.7
+            }
+          ]
         },
         {
           "san": "Bf4",
           "note": "White defends e5.",
-          "eval": 0.5
+          "eval": 0.6
         },
         {
           "san": "Nc6",
           "note": "Attack the pawn again.",
-          "eval": 0.5
+          "eval": 0.8,
+          "caps": [
+            {
+              "san": "Bb4+",
+              "reply": "Nd2",
+              "eval": 0.7
+            },
+            {
+              "san": "Nxe5",
+              "reply": "Bxe5",
+              "eval": 6.3
+            },
+            {
+              "san": "Nxh2",
+              "reply": "Bxh2",
+              "eval": 6.3
+            },
+            {
+              "san": "Nxf2",
+              "reply": "Kxf2",
+              "eval": 4.3
+            }
+          ]
         },
         {
           "san": "Nf3",
           "note": "White develops.",
-          "eval": 0.6
+          "eval": 0.7
         },
         {
           "san": "Bb4+",
           "note": "Check and pin the knight.",
-          "eval": 0.5
+          "eval": 0.7,
+          "caps": [
+            {
+              "san": "Ncxe5",
+              "reply": "Bxe5",
+              "eval": 5
+            },
+            {
+              "san": "Ngxe5",
+              "reply": "Nxe5",
+              "eval": 5.7
+            },
+            {
+              "san": "Nxh2",
+              "reply": "Bxh2",
+              "eval": 7
+            },
+            {
+              "san": "Nxf2",
+              "reply": "Kxf2",
+              "eval": 5
+            }
+          ]
         },
         {
           "san": "Nbd2",
           "note": "White blocks.",
-          "eval": 0.3
+          "eval": 0.4
         },
         {
           "san": "Qe7",
           "note": "Add pressure on e5.",
-          "eval": 0.3
+          "eval": 0.3,
+          "caps": [
+            {
+              "san": "Ncxe5",
+              "reply": "Bxe5",
+              "eval": 6.2
+            },
+            {
+              "san": "Bxd2+",
+              "reply": "Qxd2",
+              "eval": 2.1
+            },
+            {
+              "san": "Ngxe5",
+              "reply": "Bxe5",
+              "eval": 5.7
+            },
+            {
+              "san": "Nxh2",
+              "reply": "Bxh2",
+              "eval": 6.7
+            },
+            {
+              "san": "Nxf2",
+              "reply": "Kxf2",
+              "eval": 5.1
+            }
+          ]
         },
         {
           "san": "e3",
           "note": "White solidifies and prepares to develop the bishop.",
-          "eval": 0.3
+          "eval": 0.2
         },
         {
           "san": "Ngxe5",
           "note": "Win the pawn back; Black is fully developed.",
-          "eval": 0.3
+          "eval": 0.3,
+          "caps": [
+            {
+              "san": "Qxe5",
+              "reply": "Nxe5",
+              "eval": 6.9
+            },
+            {
+              "san": "Ncxe5",
+              "reply": "Nd4",
+              "eval": 0.5
+            },
+            {
+              "san": "Bxd2+",
+              "reply": "Qxd2",
+              "eval": 1.1
+            },
+            {
+              "san": "Nxh2",
+              "reply": "Bxh2",
+              "eval": 6.9
+            },
+            {
+              "san": "Nxf2",
+              "reply": "Kxf2",
+              "eval": 6.4
+            },
+            {
+              "san": "Nxe3",
+              "reply": "fxe3",
+              "eval": 5.3
+            }
+          ]
         }
       ]
     },
@@ -105,27 +215,34 @@
         {
           "san": "Nf6",
           "note": "Develop and hold e4.",
-          "eval": 0.2
+          "eval": 0.3
         },
         {
           "san": "c4",
           "note": "Gain space.",
-          "eval": 0.2
+          "eval": 0.3
         },
         {
           "san": "e5",
           "note": "The Budapest Gambit.",
-          "eval": 0.8
+          "eval": 0.9
         },
         {
           "san": "dxe5",
           "note": "White takes the pawn.",
-          "eval": 0.8
+          "eval": 0.9
         },
         {
           "san": "Ng4",
           "note": "Attack the pawn on e5.",
-          "eval": 0.7
+          "eval": 0.9,
+          "caps": [
+            {
+              "san": "Bb4+",
+              "reply": "Bd2",
+              "eval": 1.6
+            }
+          ]
         },
         {
           "san": "Nf3",
@@ -135,7 +252,29 @@
         {
           "san": "Nc6",
           "note": "Attack the pawn again.",
-          "eval": 0.6
+          "eval": 0.7,
+          "caps": [
+            {
+              "san": "Bb4+",
+              "reply": "Nc3",
+              "eval": 1.1
+            },
+            {
+              "san": "Nxe5",
+              "reply": "Nxe5",
+              "eval": 6.6
+            },
+            {
+              "san": "Nxh2",
+              "reply": "Rxh2",
+              "eval": 7
+            },
+            {
+              "san": "Nxf2",
+              "reply": "Kxf2",
+              "eval": 4.6
+            }
+          ]
         },
         {
           "san": "Nc3",
@@ -145,22 +284,39 @@
         {
           "san": "Ngxe5",
           "note": "Win the pawn back right away; the gambit has done its job.",
-          "eval": 0.4
+          "eval": 0.6,
+          "caps": [
+            {
+              "san": "Ncxe5",
+              "reply": "h3",
+              "eval": 1
+            },
+            {
+              "san": "Nxh2",
+              "reply": "Nxh2",
+              "eval": 6.3
+            },
+            {
+              "san": "Nxf2",
+              "reply": "Kxf2",
+              "eval": 5.2
+            }
+          ]
         },
         {
           "san": "Nxe5",
           "note": "White trades knights.",
-          "eval": 0.4
+          "eval": 0.6
         },
         {
           "san": "Nxe5",
           "note": "Recapture; the centralised knight is strong.",
-          "eval": 0.5
+          "eval": 0.6
         },
         {
           "san": "e4",
           "note": "White takes space in the center.",
-          "eval": 0.5
+          "eval": 0.3
         }
       ]
     }

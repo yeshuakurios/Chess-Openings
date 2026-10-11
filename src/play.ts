@@ -2,58 +2,99 @@ import { Chess } from 'chess.js';
 import type { Key } from 'chessground/types';
 import { createBoard } from './board.ts';
 import { setEval, setMessage, setProgress } from './ui.ts';
-import type { Opening, Variation } from './types.ts';
+import type { Move, Opening, Variation } from './types.ts';
 
 export const START_EVAL = 0.2;
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-export interface Ui { board: HTMLElement; hint: HTMLButtonElement }
+export interface Ui { board: HTMLElement; hint: HTMLButtonElement; prev: HTMLButtonElement; fwd: HTMLButtonElement }
 
-/** The user plays their side from memory. Only the line's move is accepted. Resolves with the mistake count. */
+const PIECE: Record<string, string> = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' };
+const fmt = (n: number) => (n > 0 ? `+${n.toFixed(1)}` : n.toFixed(1));
+
+/** Why a wrong move is not in the line. Never names the line's own move, so Drill is not given away. */
+export function whyNot(o: Opening, line: Move, tried: { san: string; captured?: string }): string {
+  const head = `${tried.san} isn't part of this line.`;
+  const authored = line.why?.[tried.san];
+  if (authored) return `${head} ${authored}`;
+  const alt = line.caps?.find(c => c.san === tried.san);
+  if (!alt) return head;
+  const what = tried.captured ? `It takes a ${PIECE[tried.captured]}, but` : 'It gives check, but';
+  const worse = (line.eval - alt.eval) * (o.color === 'white' ? 1 : -1); // > 0: worse for the user than the line
+  const reply = alt.reply ? `the engine's best reply is ${alt.reply} (${fmt(alt.eval)})` : 'the engine finds a good answer';
+  const verdict = worse >= 0.5 ? `, and you end up about ${worse.toFixed(1)} pawns worse than in the line.`
+    : worse >= 0.2 ? ', and you end up a little worse than in the line.' : '. It is playable, but this course has a different move here.';
+  return `${head} ${what} ${reply}${verdict}`;
+}
+
+/** The user plays their side from memory. Only the line's move is accepted. Arrows let them look back and forth. Resolves with the mistake count. */
 export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () => boolean }): Promise<number> {
   return new Promise(resolve => {
     const chess = new Chess();
     const board = createBoard(ui.board, o.color);
     const user = o.color === 'white' ? 'w' : 'b';
-    let idx = 0, mistakes = 0, last: [Key, Key] | undefined;
+    let idx = 0, view = 0, mistakes = 0, busy = false, finished = false;
+    let last: [Key, Key] | undefined;
+    const lasts: ([Key, Key] | undefined)[] = [undefined]; // lasts[k] = last move after k plies
     setEval(START_EVAL); setProgress(0);
     setMessage(`<b>${v.name}</b><br>Play your moves from memory.`);
 
+    const at = (k: number) => { const c = new Chess(); for (let i = 0; i < k; i++) c.move(v.moves[i].san); return c; };
+    const live = () => view === idx;
+    const syncArrows = () => { ui.prev.disabled = busy || view === 0; ui.fwd.disabled = busy || live(); };
+    const showLive = () => {
+      view = idx; board.clearArrow(); syncArrows();
+      if (finished) { board.show(chess, last); return; }
+      if (chess.turn() === user) board.allowMoves(chess, o.color, onMove, last); else board.show(chess, last);
+    };
+    const showView = (k: number) => {
+      view = k; board.lock(); board.clearArrow();
+      board.show(at(k), lasts[k]);
+      setEval(k ? v.moves[k - 1].eval : START_EVAL); setProgress(k / v.moves.length);
+      setMessage(k ? `<b>${moveLabel(k - 1, v.moves[k - 1].san)}</b> ${v.moves[k - 1].note}` : 'Start position.');
+      syncArrows();
+    };
+    ui.prev.onclick = () => { if (!busy && view > 0) showView(view - 1); };
+    ui.fwd.onclick = () => { if (busy || live()) return; if (view + 1 === idx) { showLive(); setEval(v.moves[idx - 1].eval); setProgress(idx / v.moves.length); setMessage(v.moves[idx - 1].note); } else showView(view + 1); };
+
     const finish = () => {
-      board.lock(); board.clearArrow(); setProgress(1);
+      finished = true; board.lock(); board.clearArrow(); setProgress(1); syncArrows();
       setMessage(mistakes === 0 ? '<b>Flawless.</b> Line complete.' : `<b>Line complete</b> with ${mistakes} mistake${mistakes > 1 ? 's' : ''}.`, true);
       ui.hint.onclick = null;
       resolve(mistakes);
     };
     const apply = (san: string) => {
       const m = chess.move(san);
-      last = [m.from as Key, m.to as Key];
-      idx++; setEval(v.moves[idx - 1].eval); setProgress(idx / v.moves.length);
+      last = [m.from as Key, m.to as Key]; lasts[++idx] = last; view = idx;
+      setEval(v.moves[idx - 1].eval); setProgress(idx / v.moves.length);
     };
     const next = async () => {
       if (opts.stopped()) return;
+      busy = true; syncArrows();
       while (idx < v.moves.length && chess.turn() !== user) {
         board.show(chess, last); await wait(450); if (opts.stopped()) return;
         apply(v.moves[idx].san);
       }
+      busy = false;
       if (idx >= v.moves.length) { board.show(chess, last); return finish(); }
-      board.allowMoves(chess, o.color, onMove);
+      showLive();
     };
     const expected = () => chess.moves({ verbose: true }).find(m => m.san === v.moves[idx].san)!;
     const onMove = (from: Key, to: Key) => {
       board.clearArrow();
       const m = chess.move({ from, to, promotion: 'q' });
       if (m.san === v.moves[idx].san) {
-        last = [from, to]; idx++; setEval(v.moves[idx - 1].eval); setProgress(idx / v.moves.length);
+        last = [from, to]; lasts[++idx] = last; view = idx;
+        setEval(v.moves[idx - 1].eval); setProgress(idx / v.moves.length);
         setMessage(v.moves[idx - 1].note);
         void next();
       } else {
         chess.undo(); mistakes++;
-        setMessage("That move isn't part of this line.");
-        board.allowMoves(chess, o.color, onMove);
+        setMessage(whyNot(o, v.moves[idx], m));
+        board.allowMoves(chess, o.color, onMove, last);
       }
     };
-    ui.hint.onclick = () => { if (idx < v.moves.length && chess.turn() === user) { mistakes++; const e = expected(); board.arrow(e.from as Key, e.to as Key); } };
+    ui.hint.onclick = () => { if (!finished && live() && idx < v.moves.length && chess.turn() === user) { mistakes++; const e = expected(); board.arrow(e.from as Key, e.to as Key); } };
     void next();
   });
 }

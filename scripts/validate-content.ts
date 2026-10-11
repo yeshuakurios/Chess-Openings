@@ -18,6 +18,10 @@ for (const file of listContentFiles()) {
     if (!v.strategy || !v.name) fail(tag, 'missing name/strategy');
     const chess = new Chess();
     v.moves.forEach((m, i) => {
+      for (const w of Object.keys(m.why ?? {})) {
+        const legal = chess.moves();
+        if (!legal.includes(w) || w === m.san) fail(tag, `ply ${i + 1}: why["${w}"] is not a legal alternative to ${m.san}`);
+      }
       try { chess.move(m.san); } catch { fail(tag, `illegal move ${i + 1}: ${m.san}`); return; }
       if (!m.note) fail(tag, `ply ${i + 1} (${m.san}) has no note`);
       if (process.argv.includes('--require-evals') && typeof m.eval !== 'number') fail(tag, `ply ${i + 1} has no eval`);
