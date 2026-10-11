@@ -1147,7 +1147,7 @@
     {
       "id": "nf3-bxf3",
       "name": "4.Nf3: trade the bishop for the knight",
-      "strategy": "White's pawns are doubled and the king side is open, which are long-term weaknesses, and Black's queen is already well placed. Play for the better structure: keep pieces on, restrain the doubled pawns, aim knights at the weak squares in front of them, and avoid a quick trade of queens. White has the bishop pair, so close the position when you can and avoid letting the bishops open up.",
+      "strategy": "White's pawns are doubled and the king side is open, which are long-term weaknesses, and Black's queen is already well placed. Play for the better structure: keep the pieces coordinated, restrain the doubled pawns, and aim knights at the weak squares in front of them. Welcome trades, including queens, since the doubled pawns become a bigger problem in the endgame and White's bishops and open file matter less. White has the bishop pair, so close the position when you can.",
       "board": {
         "ply": 9,
         "shapes": [
@@ -1950,7 +1950,7 @@
     {
       "id": "c4-c6",
       "name": "3.c4: strike back with the side pawn",
-      "strategy": "Black has recaptured with a developing move and built a strong pawn center, with the e-pawn gaining time against White's knight. The middlegame idea is to keep gaining tempo: advance the center pawns to hit the knights, keep pieces active, and exploit White's uncoordinated pieces. This line is a lesson in why fast development and tempo-gaining pawn pushes beat a pawn; in the final position White's knight has stepped into a trade that loses material.",
+      "strategy": "Black has recaptured with a developing move and the e-pawn advance gains time against White's knight. In the final position White's knight has gone to a square where it is simply captured, so Black is a piece up for a pawn. The middlegame task is to develop, castle and trade pieces to convert. This line is also a lesson in why fast development and tempo-gaining pawn pushes beat a pawn.",
       "board": {
         "ply": 14,
         "shapes": [
@@ -2338,7 +2338,7 @@
     {
       "id": "nxd5-qxd5",
       "name": "3.Nc3 Nxd5 4.Nxd5: recapture with the queen",
-      "strategy": "Black has a healthy structure with no weaknesses and a queen in the center. The knight that could have chased the queen is already traded, so the queen is stable. Castle, build behind the queen, then challenge the center with a pawn break and the knights. Keep the queen safe from bishop and pawn attacks, and avoid placing it where a pawn push gains a tempo.",
+      "strategy": "Black has a healthy structure with no weaknesses and a queen in the center. White's c-pawn push can still gain time on the queen, so know where it retreats. Castle, build behind the queen, then challenge the center with a pawn break and the knights. Keep the queen safe from bishop and pawn attacks.",
       "moves": [
         {
           "san": "e4",
@@ -3071,7 +3071,7 @@
     {
       "id": "nc3-d4",
       "name": "2.Nc3: gain space and kick the knight",
-      "strategy": "Black has gained space with the advanced central pawn and built a strong pawn duo. The middlegame is about keeping the center locked so that White's pieces have less room, bringing the knights to good squares, and choosing a break such as a side pawn push or the f-pawn. Keep the f-pawn defended against White's bishop aimed at it, and do not trade the advanced pawn away without a reason.",
+      "strategy": "Black has gained space with the advanced central pawn and built a strong pawn chain. The middlegame is about keeping the center locked so that White's pieces have less room, bringing the knights to good squares, and choosing a break such as a side pawn push or the f-pawn. Keep the f-pawn defended against White's bishop aimed at it, and do not trade the advanced pawn away without a reason.",
       "moves": [
         {
           "san": "e4",

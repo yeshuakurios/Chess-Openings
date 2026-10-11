@@ -43,7 +43,7 @@
     {
       "id": "main-d5",
       "name": "Main line: 1...d5 (Black builds a classical center)",
-      "strategy": "The middlegame is a fight over the key central square. Your side pawn, knight and long-diagonal bishop all watch it, so aim to plant a knight there and trade off the Black pieces that guard it. Once the center is under control, swing the queen toward the king side and lift a rook along the third rank for an attack against the Black king. Black's counterplay comes from the side-pawn push and a knight jump to the center, so keep the pawns in front of your king solid and do not let Black take the key square first.",
+      "strategy": "The middlegame is a fight over the key central square. Your side pawn, knight and long-diagonal bishop all watch it, so aim to trade off the Black piece that guards it and then take the square with a knight or a pawn. Black's fianchettoed bishop sits on the same long diagonal as yours, so a trade of those bishops is a natural moment to ease the pressure. Once the center is settled, swing the queen toward the king side and lift a rook along the third rank to attack the Black king. Black's counterplay comes from the center pawn push, which blunts your bishop, and from the e-pawn break, so keep the pawns in front of your king solid.",
       "moves": [
         {
           "san": "f4",
@@ -758,7 +758,7 @@
     {
       "id": "vs-nf6",
       "name": "Vs 1...Nf6: a flexible kingside setup",
-      "strategy": "The pawns on the f, e and d files form a compact wedge that takes space from Black's knights, which makes the key central square a perfect home for your knight. Bring the other knight to the third rank, place the long-diagonal bishop after a queen-side pawn move, and consider a king-side attack with the queen and a rook lift. Black's usual plan is a side-pawn push against your center, so keep your pieces placed to answer it rather than letting the wedge be chipped away.",
+      "strategy": "The pawns on the f, e and d files form a compact wedge that takes space from Black's knights. Black's d-pawn covers the key central square, so a knight cannot settle there yet; use the wedge for space and prepare the e-pawn advance instead. Bring the other knight to the third rank and develop the dark-squared bishop on the queen side or to the second rank to support the center, since your d-pawn closes the long diagonal. Black's usual plan is a side-pawn push against your center, so keep your pieces placed to answer it, and consider a king-side attack with the queen and a rook lift.",
       "moves": [
         {
           "san": "f4",
@@ -1011,7 +1011,7 @@
     {
       "id": "main-d5-c5",
       "name": "Main line with ...c5: Black hits the center from the side",
-      "strategy": "Black has grabbed space in the center with three pawns, so the middlegame is about showing that this space is a target, not a strength. Your knight and long-diagonal bishop already watch the key central square: jump a knight there to force trades and ask Black's pieces to defend. If Black pushes the center pawn to cramp you, answer with a pawn lever on the side or the e-file break rather than waiting. Keep the king safe behind its pawns and aim for a king-side attack once Black's pieces have been traded off.",
+      "strategy": "Black has grabbed space in the center with three pawns, so the middlegame is about showing that this space is a target, not a strength. Your knight and long-diagonal bishop already watch the key central square: jump a knight there to force trades and make Black's pieces defend. If Black pushes the center pawn to cramp you, answer with a pawn lever on the side or the e-file break rather than waiting. Keep the king safe behind its pawns and aim for a king-side attack once Black's key defenders, the king-side knight and the dark-squared bishop, have been traded or driven away. The line vs the side-pawn first move ends in this same position.",
       "board": {
         "ply": 13,
         "shapes": [
@@ -1372,7 +1372,7 @@
     {
       "id": "vs-c5",
       "name": "Vs 1...c5: the Sicilian-style reply",
-      "strategy": "The structure ends up like the main line, but Black's side pawn gives a different middlegame fight: Black may push it forward to gain queen-side space and cramp your long-diagonal bishop. When that happens, hit it with your b-pawn to open lines for the bishop and rooks. Meanwhile keep the knight ready to jump to the key central square and start the king-side attack with the queen swing, because Black's king is where your pieces point.",
+      "strategy": "This reaches exactly the same position as the line where Black plays the center pawn first, so play it the same way. Black's realistic way to cramp your long-diagonal bishop is the center pawn push; meet it by trading on that square with the e-pawn or striking with the c-pawn. If Black instead pushes the side pawn forward, simply win it. Keep the knight ready to jump to the key central square and start the king-side attack with the queen swing, because Black's king is where your pieces point.",
       "board": {
         "ply": 13,
         "shapes": [
@@ -1730,7 +1730,7 @@
     {
       "id": "vs-g6",
       "name": "Vs 1...g6: Black copies the fianchetto",
-      "strategy": "Both sides have a fianchettoed bishop, so the fight is for the center and the long diagonals. Black has already hit your central pawn from the side, so decide whether to hold it with a pawn, or trade and open the position for your pieces. Keep a knight on the key central square, watch Black's bishop pointing at your queen-side, and look to start play on the king side with the queen and a pawn advance once the center is settled.",
+      "strategy": "Black has fianchettoed a bishop and has just hit your central pawn from the side. Decide whether to support the pawn or to trade and open the position for your pieces. Black's pawn on the sixth rank covers the key central square, so a knight cannot sit there for now; control it with pawns and pieces and prepare the e-pawn advance. Watch Black's bishop pointing at your queen side, and start play on the king side with the queen and a pawn advance once the center is settled.",
       "board": {
         "ply": 11,
         "shapes": [
@@ -2412,7 +2412,7 @@
     {
       "id": "main-d5-nc6",
       "name": "1...d5 2.Nf3 Nc6: Black develops fast and pins the knight",
-      "strategy": "Black's pieces came out fast, so the middlegame is about not letting that early activity turn into an attack on your f-pawn. Count the attackers and defenders on it, and keep a pawn and a piece defending it. If Black trades the bishop for your knight, recapture so you keep the bishop pair and use it in the open position. Then control the key central square, develop the long-diagonal bishop, and look for a break in the center once Black's pieces have run out of useful squares.",
+      "strategy": "Black's pieces came out fast, so the middlegame is about not letting that early activity turn into an attack on your f-pawn. Count the attackers and defenders on it, and keep a pawn and a piece defending it. If Black trades the bishop for your knight, you get the bishop pair whichever way you recapture, so open the position later to use it. Then control the key central square, develop the long-diagonal bishop, and look for a break in the center once Black's pieces have run out of useful squares.",
       "board": {
         "ply": 12,
         "shapes": [
@@ -2711,7 +2711,7 @@
     {
       "id": "vs-f5",
       "name": "Vs 1...f5: the Dutch-style reply",
-      "strategy": "Both sides now have the same pawn structure, so the middlegame is a race to the first good central break. You are a move ahead, so use it: expand with a central or side pawn before Black does, develop the knights to the third rank, and prepare to swing the queen to the king side. Remember that Black's bishop looks along the long diagonal toward your queen-side, so do not weaken that side carelessly.",
+      "strategy": "Both sides have the f-pawn forward, but the setups differ: you hold the center with the d- and e-pawns, while Black has fianchettoed and keeps the d-pawn back. You are a move ahead, so use it: expand with a central or side pawn before Black does, develop the knights to the third rank, and prepare to swing the queen to the king side. Black's fianchettoed bishop looks along the long diagonal toward your queen side, so do not weaken that side carelessly.",
       "board": {
         "ply": 11,
         "shapes": [
@@ -3007,7 +3007,7 @@
     {
       "id": "vs-d6",
       "name": "Vs 1...d6: a modest reply",
-      "strategy": "Black's setup is flexible and there is nothing to punish, so the middlegame is about slow, safe improvement. When Black hits your central pawn, either support it with a pawn or trade and use the open file. Bring the knights to good squares, keep the key central square under control, and expand on the queen side or push on the king side with the queen. Do not rush an attack before your pieces are placed.",
+      "strategy": "This reaches exactly the same position as the line where Black fianchettoes first, so play it the same way. Black's setup is flexible and there is nothing to punish, so the middlegame is about slow, safe improvement. When Black hits your central pawn, either support it with a pawn or trade and use the open file. Control the key central square with pawns and pieces, bring the knights to good squares, and expand on the queen side or push on the king side with the queen. Do not rush an attack before your pieces are placed.",
       "board": {
         "ply": 11,
         "shapes": [
@@ -3595,7 +3595,7 @@
     {
       "id": "d5-bf5",
       "name": "Vs 1...d5 2.Nf3 Bf5: stay calm",
-      "strategy": "Black's light-squared bishop sits outside the pawn chain and looks at your king-side, so the middlegame is about challenging or trading it. Aim a knight at it, control the central squares so it has little to bite on, and prepare a pawn push to gain space. Once the bishop is dealt with, use the long-diagonal bishop and the key central square to build pressure on the center.",
+      "strategy": "Black's light-squared bishop sits outside the pawn chain and eyes your queen side and the central light squares, so the middlegame is about challenging or trading it. Aim a knight at it, control the central squares so it has little to bite on, and prepare a pawn push to gain space. Once the bishop is dealt with, use the long-diagonal bishop and the key central square to build pressure on the center.",
       "moves": [
         {
           "san": "f4",

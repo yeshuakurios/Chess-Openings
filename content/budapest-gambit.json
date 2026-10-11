@@ -48,7 +48,7 @@
     {
       "id": "bf4-rubinstein",
       "name": "4.Bf4: Rubinstein variation",
-      "strategy": "You have won the pawn back and Black's pieces are the more active: both knights are in the center and White's knight is pinned against the king. The middlegame plan is to castle, bring a rook to the center file, and keep the pin going so White cannot complete development comfortably. If White breaks the pin, trade the bishop for the knight to disturb White's setup. White has the bishop pair, so avoid opening the position for it without a reason.",
+      "strategy": "You have won the pawn back and Black's pieces are the more active: both knights are in the center and White's knight is pinned against the king. The middlegame plan is to castle, bring a rook to the center file, and keep the pin going so White cannot complete development comfortably. If you trade your bishop for the pinned knight, White gets the bishop pair, so only do it when it costs White time or structure, and keep the position closed afterwards.",
       "moves": [
         {
           "san": "d4",
@@ -895,7 +895,7 @@
     {
       "id": "a3-trap",
       "name": "7.a3? Ngxe5!: the Budapest trap",
-      "strategy": "This line is about a tactic rather than a long plan: when the opponent's king is stuck in the center with an open file and a knight is pinned, a piece sacrifice can open the file and deliver a double check. If White never falls for it, the normal Budapest plans apply: active knights, a healthy center and quick development. Use this as a pattern to remember: the unpinned knight moves away with check, the file opens, and the king has no squares.",
+      "strategy": "This line is about a tactic rather than a long plan. White grabs the offered bishop, and the knight jumps next to the king with check. Its departure lets your queen pin White's e-pawn, so the pawn cannot capture the knight, and White's own pieces block every escape square. If White never falls for it, the normal Budapest plans apply: active knights, a healthy center and quick development.",
       "board": {
         "ply": 14,
         "shapes": [
@@ -1808,7 +1808,7 @@
     {
       "id": "nc3-declined",
       "name": "3.Nc3: White develops instead of taking",
-      "strategy": "White has more space but is behind in development, so use that. Pressure the center pawn along the open file with a rook, keep the pin on the knight, and open the center with a pawn push while White's king is still in the middle. Black's pieces come out with tempo and the position stays level, so aim for activity and pressure rather than a quick trade.",
+      "strategy": "White has more space but is behind in development, so use that. Pressure the center pawn along the open file with a rook, keep pressure on the knight, and prepare a central pawn break while White's king is still in the middle. Black's pieces come out with tempo and the position stays level, so aim for activity and pressure rather than a quick trade.",
       "board": {
         "ply": 10,
         "shapes": [
@@ -2151,7 +2151,7 @@
     {
       "id": "d5-declined",
       "name": "3.d5: White closes the center",
-      "strategy": "The center is closed, so the fight moves to the wings. White has more space on the queen side, so place your knights well, perhaps with one heading to an outpost, and prepare a break: either a side pawn push to challenge the space, or a king-side pawn push to create play against White's king. Keep your pieces flexible and do not hurry; the position will not be decided by a single pawn move.",
+      "strategy": "The center is closed, so the fight moves to the wings. White has more space and is comfortably better here, so do not wait: place your knights well, perhaps with one heading to an outpost, and prepare a break, either a side pawn push to challenge White's space, or a king-side pawn break to gain room and prepare play against White's king once it castles. Keep your pieces flexible and do not hurry the break before it is prepared.",
       "board": {
         "ply": 12,
         "shapes": [
