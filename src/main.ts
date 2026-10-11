@@ -276,6 +276,8 @@ function route() {
   else home();
   window.scrollTo(0, 0);
 }
+// iOS may evict site storage for rarely used apps; ask for durable storage so progress survives (best effort, a no-op where unsupported)
+void navigator.storage?.persist?.().catch(() => {});
 await loadProgress();
 window.addEventListener('hashchange', route);
 route();
