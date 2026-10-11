@@ -2343,17 +2343,74 @@
         {
           "san": "e4",
           "note": "White takes the center.",
-          "eval": 0.3
+          "eval": 0.3,
+          "stats": {
+            "total": 445454883,
+            "n": 297593161,
+            "w": 149760859,
+            "d": 12063307,
+            "b": 135768995,
+            "alts": [
+              {
+                "san": "d4",
+                "n": 93374784
+              },
+              {
+                "san": "e3",
+                "n": 12121153
+              },
+              {
+                "san": "Nf3",
+                "n": 10806602
+              },
+              {
+                "san": "c4",
+                "n": 8018742
+              }
+            ]
+          }
         },
         {
           "san": "d5",
           "note": "Black strikes at the center at once.",
-          "eval": 0.7
+          "eval": 0.7,
+          "stats": {
+            "total": 296940262,
+            "n": 32167211,
+            "w": 16060920,
+            "d": 1380196,
+            "b": 14726095
+          }
         },
         {
           "san": "exd5",
           "note": "White takes the pawn.",
-          "eval": 0.7
+          "eval": 0.7,
+          "stats": {
+            "total": 32077619,
+            "n": 15220263,
+            "w": 8182669,
+            "d": 637891,
+            "b": 6399703,
+            "alts": [
+              {
+                "san": "e5",
+                "n": 6004245
+              },
+              {
+                "san": "Nc3",
+                "n": 3095985
+              },
+              {
+                "san": "Nf3",
+                "n": 1991933
+              },
+              {
+                "san": "d3",
+                "n": 1608027
+              }
+            ]
+          }
         },
         {
           "san": "Nf6",
@@ -2365,12 +2422,44 @@
               "reply": "Nc3",
               "eval": 0.6
             }
-          ]
+          ],
+          "stats": {
+            "total": 15191285,
+            "n": 1265429,
+            "w": 603643,
+            "d": 47438,
+            "b": 614348
+          }
         },
         {
           "san": "Nc3",
           "note": "White develops and defends the extra pawn.",
-          "eval": 0.2
+          "eval": 0.2,
+          "stats": {
+            "total": 1263722,
+            "n": 730563,
+            "w": 348677,
+            "d": 29202,
+            "b": 352684,
+            "alts": [
+              {
+                "san": "c4",
+                "n": 215569
+              },
+              {
+                "san": "Bc4",
+                "n": 102369
+              },
+              {
+                "san": "Nf3",
+                "n": 79744
+              },
+              {
+                "san": "d4",
+                "n": 50410
+              }
+            ]
+          }
         },
         {
           "san": "Nxd5",
@@ -2382,22 +2471,86 @@
               "reply": "Nxd5",
               "eval": 7.3
             }
-          ]
+          ],
+          "stats": {
+            "total": 925689,
+            "n": 643628,
+            "w": 302493,
+            "d": 29039,
+            "b": 312096
+          }
         },
         {
           "san": "Nxd5",
           "note": "White trades its knight for Black's knight.",
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 643362,
+            "n": 433266,
+            "w": 198181,
+            "d": 20270,
+            "b": 214815,
+            "alts": [
+              {
+                "san": "Bc4",
+                "n": 70800
+              },
+              {
+                "san": "Nf3",
+                "n": 48456
+              },
+              {
+                "san": "d4",
+                "n": 28958
+              },
+              {
+                "san": "Qf3",
+                "n": 19337
+              }
+            ]
+          }
         },
         {
           "san": "Qxd5",
           "note": "Black recaptures with the queen, which now stands in the center.",
-          "eval": -0.1
+          "eval": -0.1,
+          "stats": {
+            "total": 433115,
+            "n": 430774,
+            "w": 196346,
+            "d": 20182,
+            "b": 214246
+          }
         },
         {
           "san": "d4",
           "note": "White takes more space in the center.",
-          "eval": -0.1
+          "eval": -0.1,
+          "stats": {
+            "total": 439658,
+            "n": 77925,
+            "w": 35930,
+            "d": 3685,
+            "b": 38310,
+            "alts": [
+              {
+                "san": "Nf3",
+                "n": 204702
+              },
+              {
+                "san": "c4",
+                "n": 44538
+              },
+              {
+                "san": "d3",
+                "n": 33917
+              },
+              {
+                "san": "b3",
+                "n": 27078
+              }
+            ]
+          }
         },
         {
           "san": "e6",
@@ -2439,12 +2592,44 @@
               "reply": "c3",
               "eval": 0.7
             }
-          ]
+          ],
+          "stats": {
+            "total": 77884,
+            "n": 3372,
+            "w": 1662,
+            "d": 147,
+            "b": 1563
+          }
         },
         {
           "san": "Nf3",
           "note": "White develops the knight.",
-          "eval": 0.7
+          "eval": 0.7,
+          "stats": {
+            "total": 9111,
+            "n": 5074,
+            "w": 2536,
+            "d": 216,
+            "b": 2322,
+            "alts": [
+              {
+                "san": "c4",
+                "n": 1073
+              },
+              {
+                "san": "b3",
+                "n": 660
+              },
+              {
+                "san": "c3",
+                "n": 569
+              },
+              {
+                "san": "Be3",
+                "n": 503
+              }
+            ]
+          }
         },
         {
           "san": "Nc6",
@@ -2486,12 +2671,44 @@
               "reply": "Bd2",
               "eval": 1.3
             }
-          ]
+          ],
+          "stats": {
+            "total": 10291,
+            "n": 3168,
+            "w": 1496,
+            "d": 133,
+            "b": 1539
+          }
         },
         {
           "san": "Be3",
           "note": "White develops the bishop and guards the center pawn.",
-          "eval": 0.6
+          "eval": 0.6,
+          "stats": {
+            "total": 8524,
+            "n": 1194,
+            "w": 586,
+            "d": 39,
+            "b": 569,
+            "alts": [
+              {
+                "san": "b3",
+                "n": 1586
+              },
+              {
+                "san": "c4",
+                "n": 1352
+              },
+              {
+                "san": "c3",
+                "n": 1071
+              },
+              {
+                "san": "Bf4",
+                "n": 656
+              }
+            ]
+          }
         },
         {
           "san": "Bd6",
@@ -2528,7 +2745,14 @@
               "reply": "c3",
               "eval": 1
             }
-          ]
+          ],
+          "stats": {
+            "total": 1523,
+            "n": 247,
+            "w": 117,
+            "d": 3,
+            "b": 127
+          }
         }
       ]
     },
@@ -2540,27 +2764,116 @@
         {
           "san": "e4",
           "note": "White takes the center.",
-          "eval": 0.4
+          "eval": 0.4,
+          "stats": {
+            "total": 445454883,
+            "n": 297593161,
+            "w": 149760859,
+            "d": 12063307,
+            "b": 135768995,
+            "alts": [
+              {
+                "san": "d4",
+                "n": 93374784
+              },
+              {
+                "san": "e3",
+                "n": 12121153
+              },
+              {
+                "san": "Nf3",
+                "n": 10806602
+              },
+              {
+                "san": "c4",
+                "n": 8018742
+              }
+            ]
+          }
         },
         {
           "san": "d5",
           "note": "Black strikes at the center at once.",
-          "eval": 0.7
+          "eval": 0.7,
+          "stats": {
+            "total": 296940262,
+            "n": 32167211,
+            "w": 16060920,
+            "d": 1380196,
+            "b": 14726095
+          }
         },
         {
           "san": "e5",
           "note": "White gains space and closes the position.",
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 32077619,
+            "n": 6004245,
+            "w": 3031026,
+            "d": 233118,
+            "b": 2740101,
+            "alts": [
+              {
+                "san": "exd5",
+                "n": 15220263
+              },
+              {
+                "san": "Nc3",
+                "n": 3095985
+              },
+              {
+                "san": "Nf3",
+                "n": 1991933
+              },
+              {
+                "san": "d3",
+                "n": 1608027
+              }
+            ]
+          }
         },
         {
           "san": "Bf5",
           "note": "Black develops the bishop outside the pawn chain before it gets shut in.",
-          "eval": 0.1
+          "eval": 0.1,
+          "stats": {
+            "total": 5989631,
+            "n": 466777,
+            "w": 230285,
+            "d": 15975,
+            "b": 220517
+          }
         },
         {
           "san": "Nf3",
           "note": "White develops and defends the advanced pawn.",
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 466234,
+            "n": 60205,
+            "w": 29221,
+            "d": 2082,
+            "b": 28902,
+            "alts": [
+              {
+                "san": "d4",
+                "n": 291103
+              },
+              {
+                "san": "Nc3",
+                "n": 20264
+              },
+              {
+                "san": "d3",
+                "n": 18726
+              },
+              {
+                "san": "f4",
+                "n": 15574
+              }
+            ]
+          }
         },
         {
           "san": "e6",
@@ -2572,12 +2885,44 @@
               "reply": "Qxc2",
               "eval": 5.5
             }
-          ]
+          ],
+          "stats": {
+            "total": 60102,
+            "n": 31534,
+            "w": 14982,
+            "d": 1065,
+            "b": 15487
+          }
         },
         {
           "san": "d4",
           "note": "White builds the pawn chain and takes space.",
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 31494,
+            "n": 13860,
+            "w": 6766,
+            "d": 479,
+            "b": 6615,
+            "alts": [
+              {
+                "san": "Nc3",
+                "n": 5892
+              },
+              {
+                "san": "Bb5+",
+                "n": 2652
+              },
+              {
+                "san": "d3",
+                "n": 2201
+              },
+              {
+                "san": "Bd3",
+                "n": 1483
+              }
+            ]
+          }
         },
         {
           "san": "c5",
@@ -2594,12 +2939,44 @@
               "reply": "Qxc2",
               "eval": 5.3
             }
-          ]
+          ],
+          "stats": {
+            "total": 73492,
+            "n": 20017,
+            "w": 9629,
+            "d": 643,
+            "b": 9745
+          }
         },
         {
           "san": "c3",
           "note": "White supports the center pawn.",
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 25321,
+            "n": 7265,
+            "w": 3528,
+            "d": 254,
+            "b": 3483,
+            "alts": [
+              {
+                "san": "Bb5+",
+                "n": 4543
+              },
+              {
+                "san": "Nc3",
+                "n": 2755
+              },
+              {
+                "san": "Bd3",
+                "n": 2452
+              },
+              {
+                "san": "dxc5",
+                "n": 2102
+              }
+            ]
+          }
         },
         {
           "san": "Nc6",
@@ -2616,12 +2993,44 @@
               "reply": "Rxb1",
               "eval": 0.7
             }
-          ]
+          ],
+          "stats": {
+            "total": 10137,
+            "n": 4723,
+            "w": 2200,
+            "d": 177,
+            "b": 2346
+          }
         },
         {
           "san": "Be2",
           "note": "White develops and prepares to castle.",
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 6481,
+            "n": 324,
+            "w": 159,
+            "d": 9,
+            "b": 156,
+            "alts": [
+              {
+                "san": "Bb5",
+                "n": 2066
+              },
+              {
+                "san": "Bd3",
+                "n": 1033
+              },
+              {
+                "san": "Be3",
+                "n": 648
+              },
+              {
+                "san": "Bg5",
+                "n": 467
+              }
+            ]
+          }
         },
         {
           "san": "Nge7",
@@ -2648,7 +3057,14 @@
               "reply": "Rxb1",
               "eval": 0.5
             }
-          ]
+          ],
+          "stats": {
+            "total": 480,
+            "n": 83,
+            "w": 37,
+            "d": 1,
+            "b": 45
+          }
         }
       ]
     },
@@ -2660,17 +3076,74 @@
         {
           "san": "e4",
           "note": "White takes the center.",
-          "eval": 0.4
+          "eval": 0.4,
+          "stats": {
+            "total": 445454883,
+            "n": 297593161,
+            "w": 149760859,
+            "d": 12063307,
+            "b": 135768995,
+            "alts": [
+              {
+                "san": "d4",
+                "n": 93374784
+              },
+              {
+                "san": "e3",
+                "n": 12121153
+              },
+              {
+                "san": "Nf3",
+                "n": 10806602
+              },
+              {
+                "san": "c4",
+                "n": 8018742
+              }
+            ]
+          }
         },
         {
           "san": "d5",
           "note": "Black strikes at the center at once.",
-          "eval": 0.7
+          "eval": 0.7,
+          "stats": {
+            "total": 296940262,
+            "n": 32167211,
+            "w": 16060920,
+            "d": 1380196,
+            "b": 14726095
+          }
         },
         {
           "san": "Nc3",
           "note": "White develops and lets Black decide what to do with the pawn.",
-          "eval": -0.3
+          "eval": -0.3,
+          "stats": {
+            "total": 32077619,
+            "n": 3095985,
+            "w": 1399325,
+            "d": 142579,
+            "b": 1554081,
+            "alts": [
+              {
+                "san": "exd5",
+                "n": 15220263
+              },
+              {
+                "san": "e5",
+                "n": 6004245
+              },
+              {
+                "san": "Nf3",
+                "n": 1991933
+              },
+              {
+                "san": "d3",
+                "n": 1608027
+              }
+            ]
+          }
         },
         {
           "san": "d4",
@@ -2682,32 +3155,128 @@
               "reply": "Nxe4",
               "eval": 0.2
             }
-          ]
+          ],
+          "stats": {
+            "total": 3159832,
+            "n": 1420632,
+            "w": 592285,
+            "d": 57204,
+            "b": 771143
+          }
         },
         {
           "san": "Nce2",
           "note": "The knight retreats to a safe square.",
-          "eval": -0.4
+          "eval": -0.4,
+          "stats": {
+            "total": 1417111,
+            "n": 336202,
+            "w": 150151,
+            "d": 13349,
+            "b": 172702,
+            "alts": [
+              {
+                "san": "Nd5",
+                "n": 589215
+              },
+              {
+                "san": "Nb5",
+                "n": 330265
+              },
+              {
+                "san": "Nb1",
+                "n": 58352
+              },
+              {
+                "san": "Na4",
+                "n": 54875
+              }
+            ]
+          }
         },
         {
           "san": "e5",
           "note": "Black builds a strong pawn center.",
-          "eval": -0.4
+          "eval": -0.4,
+          "stats": {
+            "total": 335787,
+            "n": 179538,
+            "w": 77887,
+            "d": 6897,
+            "b": 94754
+          }
         },
         {
           "san": "Ng3",
           "note": "White reroutes the knight toward the kingside.",
-          "eval": -0.3
+          "eval": -0.3,
+          "stats": {
+            "total": 179532,
+            "n": 12679,
+            "w": 6134,
+            "d": 427,
+            "b": 6118,
+            "alts": [
+              {
+                "san": "d3",
+                "n": 61151
+              },
+              {
+                "san": "Nf3",
+                "n": 49788
+              },
+              {
+                "san": "c3",
+                "n": 35922
+              },
+              {
+                "san": "f4",
+                "n": 12057
+              }
+            ]
+          }
         },
         {
           "san": "Nf6",
           "note": "Black develops and eyes the center.",
-          "eval": -0.2
+          "eval": -0.2,
+          "stats": {
+            "total": 12668,
+            "n": 4090,
+            "w": 1937,
+            "d": 131,
+            "b": 2022
+          }
         },
         {
           "san": "Bc4",
           "note": "White develops the bishop to an active diagonal.",
-          "eval": -0.3
+          "eval": -0.3,
+          "stats": {
+            "total": 4401,
+            "n": 914,
+            "w": 477,
+            "d": 20,
+            "b": 417,
+            "alts": [
+              {
+                "san": "Nf3",
+                "n": 1613
+              },
+              {
+                "san": "d3",
+                "n": 813
+              },
+              {
+                "san": "Bb5+",
+                "n": 263
+              },
+              {
+                "san": "c3",
+                "n": 157
+              }
+            ]
+          }
         },
         {
           "san": "Bd6",
@@ -2719,12 +3288,44 @@
               "reply": "Nxe4",
               "eval": 3.9
             }
-          ]
+          ],
+          "stats": {
+            "total": 917,
+            "n": 25,
+            "w": 16,
+            "d": 0,
+            "b": 9
+          }
         },
         {
           "san": "d3",
           "note": "White supports the center and opens the bishop.",
-          "eval": 0.1
+          "eval": 0.1,
+          "stats": {
+            "total": 56,
+            "n": 26,
+            "w": 19,
+            "d": 1,
+            "b": 6,
+            "alts": [
+              {
+                "san": "Nf3",
+                "n": 11
+              },
+              {
+                "san": "Nf5",
+                "n": 5
+              },
+              {
+                "san": "Qf3",
+                "n": 3
+              },
+              {
+                "san": "a3",
+                "n": 3
+              }
+            ]
+          }
         },
         {
           "san": "O-O",
@@ -2741,7 +3342,14 @@
               "reply": "Nxe4",
               "eval": 5.3
             }
-          ]
+          ],
+          "stats": {
+            "total": 26,
+            "n": 16,
+            "w": 12,
+            "d": 1,
+            "b": 3
+          }
         }
       ]
     }

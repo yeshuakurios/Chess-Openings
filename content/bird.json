@@ -3315,52 +3315,212 @@
         {
           "san": "f4",
           "note": "The Bird: control e5 immediately.",
-          "eval": -0.1
+          "eval": -0.1,
+          "stats": {
+            "total": 445454883,
+            "n": 2212583,
+            "w": 1012690,
+            "d": 104721,
+            "b": 1095172
+          }
         },
         {
           "san": "Nc6",
           "note": "Black develops a knight and eyes the center.",
-          "eval": 0.1
+          "eval": 0.1,
+          "stats": {
+            "total": 2202644,
+            "n": 141957,
+            "w": 63569,
+            "d": 6205,
+            "b": 72183,
+            "alts": [
+              {
+                "san": "d5",
+                "n": 902866
+              },
+              {
+                "san": "e6",
+                "n": 275813
+              },
+              {
+                "san": "e5",
+                "n": 171105
+              },
+              {
+                "san": "f5",
+                "n": 137607
+              }
+            ]
+          }
         },
         {
           "san": "Nf3",
           "note": "Develop and add a second guard of e5.",
-          "eval": 0.1
+          "eval": 0.1,
+          "stats": {
+            "total": 141107,
+            "n": 67222,
+            "w": 32351,
+            "d": 2759,
+            "b": 32112
+          }
         },
         {
           "san": "d5",
           "note": "Black takes the center.",
-          "eval": 0.2
+          "eval": 0.2,
+          "stats": {
+            "total": 67114,
+            "n": 16417,
+            "w": 7769,
+            "d": 660,
+            "b": 7988,
+            "alts": [
+              {
+                "san": "Nf6",
+                "n": 20398
+              },
+              {
+                "san": "d6",
+                "n": 10941
+              },
+              {
+                "san": "e5",
+                "n": 4581
+              },
+              {
+                "san": "e6",
+                "n": 3929
+              }
+            ]
+          }
         },
         {
           "san": "e3",
           "note": "Opens the f1 bishop and keeps a solid pawn chain.",
-          "eval": 0.2
+          "eval": 0.2,
+          "stats": {
+            "total": 145346,
+            "n": 45281,
+            "w": 23168,
+            "d": 1677,
+            "b": 20436
+          }
         },
         {
           "san": "Nf6",
           "note": "Black develops the other knight.",
-          "eval": 0.1
+          "eval": 0.1,
+          "stats": {
+            "total": 57348,
+            "n": 15458,
+            "w": 7837,
+            "d": 575,
+            "b": 7046,
+            "alts": [
+              {
+                "san": "Bg4",
+                "n": 11762
+              },
+              {
+                "san": "Bf5",
+                "n": 9860
+              },
+              {
+                "san": "f6",
+                "n": 5182
+              },
+              {
+                "san": "e6",
+                "n": 4710
+              }
+            ]
+          }
         },
         {
           "san": "b3",
           "note": "Prepares the long-diagonal bishop.",
-          "eval": 0.1
+          "eval": 0.1,
+          "stats": {
+            "total": 34383,
+            "n": 4146,
+            "w": 2133,
+            "d": 162,
+            "b": 1851
+          }
         },
         {
           "san": "e6",
           "note": "Black opens the dark-squared bishop and keeps the center solid.",
-          "eval": 0.1
+          "eval": 0.1,
+          "stats": {
+            "total": 4644,
+            "n": 948,
+            "w": 491,
+            "d": 45,
+            "b": 412,
+            "alts": [
+              {
+                "san": "Bg4",
+                "n": 1388
+              },
+              {
+                "san": "Bf5",
+                "n": 1109
+              },
+              {
+                "san": "e5",
+                "n": 411
+              },
+              {
+                "san": "Ne4",
+                "n": 180
+              }
+            ]
+          }
         },
         {
           "san": "Bb2",
           "note": "Your bishop now pressures the long diagonal.",
-          "eval": 0.1
+          "eval": 0.1,
+          "stats": {
+            "total": 3061,
+            "n": 2033,
+            "w": 1053,
+            "d": 95,
+            "b": 885
+          }
         },
         {
           "san": "Be7",
           "note": "Black prepares to castle.",
-          "eval": 0.2
+          "eval": 0.2,
+          "stats": {
+            "total": 3915,
+            "n": 700,
+            "w": 350,
+            "d": 34,
+            "b": 316,
+            "alts": [
+              {
+                "san": "Bd6",
+                "n": 1080
+              },
+              {
+                "san": "Bc5",
+                "n": 481
+              },
+              {
+                "san": "Bb4",
+                "n": 435
+              },
+              {
+                "san": "Ne4",
+                "n": 343
+              }
+            ]
+          }
         },
         {
           "san": "Be2",
@@ -3372,12 +3532,44 @@
               "reply": "gxf6",
               "eval": -0.5
             }
-          ]
+          ],
+          "stats": {
+            "total": 859,
+            "n": 112,
+            "w": 50,
+            "d": 5,
+            "b": 57
+          }
         },
         {
           "san": "O-O",
           "note": "Black castles.",
-          "eval": 0
+          "eval": 0,
+          "stats": {
+            "total": 155,
+            "n": 94,
+            "w": 38,
+            "d": 1,
+            "b": 55,
+            "alts": [
+              {
+                "san": "Bd7",
+                "n": 19
+              },
+              {
+                "san": "h6",
+                "n": 8
+              },
+              {
+                "san": "Ne4",
+                "n": 6
+              },
+              {
+                "san": "Qd6",
+                "n": 6
+              }
+            ]
+          }
         },
         {
           "san": "O-O",
@@ -3389,7 +3581,14 @@
               "reply": "Bxf6",
               "eval": -0.2
             }
-          ]
+          ],
+          "stats": {
+            "total": 183,
+            "n": 134,
+            "w": 64,
+            "d": 6,
+            "b": 64
+          }
         }
       ]
     },
@@ -3401,32 +3600,128 @@
         {
           "san": "f4",
           "note": "The Bird: control e5 immediately.",
-          "eval": -0.1
+          "eval": -0.1,
+          "stats": {
+            "total": 445454883,
+            "n": 2212583,
+            "w": 1012690,
+            "d": 104721,
+            "b": 1095172
+          }
         },
         {
           "san": "d5",
           "note": "Black takes the center.",
-          "eval": -0.1
+          "eval": -0.1,
+          "stats": {
+            "total": 2202644,
+            "n": 902866,
+            "w": 406000,
+            "d": 39099,
+            "b": 457767,
+            "alts": [
+              {
+                "san": "e6",
+                "n": 275813
+              },
+              {
+                "san": "e5",
+                "n": 171105
+              },
+              {
+                "san": "Nc6",
+                "n": 141957
+              },
+              {
+                "san": "f5",
+                "n": 137607
+              }
+            ]
+          }
         },
         {
           "san": "Nf3",
           "note": "Develop and add a second guard of e5.",
-          "eval": -0.2
+          "eval": -0.2,
+          "stats": {
+            "total": 897531,
+            "n": 441447,
+            "w": 213302,
+            "d": 17338,
+            "b": 210807
+          }
         },
         {
           "san": "Bf5",
           "note": "Black develops the light-squared bishop outside the pawn chain.",
-          "eval": -0.1
+          "eval": -0.1,
+          "stats": {
+            "total": 440651,
+            "n": 51683,
+            "w": 24402,
+            "d": 1806,
+            "b": 25475,
+            "alts": [
+              {
+                "san": "Nc6",
+                "n": 129151
+              },
+              {
+                "san": "Nf6",
+                "n": 76490
+              },
+              {
+                "san": "e6",
+                "n": 50756
+              },
+              {
+                "san": "Bg4",
+                "n": 31575
+              }
+            ]
+          }
         },
         {
           "san": "e3",
           "note": "Opens the f1 bishop and keeps a solid pawn chain.",
-          "eval": -0.1
+          "eval": -0.1,
+          "stats": {
+            "total": 51596,
+            "n": 14198,
+            "w": 7180,
+            "d": 457,
+            "b": 6561
+          }
         },
         {
           "san": "e6",
           "note": "Black supports the center and prepares to develop.",
-          "eval": -0.2
+          "eval": -0.2,
+          "stats": {
+            "total": 19690,
+            "n": 7316,
+            "w": 3624,
+            "d": 231,
+            "b": 3461,
+            "alts": [
+              {
+                "san": "Nc6",
+                "n": 5526
+              },
+              {
+                "san": "Nf6",
+                "n": 3697
+              },
+              {
+                "san": "f6",
+                "n": 893
+              },
+              {
+                "san": "h6",
+                "n": 350
+              }
+            ]
+          }
         },
         {
           "san": "Be2",
@@ -3438,12 +3733,44 @@
               "reply": "c6",
               "eval": -0.2
             }
-          ]
+          ],
+          "stats": {
+            "total": 7313,
+            "n": 1449,
+            "w": 730,
+            "d": 43,
+            "b": 676
+          }
         },
         {
           "san": "Nf6",
           "note": "Black develops the knight.",
-          "eval": -0.1
+          "eval": -0.1,
+          "stats": {
+            "total": 1530,
+            "n": 393,
+            "w": 196,
+            "d": 10,
+            "b": 187,
+            "alts": [
+              {
+                "san": "Nc6",
+                "n": 286
+              },
+              {
+                "san": "Bc5",
+                "n": 251
+              },
+              {
+                "san": "Bd6",
+                "n": 191
+              },
+              {
+                "san": "h6",
+                "n": 75
+              }
+            ]
+          }
         },
         {
           "san": "O-O",
@@ -3455,12 +3782,44 @@
               "reply": "c6",
               "eval": -0.6
             }
-          ]
+          ],
+          "stats": {
+            "total": 1142,
+            "n": 813,
+            "w": 401,
+            "d": 23,
+            "b": 389
+          }
         },
         {
           "san": "Be7",
           "note": "Black prepares to castle.",
-          "eval": -0.3
+          "eval": -0.3,
+          "stats": {
+            "total": 813,
+            "n": 33,
+            "w": 13,
+            "d": 1,
+            "b": 19,
+            "alts": [
+              {
+                "san": "Bd6",
+                "n": 220
+              },
+              {
+                "san": "Bc5",
+                "n": 219
+              },
+              {
+                "san": "Nc6",
+                "n": 132
+              },
+              {
+                "san": "Ne4",
+                "n": 35
+              }
+            ]
+          }
         },
         {
           "san": "b3",
@@ -3472,12 +3831,44 @@
               "reply": "c6",
               "eval": -0.5
             }
-          ]
+          ],
+          "stats": {
+            "total": 47,
+            "n": 9,
+            "w": 5,
+            "d": 0,
+            "b": 4
+          }
         },
         {
           "san": "O-O",
           "note": "Black castles; the position is level.",
-          "eval": -0.2
+          "eval": -0.2,
+          "stats": {
+            "total": 11,
+            "n": 3,
+            "w": 2,
+            "d": 0,
+            "b": 1,
+            "alts": [
+              {
+                "san": "h6",
+                "n": 3
+              },
+              {
+                "san": "Nc6",
+                "n": 3
+              },
+              {
+                "san": "Ne4",
+                "n": 1
+              },
+              {
+                "san": "Be4",
+                "n": 1
+              }
+            ]
+          }
         }
       ]
     },
@@ -3489,32 +3880,128 @@
         {
           "san": "f4",
           "note": "The Bird: control e5 immediately.",
-          "eval": -0.2
+          "eval": -0.2,
+          "stats": {
+            "total": 445454883,
+            "n": 2212583,
+            "w": 1012690,
+            "d": 104721,
+            "b": 1095172
+          }
         },
         {
           "san": "d5",
           "note": "Black takes the center.",
-          "eval": -0.2
+          "eval": -0.2,
+          "stats": {
+            "total": 2202644,
+            "n": 902866,
+            "w": 406000,
+            "d": 39099,
+            "b": 457767,
+            "alts": [
+              {
+                "san": "e6",
+                "n": 275813
+              },
+              {
+                "san": "e5",
+                "n": 171105
+              },
+              {
+                "san": "Nc6",
+                "n": 141957
+              },
+              {
+                "san": "f5",
+                "n": 137607
+              }
+            ]
+          }
         },
         {
           "san": "Nf3",
           "note": "Develop and add a second guard of e5.",
-          "eval": -0.2
+          "eval": -0.2,
+          "stats": {
+            "total": 897531,
+            "n": 441447,
+            "w": 213302,
+            "d": 17338,
+            "b": 210807
+          }
         },
         {
           "san": "e6",
           "note": "Black supports the center and opens the dark-squared bishop.",
-          "eval": -0.1
+          "eval": -0.1,
+          "stats": {
+            "total": 440651,
+            "n": 50756,
+            "w": 25398,
+            "d": 2006,
+            "b": 23352,
+            "alts": [
+              {
+                "san": "Nc6",
+                "n": 129151
+              },
+              {
+                "san": "Nf6",
+                "n": 76490
+              },
+              {
+                "san": "Bf5",
+                "n": 51683
+              },
+              {
+                "san": "Bg4",
+                "n": 31575
+              }
+            ]
+          }
         },
         {
           "san": "e3",
           "note": "Opens the f1 bishop and keeps a solid pawn chain.",
-          "eval": -0.1
+          "eval": -0.1,
+          "stats": {
+            "total": 89313,
+            "n": 27182,
+            "w": 14164,
+            "d": 945,
+            "b": 12073
+          }
         },
         {
           "san": "Nf6",
           "note": "Black develops the knight.",
-          "eval": -0.1
+          "eval": -0.1,
+          "stats": {
+            "total": 38122,
+            "n": 9852,
+            "w": 4873,
+            "d": 335,
+            "b": 4644,
+            "alts": [
+              {
+                "san": "Nc6",
+                "n": 7668
+              },
+              {
+                "san": "c5",
+                "n": 6102
+              },
+              {
+                "san": "Bd6",
+                "n": 3367
+              },
+              {
+                "san": "Bc5",
+                "n": 1965
+              }
+            ]
+          }
         },
         {
           "san": "b3",
@@ -3526,12 +4013,44 @@
               "reply": "c6",
               "eval": -0.1
             }
-          ]
+          ],
+          "stats": {
+            "total": 16877,
+            "n": 4329,
+            "w": 2327,
+            "d": 143,
+            "b": 1859
+          }
         },
         {
           "san": "Be7",
           "note": "Black prepares to castle.",
-          "eval": -0.1
+          "eval": -0.1,
+          "stats": {
+            "total": 4550,
+            "n": 398,
+            "w": 225,
+            "d": 8,
+            "b": 165,
+            "alts": [
+              {
+                "san": "Nc6",
+                "n": 1112
+              },
+              {
+                "san": "Bd6",
+                "n": 700
+              },
+              {
+                "san": "Bc5",
+                "n": 526
+              },
+              {
+                "san": "c5",
+                "n": 471
+              }
+            ]
+          }
         },
         {
           "san": "Bb2",
@@ -3543,12 +4062,44 @@
               "reply": "Bd7",
               "eval": -0.1
             }
-          ]
+          ],
+          "stats": {
+            "total": 524,
+            "n": 478,
+            "w": 254,
+            "d": 10,
+            "b": 214
+          }
         },
         {
           "san": "O-O",
           "note": "Black castles.",
-          "eval": -0.2
+          "eval": -0.2,
+          "stats": {
+            "total": 936,
+            "n": 617,
+            "w": 328,
+            "d": 19,
+            "b": 270,
+            "alts": [
+              {
+                "san": "Nc6",
+                "n": 101
+              },
+              {
+                "san": "c5",
+                "n": 60
+              },
+              {
+                "san": "Nbd7",
+                "n": 29
+              },
+              {
+                "san": "Ne4",
+                "n": 26
+              }
+            ]
+          }
         },
         {
           "san": "Bd3",
@@ -3560,12 +4111,44 @@
               "reply": "Bxf6",
               "eval": -0.5
             }
-          ]
+          ],
+          "stats": {
+            "total": 691,
+            "n": 158,
+            "w": 90,
+            "d": 3,
+            "b": 65
+          }
         },
         {
           "san": "c5",
           "note": "Black hits the center from the side.",
-          "eval": -0.3
+          "eval": -0.3,
+          "stats": {
+            "total": 191,
+            "n": 49,
+            "w": 30,
+            "d": 0,
+            "b": 19,
+            "alts": [
+              {
+                "san": "Nc6",
+                "n": 45
+              },
+              {
+                "san": "h6",
+                "n": 19
+              },
+              {
+                "san": "Ne4",
+                "n": 18
+              },
+              {
+                "san": "b6",
+                "n": 15
+              }
+            ]
+          }
         },
         {
           "san": "O-O",
@@ -3582,7 +4165,14 @@
               "reply": "Bxf6",
               "eval": -1
             }
-          ]
+          ],
+          "stats": {
+            "total": 71,
+            "n": 40,
+            "w": 24,
+            "d": 0,
+            "b": 16
+          }
         }
       ]
     }

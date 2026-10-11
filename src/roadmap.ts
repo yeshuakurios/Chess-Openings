@@ -12,7 +12,7 @@ export const PHASES: Phase[] = [
     left: ['A human review of the draft text. Nothing is marked reviewed yet.'] },
   { id: '2', title: 'Content coverage', built: true,
     what: 'Bird has 13 lines, Budapest 8 and Portuguese Gambit 9, each checked with Stockfish. Real Lichess numbers now show how common each move is.',
-    left: ['Add lines for the next gaps: Budapest 1.d4 Nf6 2.Nc3, then re-run the Lichess stats to find new ones.', 'All lines are still draft until a human reviews them.'] },
+    left: ['Add lines for the next gaps: Budapest 1.d4 Nf6 2.Nc3 (13.5%) and 2.e3 (11.2%), Portuguese 2.e5 Bf5 3.d4 (11.7%) and 2.Nf3 (6.2%).', 'All lines are still draft until a human reviews them.'] },
   { id: '3', title: 'Mastery levels', built: true,
     what: 'Each line is Learning, Familiar, Solid or Mastered, based on clean recalls on separate days and how long you hold the line in memory.',
     left: ['The "why" question that Mastered should require.', 'Scheduling per position instead of per line.', 'The level thresholds are placeholders to tune with real use.'] },
