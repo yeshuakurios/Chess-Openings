@@ -28,7 +28,7 @@ export function whyNot(o: Opening, line: Move, tried: { san: string; captured?: 
 }
 
 /** The user plays their side from memory. Only the line's move is accepted. Arrows let them look back and forth. Resolves with the mistake count. */
-export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () => boolean; onAttempt?: (a: { p: number; ok: 0 | 1; h: 0 | 1; ms: number }) => void }): Promise<number> {
+export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () => boolean; startPly?: number; onAttempt?: (a: { p: number; ok: 0 | 1; h: 0 | 1; ms: number }) => void }): Promise<number> {
   return new Promise(resolve => {
     const chess = new Chess();
     const board = createBoard(ui.board, o.color);
@@ -101,6 +101,11 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
       }
     };
     ui.hint.onclick = () => { if (!finished && live() && idx < v.moves.length && chess.turn() === user) { mistakes++; hinted = true; const e = expected(); board.arrow(e.from as Key, e.to as Key); } };
+    if (opts.startPly) { // spot check: set the position up without animation, then play on from there
+      for (let i = 0; i < opts.startPly; i++) { const m = chess.move(v.moves[i].san); last = [m.from as Key, m.to as Key]; lasts[++idx] = last; }
+      view = idx; setEval(v.moves[idx - 1].eval); setProgress(idx / v.moves.length);
+      setMessage('<b>Spot check</b><br>Pick up the line from this position.');
+    }
     void next();
   });
 }
