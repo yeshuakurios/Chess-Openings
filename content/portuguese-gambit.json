@@ -1,0 +1,153 @@
+{
+  "id": "portuguese-gambit",
+  "name": "Portuguese Gambit (Scandinavian)",
+  "color": "black",
+  "status": "draft",
+  "summary": "Against 1.e4, Black plays ...d5 and ...Bg4 to develop quickly and win back the pawn on d5 with active pieces.",
+  "goal": {
+    "title": "Win back the pawn with fast development",
+    "text": "After 1.e4 d5 2.exd5 Nf6 3.d4 Bg4 Black has given a pawn to develop pieces quickly. The goal is to recover the pawn on d5, keep the light-squared bishop active and pose problems before White is fully developed. Avoid retreating passively: every move should add a piece to the fight.",
+    "plans": [
+      "Recover the d5 pawn with ...Nxd5 or ...Qxd5",
+      "Keep the bishop active outside the pawn chain (...Bf5 or ...Bg4)",
+      "Develop the rest of the pieces quickly: ...e6, ...Nc6, ...Be7",
+      "Castle early and avoid wasting time with the queen"
+    ]
+  },
+  "variations": [
+    {
+      "id": "f3-bf5",
+      "name": "4.f3: kick the bishop, drop back to f5",
+      "strategy": "After 4.f3 the bishop retreats to f5 and Black plays ...e6 to open lines. White's f3 weakens the king, so look for quick development with ...Nc6, ...Bb4 and pressure on the e-file.",
+      "moves": [
+        {
+          "san": "e4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "d5",
+          "note": "Challenge the center right away.",
+          "eval": 0.7
+        },
+        {
+          "san": "exd5",
+          "note": "White takes the pawn.",
+          "eval": 0.6
+        },
+        {
+          "san": "Nf6",
+          "note": "Attack the pawn on d5 with a developing move.",
+          "eval": 0.6
+        },
+        {
+          "san": "d4",
+          "note": "White builds a big center.",
+          "eval": 0.5
+        },
+        {
+          "san": "Bg4",
+          "note": "The Portuguese idea: develop and pin the knight's future square.",
+          "eval": 0.8
+        },
+        {
+          "san": "f3",
+          "note": "White tries to kick the bishop.",
+          "eval": 0.7
+        },
+        {
+          "san": "Bf5",
+          "note": "Retreat but stay active.",
+          "eval": 0.8
+        },
+        {
+          "san": "c4",
+          "note": "White supports the pawn on d5.",
+          "eval": 0.2
+        },
+        {
+          "san": "e6",
+          "note": "Open lines for the pieces.",
+          "eval": 0.5
+        },
+        {
+          "san": "dxe6",
+          "note": "White takes.",
+          "eval": 0.2
+        },
+        {
+          "san": "Bxe6",
+          "note": "Recapture and develop with tempo.",
+          "eval": 1.4
+        }
+      ]
+    },
+    {
+      "id": "nf3-nxd5",
+      "name": "4.Nf3: recapture on d5",
+      "strategy": "When White develops with 4.Nf3, simply take back on d5 with the knight and complete development with ...e6, ...Be7 and ...O-O. Black's structure is healthy and White's center is a target.",
+      "moves": [
+        {
+          "san": "e4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "d5",
+          "note": "Challenge the center right away.",
+          "eval": 0.6
+        },
+        {
+          "san": "exd5",
+          "note": "White takes the pawn.",
+          "eval": 0.7
+        },
+        {
+          "san": "Nf6",
+          "note": "Attack the pawn on d5.",
+          "eval": 0.7
+        },
+        {
+          "san": "d4",
+          "note": "White builds a big center.",
+          "eval": 0.7
+        },
+        {
+          "san": "Bg4",
+          "note": "Develop with a pin on the f3 square.",
+          "eval": 0.8
+        },
+        {
+          "san": "Nf3",
+          "note": "White develops.",
+          "eval": 0.5
+        },
+        {
+          "san": "Nxd5",
+          "note": "Win the pawn back.",
+          "eval": 0.8
+        },
+        {
+          "san": "Be2",
+          "note": "White develops and prepares to castle.",
+          "eval": 0.7
+        },
+        {
+          "san": "e6",
+          "note": "Solid and opens the bishop.",
+          "eval": 0.6
+        },
+        {
+          "san": "O-O",
+          "note": "White castles.",
+          "eval": 0.6
+        },
+        {
+          "san": "Be7",
+          "note": "Prepare to castle too.",
+          "eval": 0.6
+        }
+      ]
+    }
+  ]
+}

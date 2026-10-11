@@ -1,0 +1,29 @@
+{
+  "name": "chess-openings",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "validate": "tsx scripts/validate-content.ts",
+    "evals": "tsx scripts/add-evals.ts",
+    "try": "tsx scripts/try-line.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "stockfish": "^19.0.1",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^7.3.7",
+    "vite-plugin-pwa": "^2.0.0",
+    "workbox-build": "^7.4.1",
+    "workbox-window": "^7.4.1"
+  },
+  "dependencies": {
+    "chess.js": "^1.4.0",
+    "chessground": "^9.2.1",
+    "ts-fsrs": "^5.4.2"
+  }
+}
