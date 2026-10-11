@@ -2334,6 +2334,416 @@
           }
         }
       ]
+    },
+    {
+      "id": "nxd5-qxd5",
+      "name": "3.Nc3 Nxd5 4.Nxd5: recapture with the queen",
+      "strategy": "Black takes the pawn back and then recaptures with the queen after the knights trade, so material is level at once. The queen comes out early, so keep it safe: take space with calm pawn moves, develop the knight and bishop, and watch for any push that would chase the queen. The pawn structure is healthy and Black has no weaknesses.",
+      "moves": [
+        {
+          "san": "e4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "d5",
+          "note": "Black strikes at the center at once.",
+          "eval": 0.7
+        },
+        {
+          "san": "exd5",
+          "note": "White takes the pawn.",
+          "eval": 0.7
+        },
+        {
+          "san": "Nf6",
+          "note": "Black attacks the extra pawn and develops.",
+          "eval": 0.7,
+          "caps": [
+            {
+              "san": "Qxd5",
+              "reply": "Nc3",
+              "eval": 0.6
+            }
+          ]
+        },
+        {
+          "san": "Nc3",
+          "note": "White develops and prepares to challenge the knight.",
+          "eval": 0.2
+        },
+        {
+          "san": "Nxd5",
+          "note": "Black takes the pawn back with the knight; material is level.",
+          "eval": 0.3,
+          "caps": [
+            {
+              "san": "Qxd5",
+              "reply": "Nxd5",
+              "eval": 7.3
+            }
+          ]
+        },
+        {
+          "san": "Nxd5",
+          "note": "White trades its knight for Black's knight.",
+          "eval": 0
+        },
+        {
+          "san": "Qxd5",
+          "note": "Black recaptures with the queen, which now stands in the center.",
+          "eval": -0.1
+        },
+        {
+          "san": "d4",
+          "note": "White takes more space in the center.",
+          "eval": -0.1
+        },
+        {
+          "san": "e6",
+          "note": "Black opens the bishop and keeps the center solid.",
+          "eval": 0.7,
+          "caps": [
+            {
+              "san": "Qe6+",
+              "reply": "Be2",
+              "eval": 0.9
+            },
+            {
+              "san": "Qe5+",
+              "reply": "dxe5",
+              "eval": 7.3
+            },
+            {
+              "san": "Qe4+",
+              "reply": "Be3",
+              "eval": 0.3
+            },
+            {
+              "san": "Qxg2",
+              "reply": "Bxg2",
+              "eval": 7.3
+            },
+            {
+              "san": "Qxd4",
+              "reply": "Qxd4",
+              "eval": 7.2
+            },
+            {
+              "san": "Qxa2",
+              "reply": "Rxa2",
+              "eval": 7.2
+            },
+            {
+              "san": "Qa5+",
+              "reply": "c3",
+              "eval": 0.7
+            }
+          ]
+        },
+        {
+          "san": "Nf3",
+          "note": "White develops the knight.",
+          "eval": 0.7
+        },
+        {
+          "san": "Nc6",
+          "note": "Black develops and puts pressure on the center pawn.",
+          "eval": 0.8,
+          "caps": [
+            {
+              "san": "Bb4+",
+              "reply": "c3",
+              "eval": 0.9
+            },
+            {
+              "san": "Qe5+",
+              "reply": "Nxe5",
+              "eval": 7.9
+            },
+            {
+              "san": "Qe4+",
+              "reply": "Be3",
+              "eval": 1.6
+            },
+            {
+              "san": "Qxf3",
+              "reply": "Qxf3",
+              "eval": 6.6
+            },
+            {
+              "san": "Qxd4",
+              "reply": "Nxd4",
+              "eval": 7.1
+            },
+            {
+              "san": "Qxa2",
+              "reply": "Bb5+",
+              "eval": 7.6
+            },
+            {
+              "san": "Qa5+",
+              "reply": "Bd2",
+              "eval": 1.3
+            }
+          ]
+        },
+        {
+          "san": "Be3",
+          "note": "White develops the bishop and guards the center pawn.",
+          "eval": 0.6
+        },
+        {
+          "san": "Bd6",
+          "note": "Black develops the bishop; the position is balanced.",
+          "eval": 0.8,
+          "caps": [
+            {
+              "san": "Bb4+",
+              "reply": "c3",
+              "eval": 1
+            },
+            {
+              "san": "Nxd4",
+              "reply": "Qxd4",
+              "eval": 5.6
+            },
+            {
+              "san": "Qxf3",
+              "reply": "Qxf3",
+              "eval": 6.6
+            },
+            {
+              "san": "Qxd4",
+              "reply": "Nxd4",
+              "eval": 7
+            },
+            {
+              "san": "Qxa2",
+              "reply": "Rxa2",
+              "eval": 7.7
+            },
+            {
+              "san": "Qa5+",
+              "reply": "c3",
+              "eval": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e5-bf5",
+      "name": "2.e5: develop the bishop, then hit the pawn chain",
+      "strategy": "White gains space with an advanced pawn, so Black plays against the pawn chain instead of fighting for the center head-on. Develop the light bishop outside the chain before it gets shut in, then strike at the base of the chain with a pawn break and add pressure on the center pawn with the knights. Black is a little cramped but has a clear plan.",
+      "moves": [
+        {
+          "san": "e4",
+          "note": "White takes the center.",
+          "eval": 0.4
+        },
+        {
+          "san": "d5",
+          "note": "Black strikes at the center at once.",
+          "eval": 0.7
+        },
+        {
+          "san": "e5",
+          "note": "White gains space and closes the position.",
+          "eval": 0
+        },
+        {
+          "san": "Bf5",
+          "note": "Black develops the bishop outside the pawn chain before it gets shut in.",
+          "eval": 0.1
+        },
+        {
+          "san": "Nf3",
+          "note": "White develops and defends the advanced pawn.",
+          "eval": 0
+        },
+        {
+          "san": "e6",
+          "note": "Black supports the center and prepares a pawn break.",
+          "eval": 0,
+          "caps": [
+            {
+              "san": "Bxc2",
+              "reply": "Qxc2",
+              "eval": 5.5
+            }
+          ]
+        },
+        {
+          "san": "d4",
+          "note": "White builds the pawn chain and takes space.",
+          "eval": 0
+        },
+        {
+          "san": "c5",
+          "note": "Black attacks the base of White's pawn chain.",
+          "eval": 0,
+          "caps": [
+            {
+              "san": "Bb4+",
+              "reply": "c3",
+              "eval": 0.6
+            },
+            {
+              "san": "Bxc2",
+              "reply": "Qxc2",
+              "eval": 5.3
+            }
+          ]
+        },
+        {
+          "san": "c3",
+          "note": "White supports the center pawn.",
+          "eval": 0
+        },
+        {
+          "san": "Nc6",
+          "note": "Black adds pressure on the center pawn.",
+          "eval": 0.1,
+          "caps": [
+            {
+              "san": "cxd4",
+              "reply": "Nxd4",
+              "eval": 0.3
+            },
+            {
+              "san": "Bxb1",
+              "reply": "Rxb1",
+              "eval": 0.7
+            }
+          ]
+        },
+        {
+          "san": "Be2",
+          "note": "White develops and prepares to castle.",
+          "eval": 0
+        },
+        {
+          "san": "Nge7",
+          "note": "Black develops the last knight; the position is level.",
+          "eval": 0.3,
+          "caps": [
+            {
+              "san": "Nxe5",
+              "reply": "Nxe5",
+              "eval": 5.5
+            },
+            {
+              "san": "Nxd4",
+              "reply": "cxd4",
+              "eval": 4.5
+            },
+            {
+              "san": "cxd4",
+              "reply": "cxd4",
+              "eval": 0
+            },
+            {
+              "san": "Bxb1",
+              "reply": "Rxb1",
+              "eval": 0.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nc3-d4",
+      "name": "2.Nc3: gain space and kick the knight",
+      "strategy": "White ignores the center pawn and develops, so Black takes space with a pawn push that attacks the knight. After the knight retreats, Black builds a strong pawn center and develops pieces behind it. The plan is simple: develop the knight and the bishop, castle, and keep the center pawns safe.",
+      "moves": [
+        {
+          "san": "e4",
+          "note": "White takes the center.",
+          "eval": 0.4
+        },
+        {
+          "san": "d5",
+          "note": "Black strikes at the center at once.",
+          "eval": 0.7
+        },
+        {
+          "san": "Nc3",
+          "note": "White develops and lets Black decide what to do with the pawn.",
+          "eval": -0.3
+        },
+        {
+          "san": "d4",
+          "note": "Black gains space and attacks the knight.",
+          "eval": -0.4,
+          "caps": [
+            {
+              "san": "dxe4",
+              "reply": "Nxe4",
+              "eval": 0.2
+            }
+          ]
+        },
+        {
+          "san": "Nce2",
+          "note": "The knight retreats to a safe square.",
+          "eval": -0.4
+        },
+        {
+          "san": "e5",
+          "note": "Black builds a strong pawn center.",
+          "eval": -0.4
+        },
+        {
+          "san": "Ng3",
+          "note": "White reroutes the knight toward the kingside.",
+          "eval": -0.3
+        },
+        {
+          "san": "Nf6",
+          "note": "Black develops and eyes the center.",
+          "eval": -0.2
+        },
+        {
+          "san": "Bc4",
+          "note": "White develops the bishop to an active diagonal.",
+          "eval": -0.3
+        },
+        {
+          "san": "Bd6",
+          "note": "Black develops the bishop and supports the center.",
+          "eval": 0.1,
+          "caps": [
+            {
+              "san": "Nxe4",
+              "reply": "Nxe4",
+              "eval": 3.9
+            }
+          ]
+        },
+        {
+          "san": "d3",
+          "note": "White supports the center and opens the bishop.",
+          "eval": 0.1
+        },
+        {
+          "san": "O-O",
+          "note": "Black castles; the position is level.",
+          "eval": 0.1,
+          "caps": [
+            {
+              "san": "Bb4+",
+              "reply": "Bd2",
+              "eval": 0.5
+            },
+            {
+              "san": "Nxe4",
+              "reply": "Nxe4",
+              "eval": 5.3
+            }
+          ]
+        }
+      ]
     }
   ]
 }
