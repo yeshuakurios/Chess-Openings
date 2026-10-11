@@ -2464,6 +2464,212 @@
           }
         }
       ]
+    },
+    {
+      "id": "bf4-declined",
+      "name": "2.Bf4: no gambit, take the center",
+      "strategy": "White develops the bishop and avoids the gambit, so Black simply takes the center. Take space with a pawn, hit the center from the side with another pawn, and develop the knights and bishops. Look for a trade of White's active bishop and a chance to open the center.",
+      "moves": [
+        {
+          "san": "d4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "Nf6",
+          "note": "Black develops and watches the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "Bf4",
+          "note": "White develops the bishop outside the pawn chain.",
+          "eval": 0.2
+        },
+        {
+          "san": "d5",
+          "note": "Black stakes a claim in the center.",
+          "eval": 0.2
+        },
+        {
+          "san": "e3",
+          "note": "White supports the center and opens the other bishop.",
+          "eval": 0.2
+        },
+        {
+          "san": "c5",
+          "note": "Black hits the center from the side.",
+          "eval": 0.2
+        },
+        {
+          "san": "c3",
+          "note": "White solidifies the center.",
+          "eval": 0.1
+        },
+        {
+          "san": "Nc6",
+          "note": "Black adds pressure on the center pawn.",
+          "eval": 0,
+          "caps": [
+            {
+              "san": "cxd4",
+              "reply": "exd4",
+              "eval": 0.4
+            }
+          ]
+        },
+        {
+          "san": "Nd2",
+          "note": "White develops the knight and keeps the pawn chain solid.",
+          "eval": 0.1
+        },
+        {
+          "san": "e6",
+          "note": "Black opens the dark-squared bishop and supports the center.",
+          "eval": 0.2,
+          "caps": [
+            {
+              "san": "Nxd4",
+              "reply": "exd4",
+              "eval": 5.2
+            },
+            {
+              "san": "cxd4",
+              "reply": "exd4",
+              "eval": 0.2
+            }
+          ]
+        },
+        {
+          "san": "Ngf3",
+          "note": "White develops the other knight.",
+          "eval": 0.2
+        },
+        {
+          "san": "Bd6",
+          "note": "Black challenges the bishop; the position is level.",
+          "eval": 0.2,
+          "caps": [
+            {
+              "san": "Nxd4",
+              "reply": "exd4",
+              "eval": 5.6
+            },
+            {
+              "san": "cxd4",
+              "reply": "exd4",
+              "eval": 0.4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nf3-declined",
+      "name": "2.Nf3: no gambit, take the center",
+      "strategy": "White avoids the gambit with a quiet knight move, so Black simply takes the center. Claim space with a pawn, hit the center from the side, and develop with tempo. The queen can come out early to add pressure, and Black can gain space on the queenside.",
+      "moves": [
+        {
+          "san": "d4",
+          "note": "White takes the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "Nf6",
+          "note": "Black develops and watches the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "Nf3",
+          "note": "White develops the knight.",
+          "eval": 0.3
+        },
+        {
+          "san": "d5",
+          "note": "Black takes a share of the center.",
+          "eval": 0.3
+        },
+        {
+          "san": "Bf4",
+          "note": "White develops the bishop outside the pawn chain.",
+          "eval": 0.1
+        },
+        {
+          "san": "c5",
+          "note": "Black hits the center from the side.",
+          "eval": 0.1
+        },
+        {
+          "san": "e3",
+          "note": "White supports the center and opens the other bishop.",
+          "eval": 0.1
+        },
+        {
+          "san": "Nc6",
+          "note": "Black adds pressure on the center pawn.",
+          "eval": 0.1,
+          "caps": [
+            {
+              "san": "Qa5+",
+              "reply": "c3",
+              "eval": 0.5
+            },
+            {
+              "san": "cxd4",
+              "reply": "exd4",
+              "eval": 0.2
+            }
+          ]
+        },
+        {
+          "san": "c3",
+          "note": "White solidifies the center.",
+          "eval": -0.1
+        },
+        {
+          "san": "Qb6",
+          "note": "Black attacks the loose pawn with the queen.",
+          "eval": -0.1,
+          "caps": [
+            {
+              "san": "Nxd4",
+              "reply": "exd4",
+              "eval": 5.5
+            },
+            {
+              "san": "cxd4",
+              "reply": "exd4",
+              "eval": 0.3
+            }
+          ]
+        },
+        {
+          "san": "Qb3",
+          "note": "White offers a trade and defends the pawn.",
+          "eval": -0.2
+        },
+        {
+          "san": "c4",
+          "note": "Black attacks the queen and gains space.",
+          "eval": -0.1,
+          "caps": [
+            {
+              "san": "Qxb3",
+              "reply": "axb3",
+              "eval": 0.6
+            },
+            {
+              "san": "Nxd4",
+              "reply": "exd4",
+              "eval": 4.6
+            },
+            {
+              "san": "cxd4",
+              "reply": "Qxb6",
+              "eval": 0.6
+            }
+          ]
+        }
+      ]
     }
   ]
 }
