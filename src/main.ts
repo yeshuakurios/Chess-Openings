@@ -1,12 +1,13 @@
 import './style.css';
 import { registerSW } from 'virtual:pwa-register';
 import { openings, findOpening, findVariation, key } from './content.ts';
-import { dueKeys, exportProgress, getProgress, hasToken, importProgress, isLearned, loadProgress, logAttempt, markLearned, review, setBestCombo, setToken, syncNow, type SyncStatus } from './store.ts';
+import { awardLineBonus, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, loadProgress, logAttempt, markLearned, review, setBestCombo, setToken, syncNow, type SyncStatus } from './store.ts';
 import { playLine, walkLine, type Ui } from './play.ts';
 import { fenAfter, staticBoard } from './board.ts';
 import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery.ts';
 import { troubleSpots } from './mistakes.ts';
 import { aiExplain } from './ai.ts';
+import { BADGES, DAILY_GOAL, dayKey, earnedNow, streaks, totalXp } from './gamify.ts';
 import { esc, screenShell } from './ui.ts';
 import type { Opening, PlanBoard, Variation } from './types.ts';
 
@@ -26,6 +27,10 @@ const masteryOf = (o: Opening, v: Variation) => {
   const p = getProgress(), k = key(o, v);
   return lineMastery(k, o.color, v.moves.length, p.attempts, p.cards[k]);
 };
+/** Check every badge against the current state and store the new ones. Returns the ids that were just earned. */
+const refreshBadges = () => grantBadges(earnedNow({
+  xp: getProgress().xp, levels: openings.flatMap(o => o.variations.map(v => masteryOf(o, v).level))
+}));
 const goalKey = (o: Opening) => `goal:${o.id}`;
 const lookup = (k: string): [Opening, Variation] | undefined => {
   const [oid, vid] = k.split('/'); const o = findOpening(oid); const v = o && findVariation(o, vid);
@@ -47,10 +52,19 @@ async function runSync(rerender: boolean) {
 function home() {
   const due = dueKeys().filter(k => lookup(k)).length;
   const trouble = troubleSpots(getProgress().attempts, lookup).length;
+  const fresh = refreshBadges(), prog = getProgress();
+  const streak = streaks(prog.xp), today = prog.xp[dayKey()] ?? 0, next = BADGES.find(b => !prog.badges[b.id]);
+  const progressCard = `<div class="card">
+    <div class="row between"><b>${streak.current}-day streak</b><span class="muted">Best ${streak.best} · ${totalXp(prog.xp)} XP</span></div>
+    <div class="goal"><i style="width:${Math.min(100, Math.round((today / DAILY_GOAL) * 100))}%"></i></div>
+    <div class="muted">Today ${today} / ${DAILY_GOAL} XP${today >= DAILY_GOAL ? ' · goal reached' : ''}</div>
+    <div class="row">${BADGES.filter(b => prog.badges[b.id]).map(b => `<span class="tag">${esc(b.name)}${fresh.includes(b.id) ? ' · new' : ''}</span>`).join('')}</div>
+    ${next ? `<div class="muted">Next badge: ${esc(next.name)}. ${esc(next.hint)}</div>` : ''}</div>`;
   app.innerHTML = `
   <main class="page">
     <h1>Opening Goals</h1>
     <p class="muted">Learn the plan first, then the line.</p>
+    ${progressCard}
     <a class="btn primary big" href="${href('drill')}">Drill ${due ? `· ${due} due` : '· nothing due'}</a>
     <a class="btn big" href="${href('mistakes')}">Mistakes${trouble ? ` · ${trouble}` : ''}</a>
     <h2>Openings</h2>
@@ -169,7 +183,7 @@ async function practice(o: Opening, v: Variation) {
     btn('again').hidden = true;
     const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, onAttempt: a => logAttempt({ ...a, k: key(o, v), m: 'p' }) });
     if (my !== token) return;
-    if (mistakes === 0) markLearned(key(o, v));
+    if (mistakes === 0) { markLearned(key(o, v)); awardLineBonus(); }
     btn('again').hidden = false;
     btn('again').onclick = () => { app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}<button class="btn primary" id="again" hidden>Again</button>`); void run(); };
   };
@@ -193,6 +207,7 @@ async function drill() {
     const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, onAttempt: a => logAttempt({ ...a, k: key(o, v), m: 'd' }) });
     if (my !== token) return;
     review(k, mistakes);
+    if (mistakes === 0) awardLineBonus();
     combo = mistakes === 0 ? combo + 1 : 0; setBestCombo(combo);
     await new Promise<void>(res => { const b = btn('nextline'); b.hidden = false; b.onclick = () => res(); });
     if (my !== token) return;

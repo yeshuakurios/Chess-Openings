@@ -13,6 +13,18 @@ export function mergeAttempts(a: Attempt[], b: Attempt[]): Attempt[] {
   return [...byId.values()].sort((x, y) => x.t - y.t).slice(-MAX_ATTEMPTS);
 }
 
+/** Per-key maximum. XP is stored as a per-day total, so merging the same day from two devices never double counts. */
+const mergeMax = (a: Record<string, number>, b: Record<string, number>) => {
+  const out = { ...a };
+  for (const [k, v] of Object.entries(b)) out[k] = Math.max(out[k] ?? 0, v);
+  return out;
+};
+const mergeEarliest = (a: Record<string, string>, b: Record<string, string>) => {
+  const out = { ...a };
+  for (const [k, v] of Object.entries(b)) out[k] = out[k] && out[k] < v ? out[k] : v;
+  return out;
+};
+
 /** Union of learned lines, per-card the most recently reviewed wins, best combo is the max, attempts are unioned. */
 export function mergeProgress(a: Progress, b: Progress): Progress {
   const cards: Progress['cards'] = {};
@@ -20,5 +32,6 @@ export function mergeProgress(a: Progress, b: Progress): Progress {
     const x = a.cards[k], y = b.cards[k];
     cards[k] = !x ? y : !y ? x : reviewedAt(y) > reviewedAt(x) ? y : x;
   }
-  return { learned: { ...a.learned, ...b.learned }, cards, bestCombo: Math.max(a.bestCombo, b.bestCombo), attempts: mergeAttempts(a.attempts, b.attempts) };
+  return { learned: { ...a.learned, ...b.learned }, cards, bestCombo: Math.max(a.bestCombo, b.bestCombo), attempts: mergeAttempts(a.attempts, b.attempts),
+    xp: mergeMax(a.xp, b.xp), badges: mergeEarliest(a.badges, b.badges) };
 }
