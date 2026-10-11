@@ -3,22 +3,52 @@
   "name": "Budapest Gambit",
   "color": "black",
   "status": "draft",
-  "summary": "Against 1.d4 Black sacrifices a pawn with 2...e5 for quick piece activity and chances to win the pawn back.",
+  "summary": "Against the queen-pawn opening, Black gives a pawn for fast piece play, then wins it back with active knights and a bishop check.",
   "goal": {
-    "title": "Trade a pawn for fast piece play and recover it",
-    "text": "After 1.d4 Nf6 2.c4 e5 Black wants active pieces and a quick lead in development. The knight on g4 hits the e5 pawn and the bishop comes to b4 to disturb White. Black usually wins the pawn back and gets an easy game with natural moves. Do not push pawns early; develop pieces and aim at the weak squares in White's position.",
+    "title": "Give a pawn for quick piece play, then win it back",
+    "text": "Black lets White keep an extra pawn at first. In return Black's pieces jump out fast: a knight attacks the extra pawn from the edge of the board, the other knight joins it, and a bishop comes out with check. Within a few moves Black wins the pawn back and enjoys the more active pieces.",
     "plans": [
-      "Win back the e5 pawn with ...Nc6 and ...Ng4",
-      "Develop the bishop to b4 with check (...Bb4+) and the queen to e7",
-      "Castle quickly and use the open lines for rooks and pieces",
-      "Watch for tactical tricks against loose pieces on the e-file"
-    ]
+      "Attack the extra white pawn with a knight from the edge of the board, and bring the other knight to help.",
+      "Give a check with the dark-squared bishop to drag White's pieces onto awkward squares.",
+      "Put the queen next to the king to add pressure on the same pawn.",
+      "Take the pawn back as soon as it is safe, then castle."
+    ],
+    "board": {
+      "variation": "bf4-rubinstein",
+      "ply": 12,
+      "shapes": [
+        {
+          "from": "e5",
+          "color": "yellow"
+        },
+        {
+          "from": "g4",
+          "to": "e5",
+          "color": "green"
+        },
+        {
+          "from": "c6",
+          "to": "e5",
+          "color": "green"
+        },
+        {
+          "from": "e7",
+          "to": "e5",
+          "color": "green"
+        },
+        {
+          "from": "b4",
+          "to": "d2",
+          "color": "red"
+        }
+      ]
+    }
   },
   "variations": [
     {
       "id": "bf4-rubinstein",
       "name": "4.Bf4: Rubinstein variation",
-      "strategy": "After 4.Bf4 Black develops with ...Nc6, ...Bb4+ and ...Qe7, aiming at the pawn on e5 and the loose knight on d2. Take back the pawn with ...Ngxe5 once the pieces are ready.",
+      "strategy": "White protects the extra pawn with a bishop. Black brings out a knight, then checks with the bishop so White must block with an awkward knight that is now pinned. The queen joins on the open file. Once Black has more attackers than White has defenders, take the pawn back.",
       "moves": [
         {
           "san": "d4",
@@ -55,6 +85,17 @@
               "reply": "Bd2",
               "eval": 1.7
             }
+          ],
+          "shapes": [
+            {
+              "from": "e5",
+              "color": "yellow"
+            },
+            {
+              "from": "g4",
+              "to": "e5",
+              "color": "green"
+            }
           ]
         },
         {
@@ -87,6 +128,13 @@
               "reply": "Kxf2",
               "eval": 4.3
             }
+          ],
+          "shapes": [
+            {
+              "from": "c6",
+              "to": "e5",
+              "color": "green"
+            }
           ]
         },
         {
@@ -118,6 +166,13 @@
               "san": "Nxf2",
               "reply": "Kxf2",
               "eval": 5
+            }
+          ],
+          "shapes": [
+            {
+              "from": "b4",
+              "to": "e1",
+              "color": "red"
             }
           ]
         },
@@ -155,6 +210,13 @@
               "san": "Nxf2",
               "reply": "Kxf2",
               "eval": 5.1
+            }
+          ],
+          "shapes": [
+            {
+              "from": "e7",
+              "to": "e5",
+              "color": "green"
             }
           ]
         },
@@ -198,14 +260,49 @@
               "reply": "fxe3",
               "eval": 5.3
             }
+          ],
+          "shapes": [
+            {
+              "from": "e5",
+              "color": "green"
+            }
           ]
         }
-      ]
+      ],
+      "board": {
+        "ply": 12,
+        "shapes": [
+          {
+            "from": "e5",
+            "color": "yellow"
+          },
+          {
+            "from": "g4",
+            "to": "e5",
+            "color": "green"
+          },
+          {
+            "from": "c6",
+            "to": "e5",
+            "color": "green"
+          },
+          {
+            "from": "e7",
+            "to": "e5",
+            "color": "green"
+          },
+          {
+            "from": "b4",
+            "to": "d2",
+            "color": "red"
+          }
+        ]
+      }
     },
     {
       "id": "nf3-adler",
       "name": "4.Nf3: Adler variation",
-      "strategy": "With 4.Nf3 Black develops the knight to c6 and, after 5.Nc3, simply takes the pawn back with the g4-knight. The knights trade on e5 and Black has equalised the material with active pieces and no weaknesses.",
+      "strategy": "White protects the extra pawn with a knight, but Black's two knights soon win it back through a trade: take with the knight from the edge, swap the knights, and recapture. Material is level, Black's knight sits strongly in the center, and Black has no weaknesses. Be ready for White to grab the center with a pawn push.",
       "moves": [
         {
           "san": "d4",
@@ -242,6 +339,17 @@
               "reply": "Bd2",
               "eval": 1.6
             }
+          ],
+          "shapes": [
+            {
+              "from": "e5",
+              "color": "yellow"
+            },
+            {
+              "from": "g4",
+              "to": "e5",
+              "color": "green"
+            }
           ]
         },
         {
@@ -274,6 +382,13 @@
               "reply": "Kxf2",
               "eval": 4.6
             }
+          ],
+          "shapes": [
+            {
+              "from": "c6",
+              "to": "e5",
+              "color": "green"
+            }
           ]
         },
         {
@@ -301,6 +416,12 @@
               "reply": "Kxf2",
               "eval": 5.2
             }
+          ],
+          "shapes": [
+            {
+              "from": "e5",
+              "color": "green"
+            }
           ]
         },
         {
@@ -318,7 +439,21 @@
           "note": "White takes space in the center.",
           "eval": 0.3
         }
-      ]
+      ],
+      "board": {
+        "ply": 12,
+        "shapes": [
+          {
+            "from": "e5",
+            "color": "green"
+          },
+          {
+            "from": "e5",
+            "to": "c4",
+            "color": "yellow"
+          }
+        ]
+      }
     }
   ]
 }

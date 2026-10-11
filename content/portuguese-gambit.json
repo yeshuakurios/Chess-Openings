@@ -3,22 +3,37 @@
   "name": "Portuguese Gambit (Scandinavian)",
   "color": "black",
   "status": "draft",
-  "summary": "Against 1.e4, Black plays ...d5 and ...Bg4 to develop quickly and win back the pawn on d5 with active pieces.",
+  "summary": "Against the king-pawn opening, Black gives a pawn for rapid development and wins it back with active pieces.",
   "goal": {
-    "title": "Win back the pawn with fast development",
-    "text": "After 1.e4 d5 2.exd5 Nf6 3.d4 Bg4 Black has given a pawn to develop pieces quickly. The goal is to recover the pawn on d5, keep the light-squared bishop active and pose problems before White is fully developed. Avoid retreating passively: every move should add a piece to the fight.",
+    "title": "Win the pawn back by developing fast",
+    "text": "Black is a pawn down on purpose. The plan is to bring pieces out with threats: the bishop jumps to the side of the board and hits White's queen, a knight attacks the extra pawn, and soon Black regains it with more active pieces. Do not waste time retreating; every move should develop a piece or hit something.",
     "plans": [
-      "Recover the d5 pawn with ...Nxd5 or ...Qxd5",
-      "Keep the bishop active outside the pawn chain (...Bf5 or ...Bg4)",
-      "Develop the rest of the pieces quickly: ...e6, ...Nc6, ...Be7",
-      "Castle early and avoid wasting time with the queen"
-    ]
+      "Win back the extra pawn quickly with a knight or the queen.",
+      "Keep the bishop outside the pawn chain, where it stays active.",
+      "Bring out the rest of the pieces at once: a pawn move to free the bishop, the knight, then castle.",
+      "Do not spend moves chasing with the queen."
+    ],
+    "board": {
+      "variation": "nf3-nxd5",
+      "ply": 8,
+      "shapes": [
+        {
+          "from": "d5",
+          "color": "green"
+        },
+        {
+          "from": "g4",
+          "to": "f3",
+          "color": "red"
+        }
+      ]
+    }
   },
   "variations": [
     {
       "id": "f3-bf5",
       "name": "4.f3: kick the bishop, drop back to f5",
-      "strategy": "After 4.f3 the bishop retreats to f5 and Black plays ...e6 to open lines. White's f3 weakens the king, so look for quick development with ...Nc6, ...Bb4 and pressure on the e-file.",
+      "strategy": "White kicks the bishop with a pawn move, which weakens White's own king side. The bishop drops back to a good square and Black opens the center with a pawn move, looking for quick development and pressure on the open central file while White's king is still in the middle.",
       "moves": [
         {
           "san": "e4",
@@ -70,6 +85,13 @@
               "reply": "c4",
               "eval": 0.8
             }
+          ],
+          "shapes": [
+            {
+              "from": "g4",
+              "to": "d1",
+              "color": "red"
+            }
           ]
         },
         {
@@ -96,6 +118,12 @@
               "san": "Bxf3",
               "reply": "Nxf3",
               "eval": 6
+            }
+          ],
+          "shapes": [
+            {
+              "from": "f5",
+              "color": "green"
             }
           ]
         },
@@ -156,14 +184,35 @@
               "reply": "Rxb1",
               "eval": 1.5
             }
+          ],
+          "shapes": [
+            {
+              "from": "e6",
+              "to": "c4",
+              "color": "yellow"
+            }
           ]
         }
-      ]
+      ],
+      "board": {
+        "ply": 12,
+        "shapes": [
+          {
+            "from": "e1",
+            "color": "red"
+          },
+          {
+            "from": "e6",
+            "to": "c4",
+            "color": "yellow"
+          }
+        ]
+      }
     },
     {
       "id": "nf3-nxd5",
       "name": "4.Nf3: recapture on d5",
-      "strategy": "When White develops with 4.Nf3, simply take back on d5 with the knight and complete development with ...e6, ...Be7 and ...O-O. Black's structure is healthy and White's center is a target.",
+      "strategy": "When White develops the knight, it can be pinned against the queen. Simply take the pawn back with the knight, then finish development: a pawn move to open the bishop, the bishop out, and castle. Black's pieces are healthy and White's central pawn becomes a target.",
       "moves": [
         {
           "san": "e4",
@@ -215,6 +264,13 @@
               "reply": "c4",
               "eval": 0.6
             }
+          ],
+          "shapes": [
+            {
+              "from": "g4",
+              "to": "d1",
+              "color": "red"
+            }
           ]
         },
         {
@@ -236,6 +292,12 @@
               "san": "Bxf3",
               "reply": "Qxf3",
               "eval": 0.5
+            }
+          ],
+          "shapes": [
+            {
+              "from": "d5",
+              "color": "green"
             }
           ]
         },
@@ -273,7 +335,21 @@
             }
           ]
         }
-      ]
+      ],
+      "board": {
+        "ply": 8,
+        "shapes": [
+          {
+            "from": "d5",
+            "color": "green"
+          },
+          {
+            "from": "g4",
+            "to": "f3",
+            "color": "red"
+          }
+        ]
+      }
     }
   ]
 }

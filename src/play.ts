@@ -112,7 +112,7 @@ export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTM
   const render = () => {
     const chess = new Chess(); let last: [Key, Key] | undefined;
     for (let i = 0; i < idx; i++) { const m = chess.move(v.moves[i].san); last = [m.from as Key, m.to as Key]; }
-    board.show(chess, last);
+    board.show(chess, last); board.shapes(idx ? v.moves[idx - 1].shapes : []);
     setEval(idx ? v.moves[idx - 1].eval : START_EVAL); setProgress(idx / v.moves.length);
     const m = v.moves[idx - 1];
     setMessage(idx ? `<b>${moveLabel(idx - 1, m.san)}</b> ${m.note}` : 'Press next to step through the line.');

@@ -9,7 +9,7 @@ Start a new session by reading `CLAUDE.md`, then this file. Update this file at 
 - Known issue: the Cloudflare "Workers Builds" check fails instantly on pull-request (non-main) branches. Cause unknown; the same steps (`npm ci`, `npm run build`, `npx wrangler deploy --dry-run`) pass locally from a clean clone. The `main` branch deploys fine. Needs the build log from the Cloudflare dashboard.
 - Not yet tested on a real iPhone end to end: follow `docs/pwa-ios-checklist.md`.
 
-## Roadmap (agreed; nothing below is built yet)
+## Roadmap (agreed; Phase 0 and Phase 1 are built, see the progress notes below)
 **Phase 0, foundations:** per-position attempt log (correct/wrong, hint, time, date, variation); schema fields for board `shapes` and plain-language goal/strategy; per-opening content files loaded on demand; `storage.persist()` plus JSON export/import; CI (validate, test, build) on every PR.
 **Phase 1, visual goals + plain language** (owner items 1+2): prove the schema on one opening first, then the rest. No chess notation in goal/strategy text.
 **Phase 2, content coverage:** pick about 5-8 main lines per opening from the Lichess explorer (build time only), check each with `npm run try`, add as linear variations (still `draft`). Today each opening has only 2-3 single lines, so this is a real gap.
@@ -19,9 +19,11 @@ Start a new session by reading `CLAUDE.md`, then this file. Update this file at 
 **Phase 6, polish at $0:** review caps, "new version" notice, accessibility, optional Lichess puzzles per opening.
 Parallel, not blocking: the real-iPhone test and the Workers Builds log.
 
-Phase 0 progress: 0.1 per-move attempt log (PR #7: `Progress.attempts`, capped at 1500, merged by id). Not yet tried on a real device; check via export. 0.2 `navigator.storage.persist()` requested on load (best effort; iOS may decline, so JSON export stays the real backup). 0.3 CI: `.github/workflows/ci.yml` runs validate (with evals), test and build on every PR; `pages.yml` already deploys main to GitHub Pages. Remaining in Phase 0: per-opening lazy loading, schema fields for shapes and plain-language text.
+Phase 0 progress: 0.1 per-move attempt log (done: `Progress.attempts`, capped at 1500, merged by id; not yet tried on a real device, check via export). 0.2 `navigator.storage.persist()` requested on load (best effort; iOS may decline, so JSON export stays the real backup). 0.3 CI: `.github/workflows/ci.yml` runs validate (with evals), test and build on every PR (its first run is still unverified; GitHub showed no run on PR #9, so check the next PR). 0.4 schema: `Shape`, `PlanBoard`, `Move.shapes`, `Variation.board`, `Opening.goal.board` in `src/types.ts` (mirrored in `scripts/shared.ts`). Per-opening lazy loading was dropped on purpose: the service worker precaches all content for offline use anyway, so lazy loading would save nothing; revisit only if content grows past about 1 MB.
 
-Next up: schema fields for shapes and plain-language text, then per-opening lazy loading, then Phase 1 content.
+Phase 1 progress: shapes render in Learn (goal card, strategy card, and per-move arrows while stepping) and on the opening page; goal, strategy and summary text for all three openings rewritten in plain language. `npm run validate` now fails if goal, plans, strategy or summary contain move notation or squares, and checks shape squares, colors, ply ranges and board references. Shapes were checked against the real positions (a script printed the piece under every arrow start) and looked at in screenshots. Variation names still carry notation (4.Bf4, 1...d5) on purpose, as labels for real games. Content is still `draft`.
+
+Next up: Phase 2 (content coverage: more main lines per opening, chosen from Lichess explorer data), then Phase 3 (mastery levels).
 
 ## Mastery definition (decided; thresholds are placeholders to tune with real data)
 - Mastery is per position; a line is capped by its weakest few positions, not the average.
