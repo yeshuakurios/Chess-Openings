@@ -1,7 +1,7 @@
 import './style.css';
 import { registerSW } from 'virtual:pwa-register';
 import { openings, findOpening, findVariation, key } from './content.ts';
-import { dueKeys, exportProgress, getProgress, importProgress, isLearned, loadProgress, markLearned, review, setBestCombo } from './store.ts';
+import { dueKeys, exportProgress, getProgress, hasToken, importProgress, isLearned, loadProgress, markLearned, review, setBestCombo, setToken, syncNow, type SyncStatus } from './store.ts';
 import { playLine, walkLine, type Ui } from './play.ts';
 import { esc, screenShell } from './ui.ts';
 import type { Opening, Variation } from './types.ts';
@@ -16,6 +16,18 @@ const lookup = (k: string): [Opening, Variation] | undefined => {
   const [oid, vid] = k.split('/'); const o = findOpening(oid); const v = o && findVariation(o, vid);
   return o && v ? [o, v] : undefined;
 };
+
+const SYNC_TEXT: Record<SyncStatus, string> = {
+  off: 'Sync is off.', ok: 'Synced.', unauthorized: 'Wrong token. Tap Set up sync again.', offline: 'Could not reach the server.'
+};
+let syncText = '';
+async function runSync(rerender: boolean) {
+  const status = await syncNow();
+  syncText = SYNC_TEXT[status];
+  if (status === 'unauthorized') await setToken('');
+  if (rerender && !location.hash.slice(2)) route();
+  else { const el = document.getElementById('sync-msg'); if (el) el.textContent = syncText; }
+}
 
 function home() {
   const due = dueKeys().filter(k => lookup(k)).length;
@@ -32,9 +44,18 @@ function home() {
         <div class="muted">${esc(o.summary)}</div>
         <div class="tag">${o.color === 'white' ? 'White' : 'Black'} · ${done}/${o.variations.length} learned${o.status === 'draft' ? ' · draft' : ''}</div></div></a>`;
     }).join('')}
-    <h2>Backup</h2>
+    <h2>Backup &amp; sync</h2>
+    <div class="row"><button class="btn" id="sync">${hasToken() ? 'Sync now' : 'Set up sync'}</button><span class="muted" id="sync-msg">${esc(syncText)}</span></div>
     <div class="row"><button class="btn" id="exp">Export progress</button><button class="btn" id="imp">Import</button></div>
   </main>`;
+  document.getElementById('sync')!.onclick = async () => {
+    if (!hasToken()) {
+      const t = prompt('Paste your sync token (the SYNC_TOKEN you set on the Worker):');
+      if (!t) return;
+      await setToken(t);
+    }
+    await runSync(true);
+  };
   document.getElementById('exp')!.onclick = async () => {
     const data = exportProgress();
     try { await navigator.clipboard.writeText(data); alert('Progress copied to the clipboard. Paste it somewhere safe.'); }
@@ -145,3 +166,4 @@ function route() {
 await loadProgress();
 window.addEventListener('hashchange', route);
 route();
+if (hasToken()) void runSync(true).then(() => { if (!location.hash.slice(2)) route(); });

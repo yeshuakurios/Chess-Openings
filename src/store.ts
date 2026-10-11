@@ -1,4 +1,5 @@
 import { createEmptyCard, fsrs, Rating, type Card } from 'ts-fsrs';
+import { mergeProgress } from './merge.ts';
 
 export interface Progress {
   learned: Record<string, true>;
@@ -6,7 +7,7 @@ export interface Progress {
   bestCombo: number;
 }
 const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0 });
-const DB = 'openings', STORE = 'kv', KEY = 'progress';
+const DB = 'openings', STORE = 'kv', KEY = 'progress', TOKEN_KEY = 'syncToken';
 const scheduler = fsrs();
 
 function open(): Promise<IDBDatabase> {
@@ -21,14 +22,23 @@ const revive = (c: Card): Card => ({ ...c, due: new Date(c.due), last_review: c.
 
 let progress: Progress = empty();
 
+async function kvGet(k: string): Promise<string | undefined> {
+  const db = await open();
+  return new Promise((res, rej) => {
+    const r = db.transaction(STORE).objectStore(STORE).get(k);
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+}
+async function kvSet(k: string, v: string) {
+  const db = await open();
+  db.transaction(STORE, 'readwrite').objectStore(STORE).put(v, k);
+}
+
 export async function loadProgress(): Promise<Progress> {
   try {
-    const db = await open();
-    const raw = await new Promise<string | undefined>((res, rej) => {
-      const r = db.transaction(STORE).objectStore(STORE).get(KEY);
-      r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
-    });
+    const raw = await kvGet(KEY);
     if (raw) progress = parse(raw);
+    token = (await kvGet(TOKEN_KEY)) ?? '';
   } catch { /* private mode: run in memory */ }
   return progress;
 }
@@ -37,11 +47,9 @@ function parse(raw: string): Progress {
   for (const k of Object.keys(p.cards)) p.cards[k] = revive(p.cards[k]);
   return p;
 }
-async function save() {
-  try {
-    const db = await open();
-    db.transaction(STORE, 'readwrite').objectStore(STORE).put(JSON.stringify(progress), KEY);
-  } catch { /* ignore */ }
+async function save(sync = true) {
+  try { await kvSet(KEY, JSON.stringify(progress)); } catch { /* ignore */ }
+  if (sync) scheduleSync();
 }
 
 export const getProgress = () => progress;
@@ -67,3 +75,33 @@ export function setBestCombo(n: number) {
 }
 export const exportProgress = () => JSON.stringify(progress);
 export function importProgress(raw: string) { progress = parse(raw); void save(); }
+
+// ---- D1 sync (optional: only active once a token is set) ----
+export type SyncStatus = 'off' | 'ok' | 'unauthorized' | 'offline';
+let token = '';
+let timer: ReturnType<typeof setTimeout> | undefined;
+export const hasToken = () => !!token;
+export async function setToken(t: string) {
+  token = t.trim();
+  try { await kvSet(TOKEN_KEY, token); } catch { /* ignore */ }
+}
+function scheduleSync() {
+  if (!token) return;
+  clearTimeout(timer);
+  timer = setTimeout(() => void syncNow(), 3000);
+}
+/** Pull the remote copy, merge it with the local one, store the result both places. */
+export async function syncNow(): Promise<SyncStatus> {
+  if (!token) return 'off';
+  const headers = { authorization: `Bearer ${token}` };
+  try {
+    const res = await fetch('./api/progress', { headers, cache: 'no-store' });
+    if (res.status === 401) return 'unauthorized';
+    if (!res.ok) return 'offline';
+    const remote = (await res.json()) as { data: string | null };
+    if (remote.data) progress = mergeProgress(progress, parse(remote.data));
+    await save(false);
+    const put = await fetch('./api/progress', { method: 'PUT', headers: { ...headers, 'content-type': 'application/json' }, body: JSON.stringify(progress) });
+    return put.ok ? 'ok' : put.status === 401 ? 'unauthorized' : 'offline';
+  } catch { return 'offline'; }
+}

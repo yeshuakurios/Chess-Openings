@@ -5,13 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && tsc -p worker --noEmit && vite build",
     "preview": "vite preview",
     "validate": "tsx scripts/validate-content.ts",
     "evals": "tsx scripts/add-evals.ts",
-    "try": "tsx scripts/try-line.ts"
+    "try": "tsx scripts/try-line.ts",
+    "test": "tsx scripts/test-merge.ts"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261011.1",
     "@types/node": "^26.6.5",
     "stockfish": "^19.0.1",
     "tsx": "^4.23.15",
@@ -19,7 +21,8 @@
     "vite": "^7.3.7",
     "vite-plugin-pwa": "^2.0.0",
     "workbox-build": "^7.4.1",
-    "workbox-window": "^7.4.1"
+    "workbox-window": "^7.4.1",
+    "wrangler": "^4.149.0"
   },
   "dependencies": {
     "chess.js": "^1.4.0",

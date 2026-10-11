@@ -1,0 +1,13 @@
+name = "chess-openings"
+main = "worker/index.ts"
+compatibility_date = "2026-10-01"
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "chess-openings"
+database_id = "c0091afa-49e7-47d0-a3dc-9be393f7de43"
