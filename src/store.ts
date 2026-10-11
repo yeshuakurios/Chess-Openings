@@ -52,7 +52,14 @@ export async function loadProgress(): Promise<Progress> {
     if (raw) progress = parse(raw);
     token = (await kvGet(TOKEN_KEY)) ?? '';
   } catch { /* private mode: run in memory */ }
+  void requestPersistence();
   return progress;
+}
+/** Ask the browser not to evict our storage (iOS can clear site data of unused sites). Best effort; the answer may be no. */
+async function requestPersistence() {
+  try {
+    if (navigator.storage?.persist && !(await navigator.storage.persisted())) await navigator.storage.persist();
+  } catch { /* unsupported or denied: nothing to do */ }
 }
 function parse(raw: string): Progress {
   const p = { ...empty(), ...JSON.parse(raw) } as Progress;
