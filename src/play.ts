@@ -28,12 +28,13 @@ export function whyNot(o: Opening, line: Move, tried: { san: string; captured?: 
 }
 
 /** The user plays their side from memory. Only the line's move is accepted. Arrows let them look back and forth. Resolves with the mistake count. */
-export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () => boolean }): Promise<number> {
+export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () => boolean; onAttempt?: (a: { p: number; ok: 0 | 1; h: 0 | 1; ms: number }) => void }): Promise<number> {
   return new Promise(resolve => {
     const chess = new Chess();
     const board = createBoard(ui.board, o.color);
     const user = o.color === 'white' ? 'w' : 'b';
     let idx = 0, view = 0, mistakes = 0, busy = false, finished = false;
+    let turnPly = -1, turnStart = 0, hinted = false; // timing and hint state for the position being played
     let last: [Key, Key] | undefined;
     const lasts: ([Key, Key] | undefined)[] = [undefined]; // lasts[k] = last move after k plies
     setEval(START_EVAL); setProgress(0);
@@ -45,7 +46,10 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
     const showLive = () => {
       view = idx; board.clearArrow(); syncArrows();
       if (finished) { board.show(chess, last); return; }
-      if (chess.turn() === user) board.allowMoves(chess, o.color, onMove, last); else board.show(chess, last);
+      if (chess.turn() === user) {
+        if (turnPly !== idx) { turnPly = idx; turnStart = performance.now(); hinted = false; }
+        board.allowMoves(chess, o.color, onMove, last);
+      } else board.show(chess, last);
     };
     const showView = (k: number) => {
       view = k; board.lock(); board.clearArrow();
@@ -83,7 +87,9 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
     const onMove = (from: Key, to: Key) => {
       board.clearArrow();
       const m = chess.move({ from, to, promotion: 'q' });
-      if (m.san === v.moves[idx].san) {
+      const ok = m.san === v.moves[idx].san;
+      opts.onAttempt?.({ p: idx, ok: ok ? 1 : 0, h: hinted ? 1 : 0, ms: Math.round(performance.now() - turnStart) });
+      if (ok) {
         last = [from, to]; lasts[++idx] = last; view = idx;
         setEval(v.moves[idx - 1].eval); setProgress(idx / v.moves.length);
         setMessage(v.moves[idx - 1].note);
@@ -94,7 +100,7 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
         board.allowMoves(chess, o.color, onMove, last);
       }
     };
-    ui.hint.onclick = () => { if (!finished && live() && idx < v.moves.length && chess.turn() === user) { mistakes++; const e = expected(); board.arrow(e.from as Key, e.to as Key); } };
+    ui.hint.onclick = () => { if (!finished && live() && idx < v.moves.length && chess.turn() === user) { mistakes++; hinted = true; const e = expected(); board.arrow(e.from as Key, e.to as Key); } };
     void next();
   });
 }

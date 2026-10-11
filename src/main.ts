@@ -1,7 +1,7 @@
 import './style.css';
 import { registerSW } from 'virtual:pwa-register';
 import { openings, findOpening, findVariation, key } from './content.ts';
-import { dueKeys, exportProgress, getProgress, hasToken, importProgress, isLearned, loadProgress, markLearned, review, setBestCombo, setToken, syncNow, type SyncStatus } from './store.ts';
+import { dueKeys, exportProgress, getProgress, hasToken, importProgress, isLearned, loadProgress, logAttempt, markLearned, review, setBestCombo, setToken, syncNow, type SyncStatus } from './store.ts';
 import { playLine, walkLine, type Ui } from './play.ts';
 import { esc, screenShell } from './ui.ts';
 import type { Opening, Variation } from './types.ts';
@@ -118,7 +118,7 @@ async function practice(o: Opening, v: Variation) {
   app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}<button class="btn primary" id="again" hidden>Again</button>`);
   const run = async () => {
     btn('again').hidden = true;
-    const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token });
+    const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, onAttempt: a => logAttempt({ ...a, k: key(o, v), m: 'p' }) });
     if (my !== token) return;
     if (mistakes === 0) markLearned(key(o, v));
     btn('again').hidden = false;
@@ -141,7 +141,7 @@ async function drill() {
   for (const k of queue) {
     const [o, v] = lookup(k)!;
     app.innerHTML = screenShell('Drill', `${esc(o.name)} · ${queue.indexOf(k) + 1}/${queue.length} · ×${combo}`, `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button>`);
-    const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token });
+    const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, onAttempt: a => logAttempt({ ...a, k: key(o, v), m: 'd' }) });
     if (my !== token) return;
     review(k, mistakes);
     combo = mistakes === 0 ? combo + 1 : 0; setBestCombo(combo);
