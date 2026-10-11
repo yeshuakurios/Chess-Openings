@@ -1,0 +1,26 @@
+name: Lichess stats
+# Manual run: queries the Lichess explorer (build time only) and pushes the result to a branch.
+# The token is the repo secret LICHESS_TOKEN (no scopes). The branch push does not open a PR.
+on: workflow_dispatch
+permissions: { contents: write }
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run stats
+        env:
+          LICHESS_TOKEN: ${{ secrets.LICHESS_TOKEN }}
+      - run: npm run validate -- --require-evals
+      - name: Push branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b stats/lichess-${{ github.run_id }}
+          git add content
+          git diff --cached --quiet && { echo "No changes"; exit 0; }
+          git commit -m "Add Lichess explorer stats (rating bucket 1000)"
+          git push -u origin HEAD
