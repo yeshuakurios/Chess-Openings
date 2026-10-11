@@ -30,11 +30,18 @@ let token = 0; // cancels in-flight line playback when the screen changes
 
 const href = (...p: string[]) => `#/${p.join('/')}`;
 /** Placeholder markup for a shapes board; call drawBoard afterwards. */
-const boardSlot = (id: string, b?: PlanBoard) => (b ? `<div class="board-wrap small"><div id="${id}" class="cg-wrap"></div></div>` : '');
+const boardSlot = (id: string, b?: PlanBoard, hero = false) => (b ? `<div class="board-wrap ${hero ? 'hero' : 'small'}"><div id="${id}" class="cg-wrap"></div></div>` : '');
 function drawBoard(id: string, o: Opening, v: Variation, b?: PlanBoard) {
   const el = document.getElementById(id);
   if (el && b) staticBoard(el, o.color, fenAfter(v.moves.map(m => m.san), b.ply), b.shapes);
 }
+/** First sentence of a text, for the one-line takeaway under a hero board; the rest goes behind a fold. */
+const splitLead = (text: string): [string, string] => {
+  const m = text.match(/^(.+?[.!?])(\s+|$)/s);
+  return m ? [m[1], text.slice(m[0].length)] : [text, ''];
+};
+const fold = (rest: string, list: string[], label: string) => (rest || list.length)
+  ? `<details class="more"><summary>${label}</summary>${rest ? `<p>${esc(rest)}</p>` : ''}${list.length ? `<ul>${list.map(p => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}</details>` : '';
 const goalVariation = (o: Opening) => o.variations.find(v => v.id === o.goal.board?.variation);
 const masteryOf = (o: Opening, v: Variation) => {
   const p = getProgress(), k = key(o, v);
@@ -161,9 +168,10 @@ function openingPage(o: Opening) {
   app.innerHTML = `
   <main class="page"><a class="back" href="#/">← Openings</a>
     <h1>${esc(o.name)}</h1>
-    <div class="card"><div class="tag">Positional goal</div><h3>${esc(o.goal.title)}</h3><p>${esc(o.goal.text)}</p>
-      ${boardSlot('goal-board', o.goal.board)}
-      <ul>${o.goal.plans.map(p => `<li>${esc(p)}</li>`).join('')}</ul></div>
+    <div class="card hero-card"><div class="tag">Positional goal</div>
+      ${boardSlot('goal-board', o.goal.board, true)}
+      <h3>${esc(o.goal.title)}</h3><p class="lead">${esc(splitLead(o.goal.text)[0])}</p>
+      ${fold(splitLead(o.goal.text)[1], o.goal.plans, 'The full plan')}</div>
     <h2>Variations</h2>
     ${o.variations.map(v => { const m = masteryOf(o, v); return `<div class="card"><b>${esc(v.name)}</b>
       <p class="muted">${esc(v.strategy)}</p>
@@ -185,12 +193,16 @@ function learn(o: Opening, v: Variation) {
   const showStep = () => {
     window.scrollTo(0, 0);
     const s = steps[i];
-    app.innerHTML = `<main class="page"><a class="back" href="${href('o', o.id)}">← ${esc(o.name)}</a>
-      <div class="card big"><div class="tag">${s.tag}</div><h2>${esc(s.title)}</h2><p>${esc(s.body)}</p>
-      ${boardSlot('step-board', s.board)}
-      ${s.list.length ? `<ul>${s.list.map(p => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}</div>
+    const [lead, rest] = splitLead(s.body);
+    const board = s.board ?? (s.from ? { ply: s.from.moves.length, shapes: [] } : undefined); // no hand-made board: show where the line ends
+    app.innerHTML = `<main class="page learn"><a class="back" href="${href('o', o.id)}">← ${esc(o.name)}</a>
+      <div class="steps" aria-hidden="true">${steps.map((_, n) => `<i class="${n <= i ? 'on' : ''}"></i>`).join('')}</div>
+      <div class="tag">${s.tag}</div>
+      ${boardSlot('step-board', board, true)}
+      <h2 class="hero-title">${esc(s.title)}</h2><p class="lead">${esc(lead)}</p>
+      ${fold(rest, s.list, 'Read more')}
       <button class="btn primary big" id="go">${i === steps.length - 1 ? 'Show me the line' : 'Next: the strategy'}</button></main>`;
-    if (s.from) drawBoard('step-board', o, s.from, s.board);
+    if (s.from && board) drawBoard('step-board', o, s.from, board);
     document.getElementById('go')!.onclick = () => {
       if (i === 0 && steps.length === 2) markLearned(goalKey(o));
       if (i < steps.length - 1) { i++; showStep(); } else walk();
