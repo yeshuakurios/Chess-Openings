@@ -42,6 +42,26 @@
       "id": "e4-classical",
       "name": "1.e4 g6 2.d4: the classical setup",
       "strategy": "White has built a big center and both sides have castled, so the middlegame is about attacking that center. Strike with a pawn break, the c-pawn or the e-pawn push depending on where White's pieces stand, and let the long-diagonal bishop come alive once pawns are traded. Do not be passive: White's space can turn into a king-side attack if you wait too long, so choose your break, prepare it and play it.",
+      "board": {
+        "ply": 12,
+        "shapes": [
+          {
+            "from": "d6",
+            "to": "d5",
+            "color": "green"
+          },
+          {
+            "from": "e7",
+            "to": "e5",
+            "color": "green"
+          },
+          {
+            "from": "g7",
+            "to": "d4",
+            "color": "blue"
+          }
+        ]
+      },
       "moves": [
         {
           "san": "e4",
@@ -329,6 +349,26 @@
       "id": "e4-austrian",
       "name": "1.e4 g6 2.d4 with f4: the Austrian Attack",
       "strategy": "White's f-pawn makes the center look huge, but it loosens White's king side. Black hits the center at once and trades off White's d-pawn, so the big center shrinks to two pawns. Castle quickly: White's main idea is to push the e-pawn to kick your king-side knight, and until that knight moves your long-diagonal bishop is blocked. Develop the queen-side knight, aim at White's e-pawn, and use the loosened king side as a target once the bishop comes alive.",
+      "board": {
+        "ply": 14,
+        "shapes": [
+          {
+            "from": "e4",
+            "to": "e5",
+            "color": "red"
+          },
+          {
+            "from": "e8",
+            "to": "g8",
+            "color": "green"
+          },
+          {
+            "from": "f6",
+            "to": "e4",
+            "color": "blue"
+          }
+        ]
+      },
       "moves": [
         {
           "san": "e4",
@@ -685,6 +725,25 @@
       "id": "e4-c4",
       "name": "1.e4 g6 2.d4 with c4: a big center",
       "strategy": "This is a King's Indian-style structure where White has a lot of space. Black has castled and keeps the king safe while pressuring White's d-pawn with the queen-side knight; the long-diagonal bishop joins in once the king-side knight moves or the center opens. Break with the e-pawn when your pieces are ready, or with a queen-side pawn push. If White castles on the queen side, a pawn storm against it is Black's plan. Don't trade your long-diagonal bishop without a good reason.",
+      "board": {
+        "ply": 12,
+        "shapes": [
+          {
+            "from": "e7",
+            "to": "e5",
+            "color": "green"
+          },
+          {
+            "from": "c6",
+            "to": "d4",
+            "color": "blue"
+          },
+          {
+            "from": "d4",
+            "color": "yellow"
+          }
+        ]
+      },
       "moves": [
         {
           "san": "e4",
@@ -972,6 +1031,26 @@
       "id": "e4-bc4",
       "name": "1.e4 g6 2.Bc4: the quiet bishop",
       "strategy": "White has no big center, so the middlegame is quieter and you can take space yourself. Your king is safe, and the long-diagonal bishop becomes strong once the center opens, so aim for the central pawn push supported by the knights. Watch White's bishop on the king-side diagonal, but it has little to hit once your king is castled. If you gain space, avoid unnecessary trades; if you get cramped, trade pieces. Keep the position flexible.",
+      "board": {
+        "ply": 12,
+        "shapes": [
+          {
+            "from": "d6",
+            "to": "d5",
+            "color": "green"
+          },
+          {
+            "from": "f6",
+            "to": "e4",
+            "color": "blue"
+          },
+          {
+            "from": "c4",
+            "to": "f7",
+            "color": "red"
+          }
+        ]
+      },
       "moves": [
         {
           "san": "e4",
@@ -1264,6 +1343,21 @@
       "id": "e4-nc3",
       "name": "1.e4 g6 2.Nc3: the f-pawn plan",
       "strategy": "White pushes the f-pawn to grab space in the center and aims the bishop at your king side. Castle early: the f-pawn is then defended by the king and rook. Once White has castled too, look for the central knight capture: if White's pieces are loose, a pawn push forks the bishop and the knight and you win the material back. The long-diagonal bishop and a later central break are your trumps.",
+      "board": {
+        "ply": 18,
+        "shapes": [
+          {
+            "from": "g7",
+            "to": "b2",
+            "color": "blue"
+          },
+          {
+            "from": "e7",
+            "to": "e5",
+            "color": "green"
+          }
+        ]
+      },
       "moves": [
         {
           "san": "e4",
@@ -1699,6 +1793,21 @@
       "id": "d4-c4",
       "name": "1.d4 g6 2.c4: the King's Indian setup",
       "strategy": "White has the space and Black has the long diagonal and the e-pawn break. After the central break the tension is in the center: decide whether to trade pawns or keep it closed. If the center locks, White plays on the queen side and Black attacks White's king with the f-pawn push. Keep the long-diagonal bishop flexible, and use the knights on the central outposts.",
+      "board": {
+        "ply": 12,
+        "shapes": [
+          {
+            "from": "e5",
+            "to": "d4",
+            "color": "blue"
+          },
+          {
+            "from": "d4",
+            "to": "d5",
+            "color": "red"
+          }
+        ]
+      },
       "moves": [
         {
           "san": "d4",
@@ -1986,6 +2095,25 @@
       "id": "d4-london",
       "name": "1.d4 g6 2.Nf3 with the London bishop",
       "strategy": "White has no big center, so both sides develop calmly. You have castled and the long-diagonal bishop is ready. Challenge White's bishop and center with the e-pawn push, or hit the center with the c-pawn push. If White's bishop retreats, take the extra space. Keep the pieces coordinated and don't rush: you are not worse.",
+      "board": {
+        "ply": 12,
+        "shapes": [
+          {
+            "from": "e7",
+            "to": "e5",
+            "color": "green"
+          },
+          {
+            "from": "c7",
+            "to": "c5",
+            "color": "green"
+          },
+          {
+            "from": "f4",
+            "color": "yellow"
+          }
+        ]
+      },
       "moves": [
         {
           "san": "d4",
@@ -2259,6 +2387,20 @@
       "id": "nf3-g3",
       "name": "1.Nf3 g6 2.g3: a flexible mirror",
       "strategy": "Black has claimed the center with the e-pawn while White keeps a flexible setup. Support the center pawns with the knights and the c-pawn, use the long-diagonal bishop, and look for the f-pawn push to expand. White's bishop on the long diagonal also looks at your queen side, so keep your pieces coordinated there.",
+      "board": {
+        "ply": 12,
+        "shapes": [
+          {
+            "from": "e5",
+            "color": "yellow"
+          },
+          {
+            "from": "b8",
+            "to": "c6",
+            "color": "green"
+          }
+        ]
+      },
       "moves": [
         {
           "san": "Nf3",
@@ -2532,6 +2674,21 @@
       "id": "c4-nc3",
       "name": "1.c4 g6 2.Nc3: mirror the setup",
       "strategy": "Both sides are fianchettoed, so the middlegame is about the central break. Develop the knights, castle, and prepare the d-pawn push to claim space in the center. Hit the queen-side with pieces and pawns if White commits there. The long-diagonal bishop is your best piece, so keep it open and trade into a position you understand.",
+      "board": {
+        "ply": 10,
+        "shapes": [
+          {
+            "from": "d7",
+            "to": "d5",
+            "color": "green"
+          },
+          {
+            "from": "g7",
+            "to": "c3",
+            "color": "blue"
+          }
+        ]
+      },
       "moves": [
         {
           "san": "c4",
