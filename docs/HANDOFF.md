@@ -9,6 +9,9 @@ Start a new session by reading `CLAUDE.md`, then this file. Update this file at 
 - Known issue: the Cloudflare "Workers Builds" check fails instantly on pull-request (non-main) branches. Cause unknown; the same steps (`npm ci`, `npm run build`, `npx wrangler deploy --dry-run`) pass locally from a clean clone. The `main` branch deploys fine. Needs the build log from the Cloudflare dashboard.
 - Not yet tested on a real iPhone end to end: follow `docs/pwa-ios-checklist.md`.
 
+## Deploy status (important)
+Found in session 3: the Cloudflare Workers Builds check also fails on `main`, and the live Worker was serving an old build (no Mistakes screen), so merged changes were not reaching the installed app. Fix: `.github/workflows/deploy.yml` builds and runs `npx wrangler deploy` on every push to `main`, using the repo secret `CLOUDFLARE_API_TOKEN` (the account id is in the workflow). It skips quietly until the secret exists. After the secret is added, run Actions > Deploy to Cloudflare > Run workflow once, then check that the live site's bundle contains "Roadmap". The old Workers Builds integration can then be disconnected in the Cloudflare dashboard (Worker > Settings > Builds) so it stops posting a red check.
+
 ## Roadmap (agreed; Phases 0-6 are all built, see the status table and the progress notes below)
 
 | Phase | Status | What is left (not code unless stated) |
