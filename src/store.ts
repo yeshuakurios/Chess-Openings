@@ -24,8 +24,12 @@ export interface Progress {
   xp: Record<string, number>;
   /** Earned badge id -> day earned. Never removed. */
   badges: Record<string, string>;
+  /** Moves the owner marked "need more explanation": `opening/line#ply` -> epoch ms. Read at the start of a session (Settings copies them as a list; they also sync) so the next session can write the missing explanation. */
+  flags: Record<string, number>;
+  /** Moves flagged at or before this time were handed off and are gone. Merged by max so clearing on one device sticks. */
+  flagsClearedAt: number;
 }
-const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {} });
+const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {}, flags: {}, flagsClearedAt: 0 });
 const DB = 'openings', STORE = 'kv', KEY = 'progress', TOKEN_KEY = 'syncToken';
 const scheduler = fsrs();
 
@@ -118,6 +122,16 @@ export function grantBadges(ids: string[]): string[] {
 export function setBestCombo(n: number) {
   if (n > progress.bestCombo) { progress.bestCombo = n; void save(); }
 }
+export const flagKey = (variationKey: string, ply: number) => `${variationKey}#${ply}`;
+export const isFlagged = (fk: string) => !!progress.flags[fk];
+/** Toggle the flag; returns the new state. */
+export function toggleFlag(fk: string): boolean {
+  if (progress.flags[fk]) delete progress.flags[fk]; else progress.flags[fk] = Date.now();
+  void save();
+  return !!progress.flags[fk];
+}
+/** Hand-off done: drop every flag made so far. */
+export function clearFlags() { progress.flags = {}; progress.flagsClearedAt = Date.now(); void save(); }
 export const exportProgress = () => JSON.stringify(progress);
 export function importProgress(raw: string) { progress = parse(raw); void save(); }
 
