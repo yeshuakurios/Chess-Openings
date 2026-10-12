@@ -1,6 +1,7 @@
 import { createEmptyCard, fsrs, Rating, type Card } from 'ts-fsrs';
 import { MAX_ATTEMPTS, mergeProgress } from './merge.ts';
 import { LINE_BONUS, dayKey, xpForAttempt } from './gamify.ts';
+import { flagKey, type Stamped } from './flags.ts';
 
 /** One user move in a line. Short field names on purpose: the log is synced and the Worker caps the body at 256 KB. */
 export interface Attempt {
@@ -25,9 +26,11 @@ export interface Progress {
   /** Earned badge id -> day earned. Never removed. */
   badges: Record<string, string>;
   /** Openings set aside with "Save for later". Per opening: `on` plus when it was last changed, so the newest change wins when two devices sync. Progress on a saved opening is kept. */
-  shelf: Record<string, { on: boolean; t: number }>;
+  shelf: Record<string, Stamped>;
+  /** Moves marked "Needs more explanation", keyed by line and move index (see flagKey). Turned off, not deleted, so the change syncs. */
+  flags: Record<string, Stamped>;
 }
-const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {}, shelf: {} });
+const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {}, shelf: {}, flags: {} });
 const DB = 'openings', STORE = 'kv', KEY = 'progress', TOKEN_KEY = 'syncToken';
 const scheduler = fsrs();
 
@@ -83,6 +86,17 @@ async function save(sync = true) {
 export const getProgress = () => progress;
 export const isLearned = (k: string) => !!progress.learned[k];
 export const isShelved = (openingId: string) => !!progress.shelf[openingId]?.on;
+export const isFlagged = (line: string, ply: number) => !!progress.flags[flagKey(line, ply)]?.on;
+export function setFlagged(line: string, ply: number, on: boolean) {
+  progress.flags[flagKey(line, ply)] = { on, t: Date.now() };
+  void save();
+}
+export const flaggedCount = () => Object.values(progress.flags).filter(f => f.on).length;
+export function clearFlags() {
+  const t = Date.now();
+  for (const [k, f] of Object.entries(progress.flags)) if (f.on) progress.flags[k] = { on: false, t };
+  void save();
+}
 export function setShelved(openingId: string, on: boolean) {
   progress.shelf[openingId] = { on, t: Date.now() };
   void save();
