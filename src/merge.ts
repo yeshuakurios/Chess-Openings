@@ -25,6 +25,14 @@ const mergeEarliest = (a: Record<string, string>, b: Record<string, string>) => 
   return out;
 };
 
+/** Flags are a union; a clear on either device (flagsClearedAt) removes every flag made before it. */
+function mergeFlags(a: Progress, b: Progress): Pick<Progress, 'flags' | 'flagsClearedAt'> {
+  const cleared = Math.max(a.flagsClearedAt ?? 0, b.flagsClearedAt ?? 0);
+  const flags: Record<string, number> = {};
+  for (const [k, t] of Object.entries(mergeMax(a.flags ?? {}, b.flags ?? {}))) if (t > cleared) flags[k] = t;
+  return { flags, flagsClearedAt: cleared };
+}
+
 /** Union of learned lines, per-card the most recently reviewed wins, best combo is the max, attempts are unioned. */
 export function mergeProgress(a: Progress, b: Progress): Progress {
   const cards: Progress['cards'] = {};
@@ -33,5 +41,5 @@ export function mergeProgress(a: Progress, b: Progress): Progress {
     cards[k] = !x ? y : !y ? x : reviewedAt(y) > reviewedAt(x) ? y : x;
   }
   return { learned: { ...a.learned, ...b.learned }, cards, bestCombo: Math.max(a.bestCombo, b.bestCombo), attempts: mergeAttempts(a.attempts, b.attempts),
-    xp: mergeMax(a.xp, b.xp), badges: mergeEarliest(a.badges, b.badges) };
+    xp: mergeMax(a.xp, b.xp), badges: mergeEarliest(a.badges, b.badges), ...mergeFlags(a, b) };
 }

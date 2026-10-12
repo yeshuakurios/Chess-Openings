@@ -1,8 +1,8 @@
 import './style.css';
 import { registerSW } from 'virtual:pwa-register';
 import { openings, findOpening, findVariation, key } from './content.ts';
-import { awardLineBonus, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, loadProgress, logAttempt, markLearned, review, setBestCombo, setToken, syncNow, type SyncStatus } from './store.ts';
-import { playLine, walkLine, type Ui } from './play.ts';
+import { awardLineBonus, clearFlags, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, loadProgress, logAttempt, markLearned, review, setBestCombo, setToken, syncNow, type SyncStatus } from './store.ts';
+import { moveLabel, playLine, walkLine, type Ui } from './play.ts';
 import { fenAfter, staticBoard } from './board.ts';
 import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery.ts';
 import { troubleSpots } from './mistakes.ts';
@@ -106,12 +106,27 @@ function home() {
   </main>`;
 }
 
+/** The flagged moves as readable lines, newest first. Each carries the stable id (`opening/line#ply`) that HANDOFF.md and the content files use. */
+function flaggedMoves() {
+  return Object.entries(getProgress().flags).sort((x, y) => y[1] - x[1]).flatMap(([fk]) => {
+    const [k, ply] = fk.split('#'), found = lookup(k), p = Number(ply), m = found?.[1].moves[p];
+    if (!found || !m) return [];
+    const [o, v] = found;
+    return [{ fk, label: `${o.name} · ${v.name} · ${moveLabel(p, m.san)} (${fk}): ${m.note}` }];
+  });
+}
+
 function settingsPage() {
+  const flagged = flaggedMoves();
   app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>Settings</h1>
     <h2>Backup &amp; sync</h2>
     <div class="card"><p class="muted">Your progress lives on this device. Sync copies it to your own Cloudflare Worker so another device can pick it up; export keeps a copy you can paste somewhere safe.</p>
     <div class="row"><button class="btn" id="sync">${hasToken() ? 'Sync now' : 'Set up sync'}</button><span class="muted" id="sync-msg">${esc(syncText)}</span></div>
     <div class="row"><button class="btn" id="exp">Export progress</button><button class="btn" id="imp">Import</button></div></div>
+    <h2>Flagged for more explanation</h2>
+    <div class="card"><p class="muted">Moves you marked with "Need more explanation". Copy the list and paste it at the start of the next session (with sync on, they also travel with your progress) so the explanation gets written; clear it once handed over.</p>
+    ${flagged.length ? `<ul>${flagged.map(f => `<li>${esc(f.label)}</li>`).join('')}</ul>` : '<p class="muted">Nothing flagged.</p>'}
+    <div class="row"><button class="btn" id="fcopy" ${flagged.length ? '' : 'disabled'}>Copy list</button><button class="btn" id="fclear" ${flagged.length ? '' : 'disabled'}>Clear after hand-off</button></div></div>
   </main>`;
   document.getElementById('sync')!.onclick = async () => {
     if (!hasToken()) {
@@ -126,6 +141,11 @@ function settingsPage() {
     try { await navigator.clipboard.writeText(data); alert('Progress copied to the clipboard. Paste it somewhere safe.'); }
     catch { prompt('Copy your progress:', data); }
   };
+  document.getElementById('fcopy')!.onclick = async () => {
+    const text = `Moves flagged "need more explanation":\n${flagged.map(f => `- ${f.label}`).join('\n')}`;
+    try { await navigator.clipboard.writeText(text); alert('Copied. Paste it into the next session.'); } catch { prompt('Copy this list:', text); }
+  };
+  document.getElementById('fclear')!.onclick = () => { if (confirm('Clear all flagged moves? Do this after you handed the list over.')) { clearFlags(); settingsPage(); } };
   document.getElementById('imp')!.onclick = () => {
     const raw = prompt('Paste exported progress:');
     if (raw) { try { importProgress(raw); route(); } catch { alert('That is not valid progress data.'); } }
@@ -203,8 +223,8 @@ function learn(o: Opening, v: Variation) {
     };
   };
   const walk = () => {
-    app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button>`);
-    walkLine(ui(), o, v, { next: btn('next'), prev: btn('prev'), trap: btn('trap') }, () => {
+    app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button><button class="btn" id="flag">Need more explanation</button>`);
+    walkLine(ui(), o, v, { next: btn('next'), prev: btn('prev'), trap: btn('trap'), flag: btn('flag') }, () => {
       markLearned(key(o, v)); location.hash = href('practice', o.id, v.id);
     });
   };
@@ -212,8 +232,8 @@ function learn(o: Opening, v: Variation) {
 }
 
 const btn = (id: string) => document.getElementById(id) as HTMLButtonElement;
-const ui = (): Ui => ({ board: document.getElementById('board')!, hint: btn('hint'), prev: btn('prev'), fwd: btn('fwd'), resume: (document.getElementById('resume') as HTMLButtonElement | null) ?? undefined });
-const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</button><button class="ctl" id="hint">Hint</button><button class="ctl" id="fwd" aria-label="Forward one move">›</button><button class="btn primary" id="resume" hidden>Back to the line</button>`;
+const ui = (): Ui => ({ board: document.getElementById('board')!, hint: btn('hint'), prev: btn('prev'), fwd: btn('fwd'), resume: (document.getElementById('resume') as HTMLButtonElement | null) ?? undefined, flag: (document.getElementById('flag') as HTMLButtonElement | null) ?? undefined });
+const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</button><button class="ctl" id="hint">Hint</button><button class="ctl" id="fwd" aria-label="Forward one move">›</button><button class="btn primary" id="resume" hidden>Back to the line</button><button class="btn" id="flag">Need more explanation</button>`;
 
 const endBtns = `<button class="btn primary" id="again" hidden>Again</button><button class="btn" id="done" hidden>Done</button>`;
 
