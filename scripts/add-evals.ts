@@ -1,10 +1,13 @@
 // Build-time only: runs Stockfish (Node) and writes eval (pawns, White's view) onto every move.
+// `--mistakes` instead evaluates only the end of each hand-written common-mistake line. It is a separate run on purpose:
+// the engine's hash table carries over between searches, so mixing the two would shift the other evals by a little.
 import { createRequire } from 'node:module';
 import { writeFileSync } from 'node:fs';
 import { Chess } from 'chess.js';
 import { listContentFiles, loadOpening } from './shared.ts';
 
 const DEPTH = Number(process.env.DEPTH ?? 16);
+const MISTAKES_ONLY = process.argv.includes('--mistakes');
 const require = createRequire(import.meta.url);
 const engine = require('stockfish')('lite-single', onLine);
 let waiting: ((r: { cp: number; best: string }) => void) | null = null;
@@ -36,7 +39,7 @@ for (const file of listContentFiles()) {
       if (userMove) {
         // every other capture or check the user might try here, with the engine's best reply
         const alts: { san: string; reply: string; eval: number }[] = [];
-        for (const alt of chess.moves({ verbose: true })) {
+        for (const alt of MISTAKES_ONLY ? [] : chess.moves({ verbose: true })) {
           if (alt.san === m.san || !(alt.captured || alt.san.includes('+'))) continue;
           const c = new Chess(chess.fen()); c.move(alt.san);
           const { cp, best } = await evalFen(c.fen());
@@ -44,12 +47,18 @@ for (const file of listContentFiles()) {
           try { reply = c.move({ from: best.slice(0, 2), to: best.slice(2, 4), promotion: best[4] }).san; } catch { /* game over */ }
           alts.push({ san: alt.san, reply, eval: round(cp) });
         }
-        if (alts.length) m.caps = alts; else delete m.caps;
+        if (!MISTAKES_ONLY) { if (alts.length) m.caps = alts; else delete m.caps; }
+        // authored common mistakes: eval at the end of the played-out line (White's view)
+        if (MISTAKES_ONLY) for (const x of m.mistakes ?? []) {
+          const c = new Chess(chess.fen());
+          for (const s of [x.san, ...x.line]) c.move(s);
+          x.eval = round((await evalFen(c.fen())).cp);
+        }
       }
       chess.move(m.san);
-      m.eval = round((await evalFen(chess.fen())).cp);
+      if (!MISTAKES_ONLY) m.eval = round((await evalFen(chess.fen())).cp);
     }
-    console.log(`${o.id}/${v.id}: ${v.moves.map(m => `${m.san} ${m.eval}`).join(' | ')}`);
+    console.log(`${o.id}/${v.id}: ${MISTAKES_ONLY ? `${v.moves.reduce((n, m) => n + (m.mistakes?.length ?? 0), 0)} mistakes` : v.moves.map(m => `${m.san} ${m.eval}`).join(' | ')}`);
   }
   writeFileSync(file, JSON.stringify(o, null, 2) + '\n');
 }

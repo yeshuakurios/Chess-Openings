@@ -2,7 +2,7 @@ import { Chess } from 'chess.js';
 import { SLOW_MS } from './mastery.ts';
 import type { Attempt } from './store.ts';
 import type { Opening, Variation } from './types.ts';
-import { whyNot } from './why.ts';
+import { authoredWhy, whyNot } from './why.ts';
 
 import type { Kind } from './explainShared.ts';
 export type { Kind };
@@ -26,6 +26,8 @@ export function explain(a: Attempt, o: Opening, v: Variation): Explained {
   // The same move belongs at this point of another line of the same opening (the user is mixing the lines up).
   // Prefer the line that shares the longest opening sequence with this one.
   const common = (w: Variation) => { let n = 0; while (n < a.p && w.moves[n].san === sans[n]) n++; return n; };
+  const authored = authoredWhy(o, line, played, v, a.p); // a hand-written reason beats the generic texts below
+  if (authored) return { kind: 'tactical', text: authored };
   const sibling = o.variations.filter(w => w.id !== v.id && w.moves.length > a.p && w.moves[a.p].san === played)
     .sort((x, y) => common(y) - common(x))[0];
   if (sibling) return { kind: 'other-line', text: `${played} is the move in the "${sibling.name}" line, but this line goes differently here. Check which reply you are facing.` };
@@ -37,7 +39,7 @@ export function explain(a: Attempt, o: Opening, v: Variation): Explained {
   sans.slice(0, a.p).forEach(s => chess.move(s));
   let tried;
   try { tried = chess.move(played); } catch { return { kind: 'other', text: `${played} was not the move in this line.` }; }
-  if (tried.captured || tried.san.includes('+')) return { kind: 'tactical', text: whyNot(o, line, { san: tried.san, captured: tried.captured }) };
+  if (tried.captured || tried.san.includes('+')) return { kind: 'tactical', text: whyNot(o, line, { san: tried.san, captured: tried.captured }, v, a.p) };
   return { kind: 'other', text: `${played} isn't part of this line. Remember the plan: ${o.goal.title.toLowerCase()}.` };
 }
 

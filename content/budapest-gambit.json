@@ -132,7 +132,13 @@
             "w": 31900,
             "d": 1857,
             "b": 31417
-          }
+          },
+          "versus": [
+            {
+              "line": "bf4-declined",
+              "text": "The gambit push is right after 2.c4: White's d-pawn must take and your pieces get active at once. Against the quiet 2.Bf4 or 2.Nf3 you take space with the d-pawn instead."
+            }
+          ]
         },
         {
           "san": "dxe5",
@@ -192,7 +198,33 @@
             "w": 12581,
             "d": 721,
             "b": 12498
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Nc6",
+              "line": [
+                "exf6",
+                "Qxf6"
+              ],
+              "text": "After White takes on e5 the pawn attacks your knight on f6. Any move that ignores that loses a piece. Win the pawn back, but save the knight first.",
+              "eval": 6.3
+            },
+            {
+              "san": "d6",
+              "line": [
+                "exf6",
+                "Qxf6"
+              ],
+              "text": "After White takes on e5 the pawn attacks your knight on f6, and d6 does not save it: exf6 wins a piece. Win the pawn back, but save the knight first.",
+              "eval": 7
+            }
+          ],
+          "versus": [
+            {
+              "line": "e3-declined",
+              "text": "Because White took on e5, there is a pawn to win back and the knight goes after it. Against 3.e3, 3.Nc3 or 3.d5 White did not take, so there is nothing to chase."
+            }
+          ]
         },
         {
           "san": "Bf4",
@@ -334,7 +366,19 @@
             "w": 812,
             "d": 65,
             "b": 954
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Ngxe5",
+              "line": [
+                "Nxe5",
+                "Nxe5",
+                "Bxe5"
+              ],
+              "text": "Taking at once drops a piece. Count the attackers and defenders on e5: White has more, so the knights trade and the bishop on f4 collects the last one.",
+              "eval": 6
+            }
+          ]
         },
         {
           "san": "Nbd2",
@@ -406,7 +450,29 @@
             "w": 154,
             "d": 5,
             "b": 349
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Bxd2+",
+              "line": [
+                "Qxd2",
+                "Qe7",
+                "Qc3"
+              ],
+              "text": "Trading off your pinning bishop frees White's knight and gives White the bishop pair. The pin on d2 is your best asset: keep it until the pawn can be won back.",
+              "eval": 1.9
+            },
+            {
+              "san": "Ngxe5",
+              "line": [
+                "Bxe5",
+                "Nxe5",
+                "Nxe5"
+              ],
+              "text": "Taking on e5 too early loses a piece: the bishop takes first, then the knight, and you run out of attackers. Add another attacker first.",
+              "eval": 5.5
+            }
+          ]
         },
         {
           "san": "e3",
@@ -606,7 +672,13 @@
             "w": 31900,
             "d": 1857,
             "b": 31417
-          }
+          },
+          "versus": [
+            {
+              "line": "bf4-declined",
+              "text": "The gambit push is right after 2.c4: White's d-pawn must take and your pieces get active at once. Against the quiet 2.Bf4 or 2.Nf3 you take space with the d-pawn instead."
+            }
+          ]
         },
         {
           "san": "dxe5",
@@ -666,7 +738,33 @@
             "w": 12581,
             "d": 721,
             "b": 12498
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Nc6",
+              "line": [
+                "exf6",
+                "Qxf6"
+              ],
+              "text": "After White takes on e5 the pawn attacks your knight on f6. Any move that ignores that loses a piece. Win the pawn back, but save the knight first.",
+              "eval": 6.2
+            },
+            {
+              "san": "d6",
+              "line": [
+                "exf6",
+                "Qxf6"
+              ],
+              "text": "After White takes on e5 the pawn attacks your knight on f6, and d6 does not save it: exf6 wins a piece. Win the pawn back, but save the knight first.",
+              "eval": 7
+            }
+          ],
+          "versus": [
+            {
+              "line": "e3-declined",
+              "text": "Because White took on e5, there is a pawn to win back and the knight goes after it. Against 3.e3, 3.Nc3 or 3.d5 White did not take, so there is nothing to chase."
+            }
+          ]
         },
         {
           "san": "Nf3",
@@ -993,7 +1091,13 @@
             "w": 31900,
             "d": 1857,
             "b": 31417
-          }
+          },
+          "versus": [
+            {
+              "line": "bf4-declined",
+              "text": "The gambit push is right after 2.c4: White's d-pawn must take and your pieces get active at once. Against the quiet 2.Bf4 or 2.Nf3 you take space with the d-pawn instead."
+            }
+          ]
         },
         {
           "san": "dxe5",
@@ -1053,7 +1157,33 @@
             "w": 12581,
             "d": 721,
             "b": 12498
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Nc6",
+              "line": [
+                "exf6",
+                "Qxf6"
+              ],
+              "text": "After White takes on e5 the pawn attacks your knight on f6. Any move that ignores that loses a piece. Win the pawn back, but save the knight first.",
+              "eval": 6.3
+            },
+            {
+              "san": "d6",
+              "line": [
+                "exf6",
+                "Qxf6"
+              ],
+              "text": "After White takes on e5 the pawn attacks your knight on f6, and d6 does not save it: exf6 wins a piece. Win the pawn back, but save the knight first.",
+              "eval": 7
+            }
+          ],
+          "versus": [
+            {
+              "line": "e3-declined",
+              "text": "Because White took on e5, there is a pawn to win back and the knight goes after it. Against 3.e3, 3.Nc3 or 3.d5 White did not take, so there is nothing to chase."
+            }
+          ]
         },
         {
           "san": "Bf4",
@@ -1195,7 +1325,19 @@
             "w": 812,
             "d": 65,
             "b": 954
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Ngxe5",
+              "line": [
+                "Nxe5",
+                "Nxe5",
+                "Bxe5"
+              ],
+              "text": "Taking at once drops a piece. Count the attackers and defenders on e5: White has more, so the knights trade and the bishop on f4 collects the last one.",
+              "eval": 6.1
+            }
+          ]
         },
         {
           "san": "Nbd2",
@@ -1267,7 +1409,29 @@
             "w": 154,
             "d": 5,
             "b": 349
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Bxd2+",
+              "line": [
+                "Qxd2",
+                "Qe7",
+                "Qc3"
+              ],
+              "text": "Trading off your pinning bishop frees White's knight and gives White the bishop pair. The pin on d2 is your best asset: keep it until the pawn can be won back.",
+              "eval": 2
+            },
+            {
+              "san": "Ngxe5",
+              "line": [
+                "Bxe5",
+                "Nxe5",
+                "Nxe5"
+              ],
+              "text": "Taking on e5 too early loses a piece: the bishop takes first, then the knight, and you run out of attackers. Add another attacker first.",
+              "eval": 5.8
+            }
+          ]
         },
         {
           "san": "a3",
@@ -1352,7 +1516,25 @@
             "w": 25,
             "d": 0,
             "b": 155
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Bxa3",
+              "line": [
+                "Rxa3"
+              ],
+              "text": "Grabbing the pawn gives up the bishop for a pawn: the rook simply recaptures.",
+              "eval": 6.6
+            },
+            {
+              "san": "Bd6",
+              "line": [
+                "exd6"
+              ],
+              "text": "The retreat square is covered by the e5 pawn, which simply takes the bishop.",
+              "eval": 7.7
+            }
+          ]
         },
         {
           "san": "axb4",
@@ -1523,7 +1705,13 @@
             "w": 31900,
             "d": 1857,
             "b": 31417
-          }
+          },
+          "versus": [
+            {
+              "line": "bf4-declined",
+              "text": "The gambit push is right after 2.c4: White's d-pawn must take and your pieces get active at once. Against the quiet 2.Bf4 or 2.Nf3 you take space with the d-pawn instead."
+            }
+          ]
         },
         {
           "san": "e3",
@@ -1578,7 +1766,23 @@
             "w": 9785,
             "d": 724,
             "b": 9912
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Ng4",
+              "line": [
+                "Qxg4"
+              ],
+              "text": "The knight jump belongs to the line where White takes on e5. Here White played e3, which opens the queen's diagonal, so the knight is just captured.",
+              "eval": 5.8
+            }
+          ],
+          "versus": [
+            {
+              "line": "bf4-rubinstein",
+              "text": "After 3.dxe5 you chase the extra pawn with a knight. White declined here, so take the pawn on d4 and open the position for your pieces."
+            }
+          ]
         },
         {
           "san": "exd4",
@@ -1801,7 +2005,18 @@
             "w": 77,
             "d": 8,
             "b": 74
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Qxd5",
+              "line": [
+                "Nxd5",
+                "Nxd5"
+              ],
+              "text": "The knight on c3 attacks d5, so the queen is captured for a knight. Count who attacks d5 before the queen recaptures.",
+              "eval": 6.3
+            }
+          ]
         }
       ]
     },
@@ -1906,7 +2121,13 @@
             "w": 31900,
             "d": 1857,
             "b": 31417
-          }
+          },
+          "versus": [
+            {
+              "line": "bf4-declined",
+              "text": "The gambit push is right after 2.c4: White's d-pawn must take and your pieces get active at once. Against the quiet 2.Bf4 or 2.Nf3 you take space with the d-pawn instead."
+            }
+          ]
         },
         {
           "san": "Nc3",
@@ -1948,7 +2169,13 @@
             "w": 7847,
             "d": 623,
             "b": 9113
-          }
+          },
+          "versus": [
+            {
+              "line": "bf4-rubinstein",
+              "text": "After 3.dxe5 you chase the extra pawn with a knight. White declined here, so take the pawn on d4 and open the position for your pieces."
+            }
+          ]
         },
         {
           "san": "Qxd4",
@@ -2095,7 +2322,21 @@
             "w": 1167,
             "d": 99,
             "b": 1199
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Ne4",
+              "line": [
+                "Nxe4",
+                "d5",
+                "Bxb4",
+                "Nxb4",
+                "Qa4+"
+              ],
+              "text": "Jumping out of the pin runs into a trade and a queen check: your bishop on b4 loses its support and White ends a piece up.",
+              "eval": 5.4
+            }
+          ]
         },
         {
           "san": "e3",
@@ -2250,7 +2491,13 @@
             "w": 31900,
             "d": 1857,
             "b": 31417
-          }
+          },
+          "versus": [
+            {
+              "line": "bf4-declined",
+              "text": "The gambit push is right after 2.c4: White's d-pawn must take and your pieces get active at once. Against the quiet 2.Bf4 or 2.Nf3 you take space with the d-pawn instead."
+            }
+          ]
         },
         {
           "san": "d5",
@@ -2304,7 +2551,13 @@
             "w": 4701,
             "d": 292,
             "b": 3984
-          }
+          },
+          "versus": [
+            {
+              "line": "bf4-rubinstein",
+              "text": "After 3.dxe5 the knight goes after the pawn. White pushed past instead, so nothing hangs: support your center with a pawn and develop."
+            }
+          ]
         },
         {
           "san": "Nc3",
@@ -2407,7 +2660,17 @@
             "w": 1498,
             "d": 85,
             "b": 1361
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Nxe4",
+              "line": [
+                "Nxe4"
+              ],
+              "text": "The e4 pawn is guarded by the knight on c3, so this just gives a knight for a pawn.",
+              "eval": 4.6
+            }
+          ]
         },
         {
           "san": "Nf3",
@@ -2461,7 +2724,17 @@
             "w": 61,
             "d": 3,
             "b": 41
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Nxe4",
+              "line": [
+                "Nxe4"
+              ],
+              "text": "The e4 pawn is guarded by the knight on c3, so this just gives a knight for a pawn.",
+              "eval": 4.2
+            }
+          ]
         }
       ]
     },
@@ -2552,7 +2825,27 @@
             "w": 219127,
             "d": 16083,
             "b": 190607
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e5",
+              "line": [
+                "dxe5",
+                "Ne4",
+                "f3",
+                "Nc5",
+                "e4"
+              ],
+              "text": "The gambit push needs White's c-pawn on c4. Here the bishop on f4 already guards e5, so you are just a pawn down with nothing to show. Take space with a pawn instead.",
+              "eval": 2.1
+            }
+          ],
+          "versus": [
+            {
+              "line": "bf4-rubinstein",
+              "text": "After 2.c4 you can play the gambit pawn push. Here the bishop on f4 already guards e5, so the pawn would be lost for nothing: claim the center with the d-pawn."
+            }
+          ]
         },
         {
           "san": "e3",
@@ -2842,7 +3135,26 @@
             "w": 249830,
             "d": 20944,
             "b": 241048
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e5",
+              "line": [
+                "dxe5",
+                "Ne4",
+                "Qd5",
+                "f5"
+              ],
+              "text": "The gambit push needs White's c-pawn on c4. Here the knight on f3 already guards e5, so you are just a pawn down with nothing to show. Take space with a pawn instead.",
+              "eval": 1.9
+            }
+          ],
+          "versus": [
+            {
+              "line": "bf4-rubinstein",
+              "text": "After 2.c4 you can play the gambit pawn push. Here the knight on f3 already guards e5, so the pawn would be lost for nothing: claim the center with the d-pawn."
+            }
+          ]
         },
         {
           "san": "Bf4",
