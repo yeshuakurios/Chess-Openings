@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { Chess } from 'chess.js';
 import { listContentFiles, loadOpening, type Shape } from './shared.ts';
 
@@ -83,5 +85,10 @@ for (const file of listContentFiles()) {
     });
   }
 }
+// answers written by the daily review: { questionId: { a, t } }
+try {
+  const answers = JSON.parse(readFileSync(join(import.meta.dirname, '..', 'src', 'answers.json'), 'utf8')) as Record<string, { a?: unknown; t?: unknown }>;
+  for (const [id, x] of Object.entries(answers)) if (typeof x?.a !== 'string' || !x.a.trim() || typeof x.t !== 'number') fail('answers.json', `answer ${id} needs a text "a" and a time "t"`);
+} catch { fail('answers.json', 'missing or not valid JSON'); }
 if (errors) { console.error(`\n${errors} problem(s)`); process.exit(1); }
 console.log('✓ content valid');

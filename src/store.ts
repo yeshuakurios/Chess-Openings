@@ -1,5 +1,5 @@
 import { createEmptyCard, fsrs, Rating, type Card } from 'ts-fsrs';
-import { MAX_ATTEMPTS, mergeProgress } from './merge.ts';
+import { MAX_ATTEMPTS, MAX_QUESTIONS, MAX_QUESTION_CHARS, mergeProgress } from './merge.ts';
 import { LINE_BONUS, dayKey, xpForAttempt } from './gamify.ts';
 
 /** One user move in a line. Short field names on purpose: the log is synced and the Worker caps the body at 256 KB. */
@@ -15,6 +15,13 @@ export interface Attempt {
   o?: 1;           // 1 if the line was started from the middle (spot check)
   s?: string;      // the move played, kept only for wrong attempts
 }
+/** A question the owner asked in the app. Answers are not stored here: the daily review writes them to `src/answers.json` by `id`. */
+export interface Question {
+  id: string;
+  t: number;       // epoch ms
+  q: string;
+  k?: string;      // the move it is about: `opening/line#ply` (same id as a flag); absent for a general question
+}
 export interface Progress {
   learned: Record<string, true>;
   cards: Record<string, Card>;
@@ -28,8 +35,9 @@ export interface Progress {
   flags: Record<string, number>;
   /** Moves flagged at or before this time were handed off and are gone. Merged by max so clearing on one device sticks. */
   flagsClearedAt: number;
+  questions: Question[];
 }
-const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {}, flags: {}, flagsClearedAt: 0 });
+const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {}, flags: {}, flagsClearedAt: 0, questions: [] });
 const DB = 'openings', STORE = 'kv', KEY = 'progress', TOKEN_KEY = 'syncToken';
 const scheduler = fsrs();
 
@@ -132,6 +140,16 @@ export function toggleFlag(fk: string): boolean {
 }
 /** Hand-off done: drop every flag made so far. */
 export function clearFlags() { progress.flags = {}; progress.flagsClearedAt = Date.now(); void save(); }
+/** Store a question; the daily review picks it up once it has synced. Returns false for an empty text. */
+export function addQuestion(text: string, k?: string): boolean {
+  const q = text.trim().slice(0, MAX_QUESTION_CHARS);
+  if (!q) return false;
+  const t = Date.now();
+  progress.questions.push({ id: t.toString(36) + Math.random().toString(36).slice(2, 6), t, q, ...(k ? { k } : {}) });
+  if (progress.questions.length > MAX_QUESTIONS) progress.questions.splice(0, progress.questions.length - MAX_QUESTIONS);
+  void save();
+  return true;
+}
 export const exportProgress = () => JSON.stringify(progress);
 export function importProgress(raw: string) { progress = parse(raw); void save(); }
 
