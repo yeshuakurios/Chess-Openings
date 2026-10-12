@@ -20,6 +20,20 @@ async function sameToken(a: string, b: string): Promise<boolean> {
   return diff === 0;
 }
 
+/** Read-only list of the questions asked in the app, for the daily review routine. Same token as the rest of the API. Only the question fields leave the Worker, never the rest of the progress. */
+async function questions(req: Request, env: Env): Promise<Response> {
+  if (req.method !== 'GET') return json({ error: 'method not allowed' }, 405);
+  const row = await env.DB.prepare('SELECT data FROM progress WHERE id = 1').first<{ data: string }>();
+  let list: unknown[] = [];
+  try { const q = row ? (JSON.parse(row.data) as { questions?: unknown }).questions : []; if (Array.isArray(q)) list = q; } catch { /* unreadable progress: no questions */ }
+  const out = list.flatMap(x => {
+    const o = x as { id?: unknown; t?: unknown; q?: unknown; k?: unknown };
+    return typeof o?.id === 'string' && typeof o.q === 'string' && typeof o.t === 'number'
+      ? [{ id: o.id, t: o.t, q: o.q.slice(0, 500), ...(typeof o.k === 'string' ? { k: o.k } : {}) }] : [];
+  });
+  return json({ questions: out });
+}
+
 let tablesReady = false;
 async function ensureTables(db: D1Database) {
   if (tablesReady) return;
@@ -57,11 +71,12 @@ async function explain(req: Request, env: Env): Promise<Response> {
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
-    if (url.pathname !== '/api/progress' && url.pathname !== '/api/explain') return env.ASSETS.fetch(req);
+    if (url.pathname !== '/api/progress' && url.pathname !== '/api/explain' && url.pathname !== '/api/questions') return env.ASSETS.fetch(req);
 
     const given = (req.headers.get('authorization') ?? '').replace(/^Bearer /, '');
     if (!env.SYNC_TOKEN || !(await sameToken(given, env.SYNC_TOKEN))) return json({ error: 'unauthorized' }, 401);
     if (url.pathname === '/api/explain') return explain(req, env);
+    if (url.pathname === '/api/questions') return questions(req, env);
 
     if (req.method === 'GET') {
       const row = await env.DB.prepare('SELECT data, updated_at FROM progress WHERE id = 1').first<{ data: string; updated_at: number }>();
