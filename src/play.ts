@@ -4,16 +4,29 @@ import { createBoard, type Board } from './board.ts';
 import { esc, setEval, setMessage, setProgress } from './ui.ts';
 import { whyNot } from './why.ts';
 import { movePopularity } from './stats.ts';
-import { flagKey, isFlagged, toggleFlag } from './store.ts';
+import { addQuestion, flagKey, isFlagged, toggleFlag } from './store.ts';
 import { key } from './content.ts';
 import type { Mistake, Move, Opening, Variation } from './types.ts';
 
 export const START_EVAL = 0.2;
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-export interface Ui { board: HTMLElement; hint: HTMLButtonElement; prev: HTMLButtonElement; fwd: HTMLButtonElement; resume?: HTMLButtonElement; flag?: HTMLButtonElement }
+export interface Ui { board: HTMLElement; hint: HTMLButtonElement; prev: HTMLButtonElement; fwd: HTMLButtonElement; resume?: HTMLButtonElement; flag?: HTMLButtonElement; ask?: HTMLButtonElement }
 
 export const FLAG_TEXT = { off: 'Need more explanation', on: 'Flagged ✓ (tap to undo)' };
+export const ASK_TEXT = { idle: 'Ask a question', saved: 'Question saved ✓' };
+/** Wire an "Ask a question" button to one move: a native prompt takes the text, the question is stored with the move's id. */
+function wireAsk(btn: HTMLButtonElement | undefined, k: string, ply: () => number | undefined) {
+  if (!btn) return () => {};
+  const sync = () => { btn.disabled = ply() === undefined; };
+  btn.onclick = () => {
+    const p = ply(); if (p === undefined) return;
+    const text = prompt('Your question about this move. It is stored and answered in the daily review:');
+    if (text && addQuestion(text, flagKey(k, p))) { btn.textContent = ASK_TEXT.saved; setTimeout(() => { btn.textContent = ASK_TEXT.idle; }, 2500); }
+  };
+  sync();
+  return sync;
+}
 /** Wire a "Need more explanation" button to one move of the line. `ply()` says which move the button is about right now (or undefined for none). */
 function wireFlag(btn: HTMLButtonElement | undefined, k: string, ply: () => number | undefined) {
   if (!btn) return () => {};
@@ -63,8 +76,8 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
     const live = () => view === idx;
     // the move the button is about: the one being asked now, or the one on screen when looking back, or the last one when the line is done
     const flagPly = () => (busy ? undefined : finished ? v.moves.length - 1 : live() ? idx : view - 1 >= 0 ? view - 1 : undefined);
-    const syncFlag = wireFlag(ui.flag, key(o, v), flagPly);
-    const syncArrows = () => { ui.prev.disabled = busy || view === 0; ui.fwd.disabled = busy || live(); syncFlag(); };
+    const syncFlag = wireFlag(ui.flag, key(o, v), flagPly), syncAsk = wireAsk(ui.ask, key(o, v), flagPly);
+    const syncArrows = () => { ui.prev.disabled = busy || view === 0; ui.fwd.disabled = busy || live(); syncFlag(); syncAsk(); };
     const showLive = () => {
       view = idx; board.clearArrow(); syncArrows();
       if (finished) { board.show(chess, last); return; }
@@ -149,10 +162,11 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
 }
 
 /** Step-through walkthrough used by Learn mode. On a move with known slips, a button plays the common mistake out before going on. */
-export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTMLButtonElement; prev: HTMLButtonElement; trap?: HTMLButtonElement; flag?: HTMLButtonElement }, onEnd: () => void) {
+export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTMLButtonElement; prev: HTMLButtonElement; trap?: HTMLButtonElement; flag?: HTMLButtonElement; ask?: HTMLButtonElement }, onEnd: () => void) {
   const board = createBoard(ui.board, o.color);
   let idx = 0, demoing = false, shown = 0, token = 0;
-  const syncFlag = wireFlag(controls.flag, key(o, v), () => (idx > 0 && !demoing ? idx - 1 : undefined));
+  const learnPly = () => (idx > 0 && !demoing ? idx - 1 : undefined);
+  const syncFlag = wireFlag(controls.flag, key(o, v), learnPly), syncAsk = wireAsk(controls.ask, key(o, v), learnPly);
   const render = () => {
     token++; demoing = false;
     const chess = new Chess(); let last: [Key, Key] | undefined;
@@ -164,7 +178,7 @@ export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTM
     setMessage(idx ? `<b>${moveLabel(idx - 1, m.san)}</b> ${noteWithVersus(m)}${pop ? `<div class="stat">${pop}</div>` : ''}` : 'Press next to step through the line.');
     controls.prev.disabled = idx === 0;
     controls.next.textContent = idx === v.moves.length ? 'Finish' : 'Next';
-    syncFlag();
+    syncFlag(); syncAsk();
     if (controls.trap) {
       const n = m?.mistakes?.length ?? 0;
       controls.trap.hidden = !n; controls.trap.disabled = false;
@@ -175,7 +189,7 @@ export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTM
     const m = v.moves[idx - 1], list = m?.mistakes;
     if (!list?.length) return;
     const x = list[shown++ % list.length], my = ++token;
-    demoing = true; syncFlag(); controls.prev.disabled = true; controls.trap!.disabled = true; controls.next.disabled = true;
+    demoing = true; syncFlag(); syncAsk(); controls.prev.disabled = true; controls.trap!.disabled = true; controls.next.disabled = true;
     const before = new Chess(); for (let i = 0; i < idx - 1; i++) before.move(v.moves[i].san);
     await showMistake(board, before.fen(), x, () => my !== token);
     if (my !== token) return;

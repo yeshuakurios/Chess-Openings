@@ -1,7 +1,7 @@
 import './style.css';
 import { registerSW } from 'virtual:pwa-register';
 import { openings, findOpening, findVariation, key } from './content.ts';
-import { awardLineBonus, clearFlags, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, loadProgress, logAttempt, markLearned, review, setBestCombo, setToken, syncNow, type SyncStatus } from './store.ts';
+import { addQuestion, awardLineBonus, clearFlags, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, loadProgress, logAttempt, markLearned, review, setBestCombo, setToken, syncNow, type SyncStatus } from './store.ts';
 import { moveLabel, playLine, walkLine, type Ui } from './play.ts';
 import { fenAfter, staticBoard } from './board.ts';
 import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery.ts';
@@ -10,6 +10,7 @@ import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
 import { BADGES, DAILY_GOAL, dayKey, earnedNow, levelFor, streaks, totalXp } from './gamify.ts';
 import { esc, screenShell } from './ui.ts';
+import { answers } from './answers.ts';
 import type { Opening, PlanBoard, Variation } from './types.ts';
 
 const GEAR = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
@@ -73,6 +74,7 @@ async function runSync(rerender: boolean) {
 function home() {
   const due = dueKeys().filter(k => lookup(k)).length;
   const trouble = troubleSpots(getProgress().attempts, lookup).length;
+  const waiting = getProgress().questions.filter(q => !answers[q.id]).length;
   const fresh = refreshBadges(), prog = getProgress();
   const streak = streaks(prog.xp), today = prog.xp[dayKey()] ?? 0, next = BADGES.find(b => !prog.badges[b.id]);
   const lv = levelFor(totalXp(prog.xp));
@@ -93,6 +95,7 @@ function home() {
     <p class="muted">Learn the plan first, then the line.</p>
     ${progressCard}
     <a class="btn primary big" href="${href('drill')}">Drill ${due ? `· ${due} due` : '· nothing due'}</a>
+    <a class="btn big" href="${href('ask')}">Ask a question${waiting ? ` · ${waiting} waiting` : ''}</a>
     <a class="btn big" href="${href('mistakes')}">Mistakes${trouble ? ` · ${trouble}` : ''}</a>
     <h2>Openings</h2>
     ${openings.map(o => {
@@ -149,6 +152,32 @@ function settingsPage() {
   document.getElementById('imp')!.onclick = () => {
     const raw = prompt('Paste exported progress:');
     if (raw) { try { importProgress(raw); route(); } catch { alert('That is not valid progress data.'); } }
+  };
+}
+
+/** Where a question was asked: opening, line and move, from the move id. */
+function questionContext(k?: string) {
+  if (!k) return 'General question';
+  const [vk, ply] = k.split('#'), found = lookup(vk), p = Number(ply), m = found?.[1].moves[p];
+  return found && m ? `${found[0].name} · ${found[1].name} · ${moveLabel(p, m.san)}` : 'A move that has since changed';
+}
+const when = (t: number) => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+
+function askPage() {
+  const list = [...getProgress().questions].reverse();
+  app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>Ask a question</h1>
+    <p class="muted">Anything about an opening, a line or a move. Questions are stored with your progress and reviewed once a day; the answer appears here after the next update. To ask about one move, use "Ask a question" while you learn or practice it.</p>
+    ${hasToken() ? '' : '<div class="card"><b>Sync is off.</b><p class="muted">The daily review reads questions from your synced copy, so set up sync in Settings first or it will never see them.</p></div>'}
+    <div class="card"><textarea id="qtext" rows="3" maxlength="500" placeholder="Your question" aria-label="Your question"></textarea>
+    <div class="row"><button class="btn primary" id="qsend">Send</button><span class="muted" id="qmsg"></span></div></div>
+    <h2>Your questions</h2>
+    ${list.length ? list.map(q => { const a = answers[q.id]; return `<div class="card"><div class="tag">${esc(questionContext(q.k))} · ${esc(when(q.t))}</div>
+      <p><b>${esc(q.q)}</b></p>${a ? `<p>${esc(a.a)}</p><div class="muted">Answered ${esc(when(a.t))}</div>` : '<p class="muted">Waiting for the daily review.</p>'}</div>`; }).join('')
+      : '<div class="card"><p class="muted">No questions yet.</p></div>'}
+  </main>`;
+  document.getElementById('qsend')!.onclick = () => {
+    const el = document.getElementById('qtext') as HTMLTextAreaElement;
+    if (addQuestion(el.value)) askPage(); else document.getElementById('qmsg')!.textContent = 'Type a question first.';
   };
 }
 
@@ -223,8 +252,8 @@ function learn(o: Opening, v: Variation) {
     };
   };
   const walk = () => {
-    app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button><button class="btn" id="flag">Need more explanation</button>`);
-    walkLine(ui(), o, v, { next: btn('next'), prev: btn('prev'), trap: btn('trap'), flag: btn('flag') }, () => {
+    app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button>`);
+    walkLine(ui(), o, v, { next: btn('next'), prev: btn('prev'), trap: btn('trap'), flag: btn('flag'), ask: btn('ask') }, () => {
       markLearned(key(o, v)); location.hash = href('practice', o.id, v.id);
     });
   };
@@ -232,8 +261,8 @@ function learn(o: Opening, v: Variation) {
 }
 
 const btn = (id: string) => document.getElementById(id) as HTMLButtonElement;
-const ui = (): Ui => ({ board: document.getElementById('board')!, hint: btn('hint'), prev: btn('prev'), fwd: btn('fwd'), resume: (document.getElementById('resume') as HTMLButtonElement | null) ?? undefined, flag: (document.getElementById('flag') as HTMLButtonElement | null) ?? undefined });
-const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</button><button class="ctl" id="hint">Hint</button><button class="ctl" id="fwd" aria-label="Forward one move">›</button><button class="btn primary" id="resume" hidden>Back to the line</button><button class="btn" id="flag">Need more explanation</button>`;
+const ui = (): Ui => ({ board: document.getElementById('board')!, hint: btn('hint'), prev: btn('prev'), fwd: btn('fwd'), resume: (document.getElementById('resume') as HTMLButtonElement | null) ?? undefined, flag: (document.getElementById('flag') as HTMLButtonElement | null) ?? undefined, ask: (document.getElementById('ask') as HTMLButtonElement | null) ?? undefined });
+const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</button><button class="ctl" id="hint">Hint</button><button class="ctl" id="fwd" aria-label="Forward one move">›</button><button class="btn primary" id="resume" hidden>Back to the line</button><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button>`;
 
 const endBtns = `<button class="btn primary" id="again" hidden>Again</button><button class="btn" id="done" hidden>Done</button>`;
 
@@ -298,6 +327,7 @@ function route() {
   else if (a === 'practice' && o && v) void practice(o, v);
   else if (a === 'drill') void drill();
   else if (a === 'mistakes') mistakesPage();
+  else if (a === 'ask') askPage();
   else if (a === 'settings') settingsPage();
   else home();
   window.scrollTo(0, 0);
