@@ -1,5 +1,6 @@
 import type { Card } from 'ts-fsrs';
 import type { Attempt, Progress } from './store.ts';
+import type { Stamped } from './flags.ts';
 
 const reviewedAt = (c?: Card) => (c?.last_review ? +new Date(c.last_review) : 0);
 
@@ -25,8 +26,8 @@ const mergeEarliest = (a: Record<string, string>, b: Record<string, string>) => 
   return out;
 };
 
-/** Per opening, the most recent change wins, so bringing an opening back on one device is not undone by an older copy on another. */
-const mergeShelf = (a: Progress['shelf'], b: Progress['shelf']) => {
+/** Per key, the most recent change wins, so bringing an opening back (or clearing a flag) on one device is not undone by an older copy on another. */
+const mergeStamped = (a: Record<string, Stamped>, b: Record<string, Stamped>) => {
   const out = { ...a };
   for (const [k, v] of Object.entries(b)) if (!out[k] || v.t > out[k].t) out[k] = v;
   return out;
@@ -40,5 +41,5 @@ export function mergeProgress(a: Progress, b: Progress): Progress {
     cards[k] = !x ? y : !y ? x : reviewedAt(y) > reviewedAt(x) ? y : x;
   }
   return { learned: { ...a.learned, ...b.learned }, cards, bestCombo: Math.max(a.bestCombo, b.bestCombo), attempts: mergeAttempts(a.attempts, b.attempts),
-    xp: mergeMax(a.xp, b.xp), badges: mergeEarliest(a.badges, b.badges), shelf: mergeShelf(a.shelf ?? {}, b.shelf ?? {}) };
+    xp: mergeMax(a.xp, b.xp), badges: mergeEarliest(a.badges, b.badges), shelf: mergeStamped(a.shelf ?? {}, b.shelf ?? {}), flags: mergeStamped(a.flags ?? {}, b.flags ?? {}) };
 }

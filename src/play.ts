@@ -95,7 +95,7 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
 }
 
 /** Step-through walkthrough used by Learn mode. */
-export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTMLButtonElement; prev: HTMLButtonElement }, onEnd: () => void) {
+export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTMLButtonElement; prev: HTMLButtonElement }, onEnd: () => void, onStep?: (idx: number) => void) {
   const board = createBoard(ui.board, o.color);
   let idx = 0;
   const render = () => {
@@ -108,6 +108,7 @@ export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTM
     setMessage(idx ? `<b>${moveLabel(idx - 1, m.san)}</b> ${m.note}${pop ? `<div class="stat">${pop}</div>` : ''}` : 'Press next to step through the line.');
     controls.prev.disabled = idx === 0;
     controls.next.textContent = idx === v.moves.length ? 'Finish' : 'Next';
+    onStep?.(idx);
   };
   controls.next.onclick = () => { if (idx === v.moves.length) return onEnd(); idx++; render(); };
   controls.prev.onclick = () => { if (idx > 0) { idx--; render(); } };

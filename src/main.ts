@@ -1,7 +1,7 @@
 import './style.css';
 import { registerSW } from 'virtual:pwa-register';
 import { openings, findOpening, findVariation, key } from './content.ts';
-import { awardLineBonus, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, isShelved, loadProgress, logAttempt, markLearned, review, setBestCombo, setShelved, setToken, syncNow, type SyncStatus } from './store.ts';
+import { awardLineBonus, clearFlags, dueKeys, exportProgress, flaggedCount, getProgress, grantBadges, hasToken, importProgress, isFlagged, isLearned, isShelved, loadProgress, logAttempt, markLearned, review, setBestCombo, setFlagged, setShelved, setToken, syncNow, type SyncStatus } from './store.ts';
 import { playLine, walkLine, type Ui } from './play.ts';
 import { fenAfter, staticBoard } from './board.ts';
 import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery.ts';
@@ -10,6 +10,8 @@ import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
 import { BADGES, DAILY_GOAL, dayKey, earnedNow, levelFor, streaks, totalXp } from './gamify.ts';
 import { esc, screenShell } from './ui.ts';
+import { flagReport } from './flags.ts';
+import { goTo, installNavLinks, trackEntry } from './nav.ts';
 import type { Opening, PlanBoard, Variation } from './types.ts';
 
 const GEAR = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
@@ -52,6 +54,10 @@ const refreshBadges = () => grantBadges(earnedNow({
   xp: getProgress().xp, levels: openings.flatMap(o => o.variations.map(v => masteryOf(o, v).level))
 }));
 const goalKey = (o: Opening) => `goal:${o.id}`;
+const lookupAny = (k: string): [Opening, Variation] | undefined => {
+  const [oid, vid] = k.split('/'); const o = findOpening(oid); const v = o && findVariation(o, vid);
+  return o && v ? [o, v] : undefined;
+};
 const lookup = (k: string): [Opening, Variation] | undefined => {
   const [oid, vid] = k.split('/'); const o = findOpening(oid); const v = o && findVariation(o, vid);
   return o && v && !isShelved(o.id) ? [o, v] : undefined; // saved-for-later openings stay out of Drill and Mistakes
@@ -115,12 +121,28 @@ function home() {
 }
 
 function settingsPage() {
-  app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>Settings</h1>
+  app.innerHTML = `<main class="page"><a class="back" data-goback href="#/">← Home</a><h1>Settings</h1>
     <h2>Backup &amp; sync</h2>
     <div class="card"><p class="muted">Your progress lives on this device. Sync copies it to your own Cloudflare Worker so another device can pick it up; export keeps a copy you can paste somewhere safe.</p>
     <div class="row"><button class="btn" id="sync">${hasToken() ? 'Sync now' : 'Set up sync'}</button><span class="muted" id="sync-msg">${esc(syncText)}</span></div>
     <div class="row"><button class="btn" id="exp">Export progress</button><button class="btn" id="imp">Import</button></div></div>
+    <h2>Explanation requests</h2>
+    <div class="card"><p class="muted">On any move in Learn, tap <b>Needs more explanation</b>. The moves you mark are kept here. Copy the list and send it to Claude, which will write the missing explanations in the next update.</p>
+    <div class="row"><b id="flag-count"></b></div>
+    <div class="row"><button class="btn" id="flag-copy">Copy list</button><button class="btn" id="flag-clear">Clear all</button></div></div>
   </main>`;
+  const showFlags = () => {
+    const n = flaggedCount();
+    document.getElementById('flag-count')!.textContent = n ? `${n} move${n === 1 ? '' : 's'} marked` : 'Nothing marked yet';
+    btn('flag-copy').disabled = btn('flag-clear').disabled = !n;
+  };
+  showFlags();
+  btn('flag-copy').onclick = async () => {
+    const text = flagReport(getProgress().flags, lookupAny);
+    try { await navigator.clipboard.writeText(text); alert('List copied. Paste it to Claude.'); }
+    catch { prompt('Copy this list:', text); }
+  };
+  btn('flag-clear').onclick = () => { if (confirm('Clear all marked moves? Do this after the explanations have been added.')) { clearFlags(); showFlags(); } };
   document.getElementById('sync')!.onclick = async () => {
     if (!hasToken()) {
       const t = prompt('Paste your sync token (the SYNC_TOKEN you set on the Worker):');
@@ -143,7 +165,7 @@ function settingsPage() {
 function mistakesPage() {
   const spots = troubleSpots(getProgress().attempts, lookup);
   const times = (n: number, what: string) => (n ? `${what} ${n}×` : '');
-  app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>Mistakes</h1>
+  app.innerHTML = `<main class="page"><a class="back" data-goback href="#/">← Home</a><h1>Mistakes</h1>
     <p class="muted">The positions that cost you the most in the last 30 days. The explanations come from the line itself and never show the answer.</p>
     ${spots.length ? spots.map((t, i) => { const [o, v] = lookup(t.k)!; return `<div class="card">
       <div class="tag">${esc(o.name)} · ${esc(v.name)}</div><b>Move ${Math.floor(t.p / 2) + 1}</b>
@@ -168,7 +190,7 @@ function mistakesPage() {
 
 function openingPage(o: Opening) {
   app.innerHTML = `
-  <main class="page"><a class="back" href="#/">← Openings</a>
+  <main class="page"><a class="back" data-goback href="#/">← Openings</a>
     <h1>${esc(o.name)}</h1>
     <div class="row"><button class="chip" type="button" id="shelve">${isShelved(o.id) ? 'Bring back to Home' : 'Save for later'}</button></div>
     <div class="card hero-card"><div class="tag">Positional goal</div>
@@ -199,7 +221,7 @@ function learn(o: Opening, v: Variation) {
     const s = steps[i];
     const [lead, rest] = splitLead(s.body);
     const board = s.board ?? (s.from ? { ply: s.from.moves.length, shapes: [] } : undefined); // no hand-made board: show where the line ends
-    app.innerHTML = `<main class="page learn"><a class="back" href="${href('o', o.id)}">← ${esc(o.name)}</a>
+    app.innerHTML = `<main class="page learn"><a class="back" data-goback href="${href('o', o.id)}">← ${esc(o.name)}</a>
       <div class="steps" aria-hidden="true">${steps.map((_, n) => `<i class="${n <= i ? 'on' : ''}"></i>`).join('')}</div>
       <div class="tag">${s.tag}</div>
       ${boardSlot('step-board', board, true)}
@@ -213,10 +235,19 @@ function learn(o: Opening, v: Variation) {
     };
   };
   const walk = () => {
-    app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn primary" id="next">Next</button>`);
+    app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn primary" id="next">Next</button>
+      <div class="flag-row"><button class="chip" type="button" id="flag" aria-pressed="false">Needs more explanation</button></div>`);
+    let ply = -1; // index of the move on screen, -1 at the start position
+    const flag = btn('flag');
+    flag.onclick = () => { if (ply >= 0) { setFlagged(key(o, v), ply, !isFlagged(key(o, v), ply)); showFlag(); } };
+    const showFlag = () => {
+      const on = ply >= 0 && isFlagged(key(o, v), ply);
+      flag.disabled = ply < 0; flag.setAttribute('aria-pressed', String(on)); flag.classList.toggle('on', on);
+      flag.textContent = on ? 'Marked for more explanation · tap to undo' : 'Needs more explanation';
+    };
     walkLine(ui(), o, v, { next: btn('next'), prev: btn('prev') }, () => {
       markLearned(key(o, v)); location.hash = href('practice', o.id, v.id);
-    });
+    }, idx => { ply = idx - 1; showFlag(); });
   };
   showStep();
 }
@@ -236,7 +267,7 @@ async function practice(o: Opening, v: Variation) {
     if (my !== token) return;
     if (mistakes === 0) { markLearned(key(o, v)); awardLineBonus(); }
     btn('again').hidden = false; btn('done').hidden = false;
-    btn('done').onclick = () => { location.hash = href('o', o.id); };
+    btn('done').onclick = () => goTo(href('o', o.id));
     btn('again').onclick = () => { app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`); void run(); };
   };
   void run();
@@ -248,7 +279,7 @@ async function drill() {
   const queue = allDue.slice(0, DRILL_CAP);
   if (!queue.length) {
     const learned = Object.keys(getProgress().cards).length;
-    app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>Drill</h1>
+    app.innerHTML = `<main class="page"><a class="back" data-goback href="#/">← Home</a><h1>Drill</h1>
       <div class="card"><b>${learned ? 'Nothing is due right now.' : 'Nothing to drill yet.'}</b>
       <p class="muted">${learned ? 'Come back later; the scheduler will bring lines back just before you would forget them.' : 'Learn a variation first and it will appear here.'}</p></div></main>`;
     return;
@@ -276,10 +307,11 @@ async function drill() {
   }
   app.innerHTML = `<main class="page"><h1>Drill complete</h1><div class="card"><b>Best combo: ×${getProgress().bestCombo}</b>
     ${allDue.length > queue.length ? `<p class="muted">${allDue.length - queue.length} more ${allDue.length - queue.length === 1 ? 'line is' : 'lines are'} still due. Drill again when you are ready.</p>` : ''}</div>
-    <a class="btn primary big" href="#/">Done</a></main>`;
+    <a class="btn primary big" href="#/" data-goto>Done</a></main>`;
 }
 
 function route() {
+  trackEntry();
   token++;
   const [, a, b, c] = location.hash.split('/');
   const o = b ? findOpening(b) : undefined; const v = o && c ? findVariation(o, c) : undefined;
@@ -296,5 +328,6 @@ function route() {
 void navigator.storage?.persist?.().catch(() => {});
 await loadProgress();
 window.addEventListener('hashchange', route);
+installNavLinks(route);
 route();
 if (hasToken()) void runSync(true).then(() => { if (!location.hash.slice(2)) route(); });
