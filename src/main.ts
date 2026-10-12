@@ -336,5 +336,7 @@ function route() {
 void navigator.storage?.persist?.().catch(() => {});
 await loadProgress();
 window.addEventListener('hashchange', route);
-route();
+const autoplayId = new URLSearchParams(location.search).get('autoplay'); // video rendering: see video/README.md
+if (autoplayId) void import('./autoplay.ts').then(m => m.runAutoplay(autoplayId));
+else route();
 if (hasToken()) void runSync(true).then(() => { if (!location.hash.slice(2)) route(); });

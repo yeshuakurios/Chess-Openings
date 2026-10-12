@@ -1,0 +1,315 @@
+1
+00:00:00,250 --> 00:00:01,734
+Welcome to the Modern Defence.
+
+2
+00:00:01,734 --> 00:00:03,713
+The idea is simple, and a little sneaky.
+
+3
+00:00:03,713 --> 00:00:05,840
+Black does not rush a pawn into the center.
+
+4
+00:00:05,840 --> 00:00:08,165
+Instead, the king's bishop slides onto the long
+
+5
+00:00:08,165 --> 00:00:10,491
+diagonal behind a pawn, the knight and a modest
+
+6
+00:00:10,491 --> 00:00:12,667
+center pawn follow, and Black castles early.
+
+7
+00:00:12,667 --> 00:00:15,636
+White is invited to build a big pawn center, and that is the
+
+8
+00:00:15,636 --> 00:00:18,010
+point, because a big center can become a target.
+
+9
+00:00:18,010 --> 00:00:20,434
+Black attacks it from the side, with a pawn break
+
+10
+00:00:20,434 --> 00:00:22,710
+at the right moment and with the bishop on the
+
+11
+00:00:22,710 --> 00:00:25,035
+long diagonal, which gets stronger every time a
+
+12
+00:00:25,035 --> 00:00:26,222
+central pawn disappears.
+
+13
+00:00:26,222 --> 00:00:28,795
+As you watch, keep asking one question: what is that
+
+14
+00:00:28,795 --> 00:00:31,318
+bishop looking at, and what is standing in its way?
+
+15
+00:00:32,068 --> 00:00:33,116
+Now the line itself.
+
+16
+00:00:33,116 --> 00:00:35,369
+White plays the classical setup, with pawns
+
+17
+00:00:35,369 --> 00:00:37,465
+on e4 and d4, both knights out, a bishop
+
+18
+00:00:37,465 --> 00:00:39,037
+developed, and a castled king.
+
+19
+00:00:39,037 --> 00:00:40,871
+Black answers in the same calm way.
+
+20
+00:00:40,871 --> 00:00:42,495
+After that, the middlegame is a
+
+21
+00:00:42,495 --> 00:00:43,910
+fight about White's center.
+
+22
+00:00:43,910 --> 00:00:46,740
+Do not be passive, because White's space can turn into
+
+23
+00:00:46,740 --> 00:00:48,835
+a king-side attack if you wait too long.
+
+24
+00:00:48,835 --> 00:00:51,193
+Choose a pawn break, either the d-pawn or the
+
+25
+00:00:51,193 --> 00:00:52,870
+e-pawn, prepare it, and play it.
+
+26
+00:00:52,870 --> 00:00:55,752
+Once pawns come off, the long-diagonal bishop wakes up.
+
+27
+00:00:56,502 --> 00:00:58,151
+White opens by grabbing space in the
+
+28
+00:00:58,151 --> 00:00:59,433
+center with the king's pawn.
+
+29
+00:00:59,433 --> 00:01:01,586
+It is the most popular first move in chess, and
+
+30
+00:01:01,586 --> 00:01:03,143
+Black's setup is built to meet it.
+
+31
+00:01:03,893 --> 00:01:05,108
+Here is the signature move.
+
+32
+00:01:05,108 --> 00:01:07,044
+The g-pawn steps up one square, which opens
+
+33
+00:01:07,044 --> 00:01:08,620
+the diagonal for the king's bishop.
+
+34
+00:01:08,620 --> 00:01:11,050
+It looks odd, but few players at this level have faced
+
+35
+00:01:11,050 --> 00:01:13,076
+it, so you will know more than your opponent.
+
+36
+00:01:13,826 --> 00:01:16,425
+White builds the big center, with pawns on d4 and e4.
+
+37
+00:01:16,425 --> 00:01:19,023
+Do not worry, this is exactly what the setup invites.
+
+38
+00:01:19,023 --> 00:01:20,984
+Those pawns need defending, and they are
+
+39
+00:01:20,984 --> 00:01:22,406
+what Black will aim at later.
+
+40
+00:01:23,156 --> 00:01:25,695
+The bishop lands on the long diagonal, pointing at
+
+41
+00:01:25,695 --> 00:01:27,879
+the center and the far corner of the board.
+
+42
+00:01:27,879 --> 00:01:30,265
+Most of Black's play comes from this one piece.
+
+43
+00:01:30,265 --> 00:01:33,109
+A common slip here is knight to c6, hitting the d4 pawn.
+
+44
+00:01:33,109 --> 00:01:36,156
+It is not a blunder, but White just plays d5, the knight has
+
+45
+00:01:36,156 --> 00:01:38,644
+to move again, and White gains space and a tempo.
+
+46
+00:01:39,394 --> 00:01:41,040
+White develops the queen's knight.
+
+47
+00:01:41,040 --> 00:01:42,637
+It supports the e-pawn and brings
+
+48
+00:01:42,637 --> 00:01:43,992
+another piece into the game.
+
+49
+00:01:44,742 --> 00:01:46,240
+A quiet move with a purpose.
+
+50
+00:01:46,240 --> 00:01:48,754
+The d-pawn steps up one square, which keeps the
+
+51
+00:01:48,754 --> 00:01:51,054
+position flexible and covers the e5 square.
+
+52
+00:01:51,054 --> 00:01:53,888
+A common slip is to play the knight to f6 right away.
+
+53
+00:01:53,888 --> 00:01:56,188
+Then White pushes the e-pawn, the knight is
+
+54
+00:01:56,188 --> 00:01:58,221
+driven back, and White has more space.
+
+55
+00:01:58,971 --> 00:02:00,546
+White develops the second knight.
+
+56
+00:02:00,546 --> 00:02:02,884
+It covers the center and gets ready for castling.
+
+57
+00:02:03,634 --> 00:02:05,658
+Now the knight comes out and attacks the
+
+58
+00:02:05,658 --> 00:02:07,277
+e-pawn, so White has to respond.
+
+59
+00:02:07,277 --> 00:02:09,301
+A tempting but poor idea here is to open
+
+60
+00:02:09,301 --> 00:02:10,668
+the center at once with e5.
+
+61
+00:02:10,668 --> 00:02:12,793
+After the trades, the queens come off with
+
+62
+00:02:12,793 --> 00:02:14,868
+check, Black's king can no longer castle,
+
+63
+00:02:14,868 --> 00:02:16,335
+and White's pieces are ahead.
+
+64
+00:02:17,085 --> 00:02:19,518
+White defends the e-pawn by developing the bishop.
+
+65
+00:02:19,518 --> 00:02:21,172
+It is also a step toward castling.
+
+66
+00:02:21,922 --> 00:02:24,005
+Black castles, and the king is safe behind
+
+67
+00:02:24,005 --> 00:02:25,592
+the bishop on the long diagonal.
+
+68
+00:02:25,592 --> 00:02:27,774
+Again, resist the urge to play e5 right now.
+
+69
+00:02:27,774 --> 00:02:30,502
+With the pieces not ready, White simply wins that pawn.
+
+70
+00:02:31,252 --> 00:02:32,338
+White castles as well.
+
+71
+00:02:32,338 --> 00:02:34,905
+Both kings are safe, development is nearly done, and
+
+72
+00:02:34,905 --> 00:02:37,127
+the real middlegame battle is about to begin.
+
+73
+00:02:37,877 --> 00:02:39,658
+And here is the flexible move, c6.
+
+74
+00:02:39,658 --> 00:02:42,905
+It prepares a central break with the d-pawn or the e-pawn, and
+
+75
+00:02:42,905 --> 00:02:45,419
+it gives Black room to expand on the queen-side.
+
+76
+00:02:45,419 --> 00:02:48,561
+From here the plan is yours: choose a break, prepare it, and
+
+77
+00:02:48,561 --> 00:02:50,970
+strike before White's space becomes an attack.
+
+78
+00:02:50,970 --> 00:02:52,908
+When the center opens, that bishop on
+
+79
+00:02:52,908 --> 00:02:54,479
+the long diagonal comes alive.
