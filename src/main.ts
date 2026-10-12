@@ -203,8 +203,8 @@ function learn(o: Opening, v: Variation) {
     };
   };
   const walk = () => {
-    app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn primary" id="next">Next</button>`);
-    walkLine(ui(), o, v, { next: btn('next'), prev: btn('prev') }, () => {
+    app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button>`);
+    walkLine(ui(), o, v, { next: btn('next'), prev: btn('prev'), trap: btn('trap') }, () => {
       markLearned(key(o, v)); location.hash = href('practice', o.id, v.id);
     });
   };
@@ -212,8 +212,8 @@ function learn(o: Opening, v: Variation) {
 }
 
 const btn = (id: string) => document.getElementById(id) as HTMLButtonElement;
-const ui = (): Ui => ({ board: document.getElementById('board')!, hint: btn('hint'), prev: btn('prev'), fwd: btn('fwd') });
-const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</button><button class="ctl" id="hint">Hint</button><button class="ctl" id="fwd" aria-label="Forward one move">›</button>`;
+const ui = (): Ui => ({ board: document.getElementById('board')!, hint: btn('hint'), prev: btn('prev'), fwd: btn('fwd'), resume: (document.getElementById('resume') as HTMLButtonElement | null) ?? undefined });
+const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</button><button class="ctl" id="hint">Hint</button><button class="ctl" id="fwd" aria-label="Forward one move">›</button><button class="btn primary" id="resume" hidden>Back to the line</button>`;
 
 const endBtns = `<button class="btn primary" id="again" hidden>Again</button><button class="btn" id="done" hidden>Done</button>`;
 

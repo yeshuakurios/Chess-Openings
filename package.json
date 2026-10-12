@@ -8,9 +8,11 @@
     "build": "tsc --noEmit && tsc -p worker --noEmit && vite build",
     "preview": "vite preview",
     "validate": "tsx scripts/validate-content.ts",
-    "evals": "tsx scripts/add-evals.ts",
+    "evals": "tsx scripts/add-evals.ts && tsx scripts/add-evals.ts --mistakes",
     "stats": "tsx scripts/stats.ts",
     "try": "tsx scripts/try-line.ts",
+    "probe": "tsx scripts/probe.ts",
+    "pv": "tsx scripts/pv.ts",
     "test": "tsx scripts/test-merge.ts && tsx scripts/test-mastery.ts && tsx scripts/test-mistakes.ts && tsx scripts/test-explain.ts && tsx worker/test-explain.ts && tsx scripts/test-gamify.ts && tsx scripts/test-stats.ts"
   },
   "devDependencies": {

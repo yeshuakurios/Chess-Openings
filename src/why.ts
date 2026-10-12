@@ -1,12 +1,20 @@
-import type { Move, Opening } from './types.ts';
+import type { Move, Opening, Variation } from './types.ts';
 
 const PIECE: Record<string, string> = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' };
 const fmt = (n: number) => (n > 0 ? `+${n.toFixed(1)}` : n.toFixed(1));
 
+/** Hand-written reason for a wrong move: a `why`, a common-mistake text, or the contrast with the similar position of another line where this very move is played. */
+export function authoredWhy(o: Opening, line: Move, tried: string, v?: Variation, idx?: number): string | undefined {
+  const own = line.why?.[tried] ?? line.mistakes?.find(x => x.san === tried)?.text;
+  if (own) return own;
+  if (v && idx !== undefined) for (const x of line.versus ?? []) if (o.variations.find(w => w.id === x.line)?.moves[idx]?.san === tried) return x.text;
+  return undefined;
+}
+
 /** Why a wrong move is not in the line. Never names the line's own move, so Drill is not given away. */
-export function whyNot(o: Opening, line: Move, tried: { san: string; captured?: string }): string {
+export function whyNot(o: Opening, line: Move, tried: { san: string; captured?: string }, v?: Variation, idx?: number): string {
   const head = `${tried.san} isn't part of this line.`;
-  const authored = line.why?.[tried.san];
+  const authored = authoredWhy(o, line, tried.san, v, idx);
   if (authored) return `${head} ${authored}`;
   const alt = line.caps?.find(c => c.san === tried.san);
   if (!alt) return head;

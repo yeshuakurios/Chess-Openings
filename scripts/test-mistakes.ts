@@ -11,10 +11,22 @@ let n = 0; const T = Date.now();
 const att = (k: string, p: number, o: Partial<Attempt> = {}): Attempt => ({ id: 'm' + n++, k, p, ok: 0, h: 0, ms: 3000, t: T - 1000 * (100 - n), m: 'd', ...o });
 
 // other line: Black plays the Adler move in the Rubinstein line (same point in the line, different earlier choice)
-const bud = op('budapest-gambit'), rub = va(bud, 'bf4-rubinstein');
+const plain = (o: Opening): Opening => ({ ...o, variations: o.variations.map(v => ({ ...v, moves: v.moves.map(({ mistakes: _m, versus: _v, ...m }) => m) })) }); // content without the hand-written texts
+const bud = plain(op('budapest-gambit')), rub = va(bud, 'bf4-rubinstein');
 const e1 = explain(att('budapest-gambit/bf4-rubinstein', 9, { s: 'Ngxe5' }), bud, rub);
 assert.equal(e1.kind, 'other-line');
 assert.ok(e1.text.includes('Adler'));
+// hand-written texts win over the generic ones: a common mistake, and the contrast with the near-identical position of another line
+const budFull = op('budapest-gambit'), e3l = va(budFull, 'e3-declined');
+const e1a = explain(att('budapest-gambit/e3-declined', 5, { s: 'Ng4' }), budFull, e3l);
+assert.equal(e1a.kind, 'tactical');
+assert.ok(e1a.text.includes('queen'), 'uses the mistake text');
+assert.ok(!e1a.text.includes('exd4'), 'must not name the line move');
+const porFull = op('portuguese-gambit'), f3l = va(porFull, 'f3-bf5');
+const e1b = explain(att('portuguese-gambit/f3-bf5', 7, { s: 'Nxd5' }), porFull, f3l);   // Nxd5 is the move of the 4.Nf3 line at this point
+assert.equal(e1b.kind, 'tactical');
+assert.ok(e1b.text.includes('4.Nf3'), 'uses the versus text');
+assert.ok(!e1b.text.includes('Bf5'), 'must not name the line move');
 // move order: a move that belongs later in the same line
 const bird = op('bird'), main = va(bird, 'main-d5');
 const e2 = explain(att('bird/main-d5', 4, { s: 'b3' }), bird, main);
