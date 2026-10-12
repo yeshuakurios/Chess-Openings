@@ -94,3 +94,15 @@ cg-board square.oc.move-dest{background:radial-gradient(transparent 0%,transpare
 .head{margin-top:0;flex-wrap:nowrap}.head h1{margin:6px 0 0}
 .gear{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);flex:none;transition:transform .12s}
 .gear:active{transform:scale(.93)}
+
+/* save for later */
+.card.opening{padding:0;display:block}
+.card.opening .link{display:flex;gap:14px;align-items:flex-start;padding:16px 16px 6px;transition:transform .15s}
+.card.opening .link:active{transform:scale(.98)}
+.card.opening .row{margin:0;padding:4px 16px 14px}
+.chip{appearance:none;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);border-radius:999px;padding:6px 14px;font:inherit;font-size:13px;font-weight:650;cursor:pointer;transition:transform .12s,color .15s,border-color .15s}
+.chip:active{transform:scale(.95);color:var(--amber);border-color:var(--orange)}
+.saved{margin-top:22px}
+.saved summary{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.saved-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.saved-row a{min-width:0}

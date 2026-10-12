@@ -24,8 +24,10 @@ export interface Progress {
   xp: Record<string, number>;
   /** Earned badge id -> day earned. Never removed. */
   badges: Record<string, string>;
+  /** Openings set aside with "Save for later". Per opening: `on` plus when it was last changed, so the newest change wins when two devices sync. Progress on a saved opening is kept. */
+  shelf: Record<string, { on: boolean; t: number }>;
 }
-const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {} });
+const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {}, shelf: {} });
 const DB = 'openings', STORE = 'kv', KEY = 'progress', TOKEN_KEY = 'syncToken';
 const scheduler = fsrs();
 
@@ -80,6 +82,11 @@ async function save(sync = true) {
 
 export const getProgress = () => progress;
 export const isLearned = (k: string) => !!progress.learned[k];
+export const isShelved = (openingId: string) => !!progress.shelf[openingId]?.on;
+export function setShelved(openingId: string, on: boolean) {
+  progress.shelf[openingId] = { on, t: Date.now() };
+  void save();
+}
 
 export function markLearned(k: string) {
   progress.learned[k] = true;
