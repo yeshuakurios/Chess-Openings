@@ -97,3 +97,7 @@ cg-board square.oc.move-dest{background:radial-gradient(transparent 0%,transpare
 .gear{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);flex:none;transition:transform .12s}
 .gear:active{transform:scale(.93)}
 textarea{width:100%;box-sizing:border-box;background:var(--panel2);border:1px solid var(--line);border-radius:12px;color:var(--text);font:inherit;font-size:16px;padding:10px 12px;resize:vertical}
+/* ?autoplay= (video rendering): the board and message only, laid out for a 1080x1920 frame. Chessground measures its own box, so the board is sized in real pixels and only the rest is zoomed. */
+.autoplay .back,.autoplay .controls{display:none}
+.autoplay :is(.top,.bar,.msg,.eval){zoom:2}
+.autoplay .board-wrap{max-width:1032px}

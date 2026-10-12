@@ -35,7 +35,8 @@
           "color": "blue"
         }
       ]
-    }
+    },
+    "narration": "Welcome to the Modern Defence. The idea is simple, and a little sneaky. Black does not rush a pawn into the center. Instead, the king's bishop slides onto the long diagonal behind a pawn, the knight and a modest center pawn follow, and Black castles early. White is invited to build a big pawn center, and that is the point, because a big center can become a target. Black attacks it from the side, with a pawn break at the right moment and with the bishop on the long diagonal, which gets stronger every time a central pawn disappears. As you watch, keep asking one question: what is that bishop looking at, and what is standing in its way?"
   },
   "variations": [
     {
@@ -91,7 +92,8 @@
                 "n": 8018742
               }
             ]
-          }
+          },
+          "narration": "White opens by grabbing space in the center with the king's pawn. It is the most popular first move in chess, and Black's setup is built to meet it."
         },
         {
           "san": "g6",
@@ -103,7 +105,8 @@
             "w": 2597007,
             "d": 216471,
             "b": 2540291
-          }
+          },
+          "narration": "Here is the signature move. The g-pawn steps up one square, which opens the diagonal for the king's bishop. It looks odd, but few players at this level have faced it, so you will know more than your opponent."
         },
         {
           "san": "d4",
@@ -133,7 +136,8 @@
                 "n": 212953
               }
             ]
-          }
+          },
+          "narration": "White builds the big center, with pawns on d4 and e4. Do not worry, this is exactly what the setup invites. Those pawns need defending, and they are what Black will aim at later."
         },
         {
           "san": "Bg7",
@@ -157,7 +161,8 @@
               "text": "Not a blunder, but wasted time: the knight attacks d4, yet d5 kicks it away and White gains space and a tempo.",
               "eval": 0.9
             }
-          ]
+          ],
+          "narration": "The bishop lands on the long diagonal, pointing at the center and the far corner of the board. Most of Black's play comes from this one piece. A common slip here is knight to c6, hitting the d4 pawn. It is not a blunder, but White just plays d5, the knight has to move again, and White gains space and a tempo."
         },
         {
           "san": "Nc3",
@@ -187,7 +192,8 @@
                 "n": 52597
               }
             ]
-          }
+          },
+          "narration": "White develops the queen's knight. It supports the e-pawn and brings another piece into the game."
         },
         {
           "san": "d6",
@@ -218,7 +224,8 @@
               "text": "Hitting the e-pawn too early lets White gain a tempo with e5: your knight is driven back and White has more space.",
               "eval": 1.2
             }
-          ]
+          ],
+          "narration": "A quiet move with a purpose. The d-pawn steps up one square, which keeps the position flexible and covers the e5 square. A common slip is to play the knight to f6 right away. Then White pushes the e-pawn, the knight is driven back, and White has more space."
         },
         {
           "san": "Nf3",
@@ -248,7 +255,8 @@
                 "n": 5413
               }
             ]
-          }
+          },
+          "narration": "White develops the second knight. It covers the center and gets ready for castling."
         },
         {
           "san": "Nf6",
@@ -281,7 +289,8 @@
               "text": "Opening the center early lets the queens come off with check. Your king loses the right to castle and White's pieces get ahead.",
               "eval": 1.3
             }
-          ]
+          ],
+          "narration": "Now the knight comes out and attacks the e-pawn, so White has to respond. A tempting but poor idea here is to open the center at once with e5. After the trades, the queens come off with check, Black's king can no longer castle, and White's pieces are ahead."
         },
         {
           "san": "Be2",
@@ -311,7 +320,8 @@
                 "n": 84182
               }
             ]
-          }
+          },
+          "narration": "White defends the e-pawn by developing the bishop. It is also a step toward castling."
         },
         {
           "san": "O-O",
@@ -344,7 +354,8 @@
               "text": "Opening the center early lets the queens come off with check. Your king loses the right to castle and the e5 pawn falls.",
               "eval": 2.7
             }
-          ]
+          ],
+          "narration": "Black castles, and the king is safe behind the bishop on the long diagonal. Again, resist the urge to play e5 right now. With the pieces not ready, White simply wins that pawn."
         },
         {
           "san": "O-O",
@@ -374,7 +385,8 @@
                 "n": 648
               }
             ]
-          }
+          },
+          "narration": "White castles as well. Both kings are safe, development is nearly done, and the real middlegame battle is about to begin."
         },
         {
           "san": "c6",
@@ -393,9 +405,11 @@
             "w": 474,
             "d": 35,
             "b": 439
-          }
+          },
+          "narration": "And here is the flexible move, c6. It prepares a central break with the d-pawn or the e-pawn, and it gives Black room to expand on the queen-side. From here the plan is yours: choose a break, prepare it, and strike before White's space becomes an attack. When the center opens, that bishop on the long diagonal comes alive."
         }
-      ]
+      ],
+      "narration": "Now the line itself. White plays the classical setup, with pawns on e4 and d4, both knights out, a bishop developed, and a castled king. Black answers in the same calm way. After that, the middlegame is a fight about White's center. Do not be passive, because White's space can turn into a king-side attack if you wait too long. Choose a pawn break, either the d-pawn or the e-pawn, prepare it, and play it. Once pawns come off, the long-diagonal bishop wakes up."
     },
     {
       "id": "e4-austrian",
