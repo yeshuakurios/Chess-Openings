@@ -8,13 +8,13 @@ import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery
 import { troubleSpots } from './mistakes.ts';
 import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
-import { BADGES, DAILY_GOAL, dayKey, earnedNow, levelFor, streaks, totalXp } from './gamify.ts';
+import { earnedNow, levelFor, totalXp } from './gamify.ts';
 import { esc, screenShell } from './ui.ts';
 import { answers } from './answers.ts';
 import type { Opening, PlanBoard, Variation } from './types.ts';
 
 const GEAR = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
-const DRILL_CAP = 10; // lines per Drill session; the rest stay due for the next one
+const DRILL_CAP = 5; // lines per Drill session; a short, relaxed sitting. The rest stay due for next time
 /** Tell the user a new version is ready instead of reloading under them; applying it is their tap. */
 const updateSW = registerSW({
   immediate: true,
@@ -35,6 +35,15 @@ const boardSlot = (id: string, b?: PlanBoard, hero = false) => (b ? `<div class=
 function drawBoard(id: string, o: Opening, v: Variation, b?: PlanBoard) {
   const el = document.getElementById(id);
   if (el && b) staticBoard(el, o.color, fenAfter(v.moves.map(m => m.san), b.ply), b.shapes);
+}
+/** Words come first; a board is one tap away for when a picture really helps. */
+const boardFold = (id: string, b?: PlanBoard, label = 'Show on the board') => (b
+  ? `<details class="more" id="${id}-fold"><summary>${label}</summary><div class="board-wrap hero"><div id="${id}" class="cg-wrap"></div></div></details>` : '');
+/** Draw the folded board the first time it is opened (Chessground needs a visible, sized element). */
+function drawOnOpen(id: string, o: Opening, v: Variation | undefined, b?: PlanBoard) {
+  const d = document.getElementById(`${id}-fold`) as HTMLDetailsElement | null;
+  if (!d || !v || !b) return;
+  d.addEventListener('toggle', () => { if (d.open && !document.getElementById(id)!.firstChild) drawBoard(id, o, v, b); });
 }
 /** First sentence of a text, for the one-line takeaway under a hero board; the rest goes behind a fold. */
 const splitLead = (text: string): [string, string] => {
@@ -75,28 +84,19 @@ function home() {
   const due = dueKeys().filter(k => lookup(k)).length;
   const trouble = troubleSpots(getProgress().attempts, lookup).length;
   const waiting = getProgress().questions.filter(q => !answers[q.id]).length;
-  const fresh = refreshBadges(), prog = getProgress();
-  const streak = streaks(prog.xp), today = prog.xp[dayKey()] ?? 0, next = BADGES.find(b => !prog.badges[b.id]);
-  const lv = levelFor(totalXp(prog.xp));
+  refreshBadges(); // still earned quietly in the background
+  const prog = getProgress(), lv = levelFor(totalXp(prog.xp));
   let levelUp = false; // best effort: the last level shown is kept on this device only
   try { const seen = Number(localStorage.getItem('level-seen') ?? 0); levelUp = seen > 0 && lv.n > seen; localStorage.setItem('level-seen', String(lv.n)); } catch { /* storage unavailable */ }
-  const progressCard = `<div class="card">
-    <div class="row between"><b>Level ${lv.n} · ${esc(lv.title)}</b>${levelUp ? '<span class="tag">Level up!</span>' : ''}</div>
-    <div class="goal"><i style="width:${lv.span ? Math.round((lv.into / lv.span) * 100) : 100}%"></i></div>
-    <div class="muted">${lv.next ? `${lv.span - lv.into} XP to ${esc(lv.next)}` : 'Top title reached'}</div>
-    <div class="row between"><b>${streak.current}-day streak</b><span class="muted">Best ${streak.best} · ${totalXp(prog.xp)} XP</span></div>
-    <div class="goal"><i style="width:${Math.min(100, Math.round((today / DAILY_GOAL) * 100))}%"></i></div>
-    <div class="muted">Today ${today} / ${DAILY_GOAL} XP${today >= DAILY_GOAL ? ' · goal reached' : ''}</div>
-    <div class="row">${BADGES.filter(b => prog.badges[b.id]).map(b => `<span class="tag">${esc(b.name)}${fresh.includes(b.id) ? ' · new' : ''}</span>`).join('')}</div>
-    ${next ? `<div class="muted">Next badge: ${esc(next.name)}. ${esc(next.hint)}</div>` : ''}</div>`;
+  const progressCard = `<div class="quiet"><span>${esc(lv.title)}</span>${levelUp ? '<span class="tag">Level up!</span>' : ''}
+    <div class="goal"><i style="width:${lv.span ? Math.round((lv.into / lv.span) * 100) : 100}%"></i></div></div>`;
   app.innerHTML = `
   <main class="page">
     <div class="row between head"><h1>Opening Goals</h1><a class="gear" href="${href('settings')}" aria-label="Settings">${GEAR}</a></div>
     <p class="muted">Learn the plan first, then the line.</p>
     ${progressCard}
-    <a class="btn primary big" href="${href('drill')}">Drill ${due ? `· ${due} due` : '· nothing due'}</a>
-    <a class="btn big" href="${href('ask')}">Ask a question${waiting ? ` · ${waiting} waiting` : ''}</a>
-    <a class="btn big" href="${href('mistakes')}">Mistakes${trouble ? ` · ${trouble}` : ''}</a>
+    <a class="btn primary big" href="${href('drill')}">${due ? 'Play a few lines' : 'Nothing to review. Enjoy your day.'}</a>
+    <div class="row links"><a href="${href('mistakes')}">Tricky spots${trouble ? ` (${trouble})` : ''}</a><a href="${href('ask')}">Questions${waiting ? ` (${waiting})` : ''}</a></div>
     <h2>Openings</h2>
     ${openings.map(o => {
       const done = o.variations.filter(v => isLearned(key(o, v))).length;
@@ -188,13 +188,13 @@ function mistakesPage() {
     <p class="muted">The positions that cost you the most in the last 30 days. The explanations come from the line itself and never show the answer.</p>
     ${spots.length ? spots.map((t, i) => { const [o, v] = lookup(t.k)!; return `<div class="card">
       <div class="tag">${esc(o.name)} · ${esc(v.name)}</div><b>Move ${Math.floor(t.p / 2) + 1}</b>
-      ${boardSlot('trouble-' + i, { ply: t.p, shapes: [] })}
       <p id="trouble-text-${i}">${esc(t.last.text)}</p><span class="tag" id="trouble-ai-${i}" hidden>AI-generated explanation</span>
+      ${boardFold('trouble-' + i, { ply: t.p, shapes: [] }, 'Show the position')}
       <div class="muted">${[times(t.count, 'Wrong'), times(t.hints, 'Hint'), times(t.slow, 'Slow')].filter(Boolean).join(' · ')}</div>
       <div class="row"><a class="btn primary" href="${href('practice', o.id, v.id)}">Practice this line</a></div></div>`; }).join('')
       : `<div class="card"><b>No trouble spots right now.</b><p class="muted">Mistakes, hints and slow moves from Practice and Drill show up here.</p></div>`}
   </main>`;
-  spots.forEach((t, i) => { const [o, v] = lookup(t.k)!; drawBoard('trouble-' + i, o, v, { ply: t.p, shapes: [] }); });
+  spots.forEach((t, i) => { const [o, v] = lookup(t.k)!; drawOnOpen('trouble-' + i, o, v, { ply: t.p, shapes: [] }); });
   // Optional: rephrase the rule-based text with Workers AI (only when sync is set up, so the Worker accepts us). Any failure keeps the rule-based text.
   if (!hasToken() || !navigator.onLine) return;
   const my = token;
@@ -212,9 +212,9 @@ function openingPage(o: Opening) {
   <main class="page"><a class="back" href="#/">← Openings</a>
     <h1>${esc(o.name)}</h1>
     <div class="card hero-card"><div class="tag">Positional goal</div>
-      ${boardSlot('goal-board', o.goal.board, true)}
       <h3>${esc(o.goal.title)}</h3><p class="lead">${esc(splitLead(o.goal.text)[0])}</p>
-      ${fold(splitLead(o.goal.text)[1], o.goal.plans, 'The full plan')}</div>
+      ${fold(splitLead(o.goal.text)[1], o.goal.plans, 'The full plan')}
+      ${boardFold('goal-board', o.goal.board)}</div>
     <h2>Variations</h2>
     ${o.variations.map(v => { const m = masteryOf(o, v); return `<div class="card"><b>${esc(v.name)}</b>
       <p class="muted">${esc(v.strategy)}</p>
@@ -224,7 +224,7 @@ function openingPage(o: Opening) {
       <span class="tag">${m.level}</span></div>
       <p class="muted">${m.hint}</p></div>`; }).join('')}
   </main>`;
-  const gv = goalVariation(o); if (gv) drawBoard('goal-board', o, gv, o.goal.board);
+  drawOnOpen('goal-board', o, goalVariation(o), o.goal.board);
 }
 
 function learn(o: Opening, v: Variation) {
@@ -241,11 +241,11 @@ function learn(o: Opening, v: Variation) {
     app.innerHTML = `<main class="page learn"><a class="back" href="${href('o', o.id)}">← ${esc(o.name)}</a>
       <div class="steps" aria-hidden="true">${steps.map((_, n) => `<i class="${n <= i ? 'on' : ''}"></i>`).join('')}</div>
       <div class="tag">${s.tag}</div>
-      ${boardSlot('step-board', board, true)}
       <h2 class="hero-title">${esc(s.title)}</h2><p class="lead">${esc(lead)}</p>
       ${fold(rest, s.list, 'Read more')}
+      ${boardFold('step-board', s.from ? board : undefined)}
       <button class="btn primary big" id="go">${i === steps.length - 1 ? 'Show me the line' : 'Next: the strategy'}</button></main>`;
-    if (s.from && board) drawBoard('step-board', o, s.from, board);
+    drawOnOpen('step-board', o, s.from, board);
     document.getElementById('go')!.onclick = () => {
       if (i === 0 && steps.length === 2) markLearned(goalKey(o));
       if (i < steps.length - 1) { i++; showStep(); } else walk();
@@ -292,30 +292,39 @@ async function drill() {
       <p class="muted">${learned ? 'Come back later; the scheduler will bring lines back just before you would forget them.' : 'Learn a variation first and it will appear here.'}</p></div></main>`;
     return;
   }
-  let combo = 0;
+  let combo = 0, played = 0;
+  /** Wait for "Next" or "That's enough for today"; true means keep going. */
+  const goOn = () => new Promise<boolean>(res => {
+    const b = btn('nextline'), e = btn('enough');
+    b.hidden = false; e.hidden = false;
+    b.onclick = () => res(true); e.onclick = () => res(false);
+  });
   for (const k of queue) {
     const [o, v] = lookup(k)!;
-    app.innerHTML = screenShell('Drill', `${esc(o.name)} · ${queue.indexOf(k) + 1}/${queue.length} · ×${combo}`, `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button>`);
+    app.innerHTML = screenShell('Drill', `${esc(o.name)}`, `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`);
     const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, onAttempt: a => logAttempt({ ...a, k: key(o, v), m: 'd' }) });
     if (my !== token) return;
     review(k, mistakes);
     if (mistakes === 0) awardLineBonus();
     combo = mistakes === 0 ? combo + 1 : 0; setBestCombo(combo);
-    await new Promise<void>(res => { const b = btn('nextline'); b.hidden = false; b.onclick = () => res(); });
+    played++;
+    const more = await goOn();
     if (my !== token) return;
+    if (!more) break;
     // Once a line is familiar, check it from the middle once a day. This feeds mastery only; it does not reschedule the line.
     const m = masteryOf(o, v), from = pickSpotCheck(m);
     if (LEVELS.indexOf(m.level) >= 2 && from !== undefined && !hadSpotCheckToday(k, getProgress().attempts)) {
-      app.innerHTML = screenShell('Spot check', esc(o.name), `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button>`);
+      app.innerHTML = screenShell('Spot check', esc(o.name), `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`);
       await playLine(ui(), o, v, { stopped: () => my !== token, startPly: from, onAttempt: a => logAttempt({ ...a, k, m: 'd', o: 1 }) });
       if (my !== token) return;
-      await new Promise<void>(res => { const b = btn('nextline'); b.hidden = false; b.onclick = () => res(); });
+      if (!(await goOn())) break;
       if (my !== token) return;
     }
   }
-  app.innerHTML = `<main class="page"><h1>Drill complete</h1><div class="card"><b>Best combo: ×${getProgress().bestCombo}</b>
-    ${allDue.length > queue.length ? `<p class="muted">${allDue.length - queue.length} more ${allDue.length - queue.length === 1 ? 'line is' : 'lines are'} still due. Drill again when you are ready.</p>` : ''}</div>
-    <a class="btn primary big" href="#/">Done</a></main>`;
+  const left = allDue.length - played;
+  app.innerHTML = `<main class="page"><h1>Nice work</h1><div class="card"><b>${played} ${played === 1 ? 'line' : 'lines'} played.</b>
+    <p class="muted">${left > 0 ? 'The rest will be waiting whenever you feel like more.' : 'Everything is up to date. Come back whenever you like.'}</p></div>
+    <a class="btn primary big" href="#/">Done</a>${left > 0 ? `<a class="btn big" href="${href('drill')}">A few more</a>` : ''}</main>`;
 }
 
 function route() {
