@@ -6,13 +6,15 @@ import { whyNot } from './why.ts';
 import { movePopularity } from './stats.ts';
 import { addQuestion, flagKey, getProgress, isFlagged, toggleFlag } from './store.ts';
 import { mistakesAt } from './games.ts';
+import { explainMistake } from './mistakestory.ts';
+import { openMistakeStory } from './mistakeview.ts';
 import { key } from './content.ts';
 import type { Mistake, Move, Opening, Variation } from './types.ts';
 
 export const START_EVAL = 0.2;
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-export interface Ui { board: HTMLElement; hint: HTMLButtonElement; prev: HTMLButtonElement; fwd: HTMLButtonElement; resume?: HTMLButtonElement; flag?: HTMLButtonElement; ask?: HTMLButtonElement }
+export interface Ui { board: HTMLElement; hint: HTMLButtonElement; prev: HTMLButtonElement; fwd: HTMLButtonElement; resume?: HTMLButtonElement; why?: HTMLButtonElement; flag?: HTMLButtonElement; ask?: HTMLButtonElement }
 
 export const FLAG_TEXT = { off: 'Need more explanation', on: 'Flagged ✓ (tap to undo)' };
 export const ASK_TEXT = { idle: 'Ask a question', saved: 'Question saved ✓' };
@@ -71,6 +73,9 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
     let idx = 0, view = 0, mistakes = 0, busy = false, finished = false;
     let turnPly = -1, turnStart = 0, hinted = false; // timing and hint state for the position being played
     let last: [Key, Key] | undefined;
+    let wrong: { idx: number; san: string } | undefined; // the last wrong move at the position now on screen: what "Show me why" explains
+    const showWhy = (on: boolean) => { if (ui.why) ui.why.hidden = !on; };
+    if (ui.why) ui.why.onclick = () => { if (!wrong) return; const story = explainMistake(o, v, wrong.idx, wrong.san); if (story) openMistakeStory(story, o, v); };
     const lasts: ([Key, Key] | undefined)[] = [undefined]; // lasts[k] = last move after k plies
     setEval(START_EVAL); setProgress(0);
     setMessage(`<b>${v.name}</b><br>Play your moves from memory.`);
@@ -102,7 +107,7 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
     const finish = () => {
       finished = true; board.lock(); board.clearArrow(); setProgress(1); syncArrows();
       setMessage(mistakes === 0 ? '<b>Flawless.</b> Line complete.' : `<b>Line complete</b> with ${mistakes} mistake${mistakes > 1 ? 's' : ''}.`, true);
-      ui.hint.onclick = null;
+      ui.hint.onclick = null; showWhy(false);
       resolve(mistakes);
     };
     const apply = (san: string) => {
@@ -140,12 +145,13 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
       const ok = m.san === v.moves[idx].san;
       opts.onAttempt?.({ p: idx, ok: ok ? 1 : 0, h: hinted ? 1 : 0, ms: Math.round(performance.now() - turnStart), ...(ok ? {} : { s: m.san }) });
       if (ok) {
+        showWhy(false); wrong = undefined;
         last = [from, to]; lasts[++idx] = last; view = idx;
         setEval(v.moves[idx - 1].eval); setProgress(idx / v.moves.length);
         setMessage(noteWithVersus(v.moves[idx - 1]));
         void next();
       } else {
-        chess.undo(); mistakes++;
+        chess.undo(); mistakes++; wrong = { idx, san: m.san }; showWhy(true);
         const x = mistakesFor(o, v, idx).find(q => q.san === m.san);
         if (x) void demo(x);
         else {

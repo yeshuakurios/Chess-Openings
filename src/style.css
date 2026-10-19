@@ -174,3 +174,6 @@ textarea,input[type=text]{width:100%;box-sizing:border-box;background:var(--pane
 .mv-reply{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px}
 .mv-lost{font-size:18px;font-weight:700;color:#fca5a5}
 .mv-drop{margin-left:auto;font-size:26px;font-weight:800;color:#f87171}
+
+.mv-overlay{position:fixed;inset:0;z-index:60;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
+button.back{appearance:none;background:none;border:0;font:inherit;font-weight:600;cursor:pointer;text-align:left}

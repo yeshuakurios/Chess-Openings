@@ -2,24 +2,25 @@ import { Chess } from 'chess.js';
 import type { Key } from 'chessground/types';
 import type { Api } from 'chessground/api';
 import { staticBoard, toDraw } from './board.ts';
-import { moveLabel } from './play.ts';
 import { esc, winPct } from './ui.ts';
 import { GLYPH, type MoveShape, type Story } from './mistakestory.ts';
 import type { Opening, Shape, Variation } from './types.ts';
 
 // ---------- the walkthrough ----------
 const STEPS = ['The game so far', 'Your move', 'Why it tempted you', 'Why it fails', 'Do this instead'];
+const moveLabel = (ply: number, san: string) => `${Math.floor(ply / 2) + 1}${ply % 2 === 0 ? '.' : '…'} ${san}`;
 const fmt = (n: number) => (n > 0 ? `+${n.toFixed(1)}` : n.toFixed(1));
 const ring = (sq: string, color: Shape['color'] = 'yellow'): Shape => ({ from: sq, color });
 const arrow = (m: MoveShape, color: Shape['color']): Shape => ({ from: m.from, to: m.to, color });
 const bar = (mine: number, label: string, cls = '') => `<div class="mv-row"><span>${label}</span><div class="mv-bar ${cls}"><i style="width:${winPct(mine).toFixed(1)}%"></i></div><b>${fmt(mine)}</b></div>`;
 
-export interface StoryCtx { o: Opening; v: Variation; backHref: string; practiceHref: string }
+/** `onClose` turns the walkthrough into an overlay on a Practice or Drill screen ("Back to the line" instead of navigating); `hideAnswer` keeps the last step behind a tap so a drill is not given away. */
+export interface StoryCtx { o: Opening; v: Variation; backHref?: string; practiceHref?: string; onClose?: () => void; hideAnswer?: boolean }
 
 /** Draws the five-step walkthrough into `host`: the moves so far, your move, why it tempted you, why it fails, what to play. Boards and bars carry the story; the words are labels. */
 export function mountMistakeStory(host: HTMLElement, s: Story, ctx: StoryCtx, alive: () => boolean) {
   const { o, v } = ctx;
-  host.innerHTML = `<main class="page mv"><a class="back" data-goback href="${esc(ctx.backHref)}">← Back</a>
+  host.innerHTML = `<main class="page mv">${ctx.onClose ? '<button class="back" type="button" id="mv-close">← Back to the line</button>' : `<a class="back" data-goback href="${esc(ctx.backHref ?? '#/')}">← Back</a>`}
     <div class="steps" aria-hidden="true">${STEPS.map(() => '<i></i>').join('')}</div>
     <div class="tag mv-title" role="status" aria-live="polite"></div>
     <div class="board-wrap hero"><div class="cg-wrap" aria-label="Board"></div></div>
@@ -78,23 +79,42 @@ export function mountMistakeStory(host: HTMLElement, s: Story, ctx: StoryCtx, al
       + `<div class="mv-reply">${a.reply ? `<span class="rs on"><b>${GLYPH[a.reply.piece]}</b>${esc(a.reply.san)}</span>` : ''}${a.lost.length ? `<span class="mv-lost">you lose ${a.lost.map(p => GLYPH[p]).join(' ')}</span>` : ''}${loss !== undefined && loss > 0 ? `<span class="mv-drop">−${loss.toFixed(1)}</span>` : ''}</div>`
       + (a.mine === undefined ? '<p class="muted">No engine data for this position yet.</p>' : '');
   };
+  let revealed = !ctx.hideAnswer;
   const step5 = () => {
+    if (!revealed) {
+      draw(s.fen, []);
+      panel.innerHTML = '<div class="mv-played"><button class="btn primary" type="button" id="mv-reveal">Show me the answer</button></div><p class="muted" style="text-align:center">Or go back and find it yourself.</p>';
+      panel.onclick = e => { if ((e.target as HTMLElement).closest('#mv-reveal')) { revealed = true; step5(); } };
+      return;
+    }
     const b = s.better, shapes: Shape[] = [arrow(b.move, 'green'), ...b.controls.map(q => ring(q, 'green'))];
     if (b.top) shapes.push(arrow(b.top.move, 'blue'));
     draw(s.fen, shapes);
     const played = s.after.mine;
     panel.innerHTML = `<div class="mv-played"><span class="mv-piece">${GLYPH[b.move.piece]}</span><b>${esc(b.move.san)}</b>${b.top ? `<span class="rs"><b>${GLYPH[b.top.move.piece]}</b>${esc(b.top.move.san)} engine</span>` : ''}</div>`
       + (b.mine !== undefined ? bar(b.mine, 'Line', 'good') : '') + (played !== undefined ? bar(played, 'You', 'bad') : '')
-      + `<div class="row"><a class="btn primary" href="${esc(ctx.practiceHref)}">Try it from here</a></div>`;
+      + `<div class="row">${ctx.onClose ? '<button class="btn primary" type="button" id="mv-done">Back to the line</button>' : `<a class="btn primary" href="${esc(ctx.practiceHref ?? '#/')}">Try it from here</a>`}</div>`;
+    panel.onclick = e => { if (ctx.onClose && (e.target as HTMLElement).closest('#mv-done')) ctx.onClose(); };
   };
   const steps = [step1, step2, step3, step4, step5];
+  const first = s.before.length ? 0 : 1; // nothing was played yet: start at your move
   const go = (n: number) => {
-    stop(); step = Math.max(0, Math.min(steps.length - 1, n)); panel.onclick = null;
+    stop(); step = Math.max(first, Math.min(steps.length - 1, n)); panel.onclick = null;
     dots.forEach((d, i) => d.classList.toggle('on', i <= step));
     title.textContent = `${step + 1} / ${steps.length} · ${STEPS[step]}`;
-    prev.disabled = step === 0; next.hidden = step === steps.length - 1;
+    prev.disabled = step === first; next.hidden = step === steps.length - 1;
     steps[step]();
   };
   prev.onclick = () => go(step - 1); next.onclick = () => go(step + 1);
-  go(0);
+  const close = host.querySelector('#mv-close') as HTMLButtonElement | null; if (close) close.onclick = () => { stop(); ctx.onClose?.(); };
+  go(first);
+}
+
+/** Shows the walkthrough over a Practice or Drill screen. Closing it leaves the drill exactly where it was. The answer step needs a tap. */
+export function openMistakeStory(s: Story, o: Opening, v: Variation) {
+  document.querySelector('.mv-overlay')?.remove();
+  const wrap = document.createElement('div');
+  wrap.className = 'mv-overlay'; wrap.setAttribute('role', 'dialog'); wrap.setAttribute('aria-modal', 'true'); wrap.setAttribute('aria-label', 'Why that move fails');
+  document.body.append(wrap);
+  mountMistakeStory(wrap, s, { o, v, hideAnswer: true, onClose: () => wrap.remove() }, () => wrap.isConnected);
 }
