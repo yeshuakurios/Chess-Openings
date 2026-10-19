@@ -1,4 +1,5 @@
 import { Chess } from 'chess.js';
+import type { Attempt } from './store.ts';
 import type { Mistake, Opening } from './types.ts';
 
 /** One finished game as chess.com's public API returns it (only the fields we read). */
@@ -24,10 +25,14 @@ export interface GameImport {
   left: number;    // games in which the user left their line on their own move
   kept: number;    // games in which the user followed the line until the opponent left it or it ended
   mistakes: GameMistake[];
+  /** Days (epoch days) on which the owner played the line's move at a position (`ok`) or left the line there (`bad`), keyed `variation#ply`. Feeds mastery. Absent in imports made before this existed. */
+  recalls?: Record<string, Recalls>;
 }
+export interface Recalls { ok: number[]; bad: number[] }
 
 export const MAX_GAME_MISTAKES = 150; // about 150 bytes each: far below the Worker's 256 KB sync limit
 const FOLLOW_UP = 4;                  // plies shown after the wrong move
+const RECALL_DAYS = 60;               // newest days kept per position
 const DRAWN = new Set(['agreed', 'repetition', 'stalemate', 'insufficient', '50move', 'timevsinsufficient']);
 
 /** Which side the user had and how it ended for them; undefined when the user is in neither seat or the game is not standard chess. */
@@ -40,6 +45,8 @@ function sideOf(g: RawGame, user: string): { color: 'white' | 'black'; res: 'w' 
   return { color, res: r === 'win' ? 'w' : DRAWN.has(r) ? 'd' : 'l' };
 }
 
+const newest = (days: Iterable<number>) => [...new Set(days)].sort((a, b) => a - b).slice(-RECALL_DAYS);
+
 /**
  * Replay each game against the lines of the user's openings. A game is "in the line" while every move matches at least one variation that has
  * the same moves so far. If the user then plays a move no such variation has, that is a deviation, counted against every variation at that spot.
@@ -48,6 +55,11 @@ function sideOf(g: RawGame, user: string): { color: 'white' | 'black'; res: 'w' 
 export function analyzeGames(games: RawGame[], user: string, openings: Opening[], now = Date.now(), maxItems = MAX_GAME_MISTAKES): GameImport {
   const found = new Map<string, GameMistake>();
   const last = Math.max(0, ...games.map(g => g.end_time ?? 0));
+  const rec = new Map<string, { ok: Set<number>; bad: Set<number> }>();
+  const mark = (k: string, p: number, kind: 'ok' | 'bad', day: number) => {
+    const r = rec.get(`${k}#${p}`) ?? { ok: new Set<number>(), bad: new Set<number>() };
+    r[kind].add(day); rec.set(`${k}#${p}`, r);
+  };
   let read = 0, left = 0, kept = 0;
   for (const g of games) {
     const side = sideOf(g, user);
@@ -57,7 +69,7 @@ export function analyzeGames(games: RawGame[], user: string, openings: Opening[]
     const sans = chess.history();
     if (!sans.length) continue;
     read++;
-    const t = (g.end_time ?? 0) * 1000;
+    const t = (g.end_time ?? 0) * 1000, day = Math.floor((g.end_time ?? 0) / 86400);
     let leftHere = false, keptHere = false;
     for (const o of openings) {
       if (o.color !== side.color) continue;
@@ -67,9 +79,13 @@ export function analyzeGames(games: RawGame[], user: string, openings: Opening[]
         if (!cands.length) break;
         const mine = (p % 2 === 0) === (side.color === 'white');
         const next = cands.filter(v => v.moves[p].san === sans[p]);
-        if (next.length) { if (mine) own++; cands = next; continue; }
+        if (next.length) {
+          if (mine) { own++; if (day) for (const v of next) mark(`${o.id}/${v.id}`, p, 'ok', day); }
+          cands = next; continue;
+        }
         if (mine && own > 0) {
           deviated = true;
+          if (day && own >= 2) for (const v of cands) mark(`${o.id}/${v.id}`, p, 'bad', day); // one matching move can be a different opening; two is a real try
           for (const v of cands) {
             const id = `${o.id}/${v.id}#${p}#${sans[p]}`;
             const x = found.get(id) ?? { k: `${o.id}/${v.id}`, p, s: sans[p], n: 0, w: 0, d: 0, l: 0, line: [], t: -1 };
@@ -85,7 +101,9 @@ export function analyzeGames(games: RawGame[], user: string, openings: Opening[]
     if (leftHere) left++; else if (keptHere) kept++;
   }
   const mistakes = [...found.values()].sort((a, b) => b.n - a.n || b.t - a.t).slice(0, maxItems);
-  return { user, at: now, last, games: read, left, kept, mistakes };
+  const recalls: Record<string, Recalls> = {};
+  for (const [id, r] of rec) recalls[id] = { ok: newest(r.ok), bad: newest(r.bad) };
+  return { user, at: now, last, games: read, left, kept, mistakes, recalls };
 }
 
 /** "You played Nc3 here in 3 of your games (1 won, 0 drawn, 2 lost)." Never names the line's own move. */
@@ -111,5 +129,25 @@ export function mergeImports(old: GameImport, fresh: GameImport, maxItems = MAX_
     if (x.t >= o.t) { o.t = x.t; o.line = x.line; if (x.u) o.u = x.u; }
   }
   return { user: fresh.user, at: fresh.at, last: Math.max(old.last, fresh.last), games: old.games + fresh.games, left: old.left + fresh.left, kept: old.kept + fresh.kept,
-    mistakes: [...by.values()].sort((a, b) => b.n - a.n || b.t - a.t).slice(0, maxItems) };
+    mistakes: [...by.values()].sort((a, b) => b.n - a.n || b.t - a.t).slice(0, maxItems), recalls: mergeRecalls(old.recalls, fresh.recalls) };
+}
+
+function mergeRecalls(a: Record<string, Recalls> = {}, b: Record<string, Recalls> = {}): Record<string, Recalls> {
+  const out: Record<string, Recalls> = {};
+  for (const id of new Set([...Object.keys(a), ...Object.keys(b)])) out[id] = { ok: newest([...(a[id]?.ok ?? []), ...(b[id]?.ok ?? [])]), bad: newest([...(a[id]?.bad ?? []), ...(b[id]?.bad ?? [])]) };
+  return out;
+}
+
+/** The games as attempts at one line, for mastery: a day with the line's move played is a clean recall, a day with the line left is a slip. They never give XP and are not stored with the attempt log. */
+export function gameAttempts(imp: GameImport | undefined, k: string): Attempt[] {
+  const out: Attempt[] = [];
+  if (!imp?.recalls) return out;
+  for (const [id, r] of Object.entries(imp.recalls)) {
+    if (!id.startsWith(`${k}#`)) continue;
+    const p = Number(id.slice(k.length + 1));
+    const at = (d: number) => d * 86_400_000 + 43_200_000; // noon UTC
+    for (const d of r.bad) out.push({ id: `g${d}b${id}`, k, p, ok: 0, h: 0, ms: 0, t: at(d) - 1, m: 'g' });
+    for (const d of r.ok) out.push({ id: `g${d}o${id}`, k, p, ok: 1, h: 0, ms: 0, t: at(d), m: 'g' });
+  }
+  return out;
 }

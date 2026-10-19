@@ -12,7 +12,7 @@ export interface Attempt {
   h: 0 | 1;        // 1 if Hint was pressed at this position first
   ms: number;      // time from the position appearing to this move
   t: number;       // epoch ms
-  m: 'p' | 'd';    // practice or drill
+  m: 'p' | 'd' | 'g'; // practice, drill, or a move from an imported chess.com game (only built for mastery, never stored in the log)
   o?: 1;           // 1 if the line was started from the middle (spot check)
   s?: string;      // the move played, kept only for wrong attempts
 }

@@ -4,9 +4,10 @@ import { openings, findOpening, findVariation, key } from './content.ts';
 import { addQuestion, awardLineBonus, clearFlags, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, loadProgress, logAttempt, markLearned, review, setBestCombo, setGames, setToken, syncNow, type SyncStatus } from './store.ts';
 import { moveLabel, playLine, walkLine, type Ui } from './play.ts';
 import { fenAfter, staticBoard } from './board.ts';
+import { lineViewerSlot, mountLineViewer } from './lineview.ts';
 import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery.ts';
 import { troubleSpots } from './mistakes.ts';
-import { analyzeGames, mergeImports } from './games.ts';
+import { analyzeGames, gameAttempts, gameMistakeText, mergeImports } from './games.ts';
 import { fetchGames, FIRST_GAMES, LATER_GAMES, USERNAME } from './chesscom.ts';
 import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
@@ -55,10 +56,16 @@ const splitLead = (text: string): [string, string] => {
 };
 const fold = (rest: string, list: string[], label: string) => (rest || list.length)
   ? `<details class="more"><summary>${label}</summary>${rest ? `<p>${esc(rest)}</p>` : ''}${list.length ? `<ul>${list.map(p => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}</details>` : '';
+/** The move-by-move picture of a line, folded away until asked for; it is drawn the first time it opens. */
+const viewFold = (id: string) => `<details class="more" id="${id}-fold"><summary>Walk the line on the board</summary>${lineViewerSlot(id)}</details>`;
+function mountOnOpen(id: string, o: Opening, v: Variation) {
+  const d = document.getElementById(`${id}-fold`) as HTMLDetailsElement | null, host = document.getElementById(id);
+  if (d && host) d.addEventListener('toggle', () => { if (d.open && !host.firstChild) mountLineViewer(host, o, v); });
+}
 const goalVariation = (o: Opening) => o.variations.find(v => v.id === o.goal.board?.variation);
 const masteryOf = (o: Opening, v: Variation) => {
   const p = getProgress(), k = key(o, v);
-  return lineMastery(k, o.color, v.moves.length, p.attempts, p.cards[k]);
+  return lineMastery(k, o.color, v.moves.length, [...p.attempts, ...gameAttempts(p.games, k)], p.cards[k]);
 };
 /** Check every badge against the current state and store the new ones. Returns the ids that were just earned. */
 const refreshBadges = () => grantBadges(earnedNow({
@@ -87,6 +94,7 @@ function home() {
   const due = dueKeys().filter(k => lookup(k)).length;
   const trouble = troubleSpots(getProgress().attempts, lookup).length;
   const waiting = getProgress().questions.filter(q => !answers[q.id]).length;
+  const fromGames = gameSpots().length;
   refreshBadges(); // still earned quietly in the background
   const prog = getProgress(), lv = levelFor(totalXp(prog.xp));
   let levelUp = false; // best effort: the last level shown is kept on this device only
@@ -99,7 +107,7 @@ function home() {
     <p class="muted">Learn the plan first, then the line.</p>
     ${progressCard}
     <a class="btn primary big" href="${href('drill')}">${due ? 'Play a few lines' : 'Nothing to review. Enjoy your day.'}</a>
-    <div class="row links"><a href="${href('mistakes')}">Tricky spots${trouble ? ` (${trouble})` : ''}</a><a href="${href('ask')}">Questions${waiting ? ` (${waiting})` : ''}</a></div>
+    <div class="row links"><a href="${href('mistakes')}">Tricky spots${trouble ? ` (${trouble})` : ''}</a><a href="${href('ask')}">Questions${waiting ? ` (${waiting})` : ''}</a>${fromGames ? `<a href="${href('games')}">From your games (${fromGames})</a>` : ''}</div>
     <h2>Openings</h2>
     ${openings.map(o => {
       const done = o.variations.filter(v => isLearned(key(o, v))).length;
@@ -134,7 +142,7 @@ function gameFindings() {
     return [`<li>${esc(found[0].name)} · ${esc(found[1].name)} · move ${Math.floor(x.p / 2) + 1}: you played <b>${esc(x.s)}</b> ${x.n}× (${x.w} won, ${x.d} drawn, ${x.l} lost)</li>`];
   }).slice(0, 8);
   return `<p class="muted">${g.games} games read for ${esc(g.user)} on ${esc(new Date(g.at).toLocaleDateString())}. You left your line on your own move in ${g.left} and followed it until the opponent left in ${g.kept}. Each import adds only games you have not imported yet. Practice and Drill now show these mistakes instead of the hand-written ones, on every move that has one.</p>
-    ${rows.length ? `<ul>${rows.join('')}</ul>` : '<p class="muted">No deviations found. The hand-written mistakes stay.</p>'}`;
+    ${rows.length ? `<ul>${rows.join('')}</ul><div class="row"><a class="btn primary" href="${href('games')}">Practice these</a></div>` : '<p class="muted">No deviations found. The hand-written mistakes stay.</p>'}`;
 }
 
 function settingsPage() {
@@ -174,7 +182,7 @@ function settingsPage() {
     if (!navigator.onLine) return ccMsg('You are offline. Try again with a connection.');
     const go = btn('cc-go'); go.disabled = true;
     try {
-      const prev = getProgress().games, more = !!prev?.games && prev.user.toLowerCase() === user.toLowerCase(); // same user again: only what is new
+      const prev = getProgress().games, more = !!prev?.games && !!prev.recalls && prev.user.toLowerCase() === user.toLowerCase(); // same user again: only what is new (an import from before game mastery is read again in full)
       const raw = await fetchGames(user, { progress: ccMsg, max: more ? LATER_GAMES : FIRST_GAMES, months: more ? 2 : 6 });
       const fresh = more ? raw.filter(g => (g.end_time ?? 0) > prev!.last) : raw;
       if (!fresh.length) { ccMsg(more ? 'No new games since your last import.' : 'No games found for that user.'); go.disabled = false; return; }
@@ -247,6 +255,30 @@ function mistakesPage() {
   });
 }
 
+/** The positions where the owner left their line in real games, most frequent first, one row per position and move (a position can sit in several lines). */
+function gameSpots() {
+  const seen = new Set<string>();
+  return (getProgress().games?.mistakes ?? []).flatMap(x => {
+    const found = lookup(x.k), id = `${found?.[0].id}#${x.p}#${x.s}`;
+    if (!found || seen.has(id)) return [];
+    seen.add(id);
+    return [{ x, o: found[0], v: found[1] }];
+  });
+}
+
+function gamesPage() {
+  const spots = gameSpots().slice(0, 20), g = getProgress().games;
+  app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>From your games</h1>
+    <p class="muted">Where you left your line in your own chess.com games. Practice starts at that position, and the slip plays out if you repeat it.</p>
+    ${spots.length ? spots.map(({ x, o, v }, i) => `<div class="card"><div class="tag">${esc(o.name)} · ${esc(v.name)}</div>
+      <b>Move ${Math.floor(x.p / 2) + 1}</b><p>${esc(gameMistakeText(x))}</p>
+      ${boardFold('game-' + i, { ply: x.p, shapes: [] }, 'Show the position')}
+      <div class="row"><a class="btn primary" href="${href('practice', o.id, v.id, String(x.p))}">Practice from here</a>${x.u ? `<a class="btn" href="${esc(x.u)}" target="_blank" rel="noopener">Open the game</a>` : ''}</div></div>`).join('')
+      : `<div class="card"><b>${g?.games ? 'No deviations found.' : 'No games imported yet.'}</b><p class="muted">${g?.games ? 'You followed your lines in the games read.' : 'Import your chess.com games in Settings.'}</p><div class="row"><a class="btn" href="${href('settings')}">Settings</a></div></div>`}
+  </main>`;
+  spots.forEach(({ x, o, v }, i) => drawOnOpen('game-' + i, o, v, { ply: x.p, shapes: [] }));
+}
+
 function openingPage(o: Opening) {
   app.innerHTML = `
   <main class="page"><a class="back" href="#/">← Openings</a>
@@ -256,8 +288,10 @@ function openingPage(o: Opening) {
       ${fold(splitLead(o.goal.text)[1], o.goal.plans, 'The full plan')}
       ${boardFold('goal-board', o.goal.board)}</div>
     <h2>Variations</h2>
-    ${o.variations.map(v => { const m = masteryOf(o, v); return `<div class="card"><b>${esc(v.name)}</b>
-      <p class="muted">${esc(v.strategy)}</p>
+    ${o.variations.map((v, i) => { const m = masteryOf(o, v), [lead, rest] = splitLead(v.strategy); return `<div class="card"><b>${esc(v.name)}</b>
+      <p class="muted">${esc(lead)}</p>
+      ${viewFold('lv-' + i)}
+      ${fold(rest, [], 'Read the strategy')}
       ${lineReach(o, v) !== undefined ? `<p class="muted">${esc(reachText(lineReach(o, v)))}</p>` : ''}
       <div class="row"><a class="btn primary" href="${href('learn', o.id, v.id)}">Learn</a>
       <a class="btn" href="${href('practice', o.id, v.id)}">Practice</a>
@@ -265,12 +299,13 @@ function openingPage(o: Opening) {
       <p class="muted">${m.hint}</p></div>`; }).join('')}
   </main>`;
   drawOnOpen('goal-board', o, goalVariation(o), o.goal.board);
+  o.variations.forEach((v, i) => mountOnOpen('lv-' + i, o, v));
 }
 
 function learn(o: Opening, v: Variation) {
-  const steps = [
+  const steps: { tag: string; title: string; body: string; list: string[]; board?: PlanBoard; from?: Variation; viewer?: boolean }[] = [
     ...(isLearned(goalKey(o)) ? [] : [{ tag: 'Step 1 · Positional goal', title: o.goal.title, body: o.goal.text, list: o.goal.plans, board: o.goal.board, from: goalVariation(o) }]),
-    { tag: 'Strategy for this variation', title: v.name, body: v.strategy, list: [] as string[], board: v.board, from: v }
+    { tag: 'Strategy for this variation', title: v.name, body: v.strategy, list: [] as string[], board: v.board, from: v, viewer: true }
   ];
   let i = 0;
   const showStep = () => {
@@ -283,9 +318,9 @@ function learn(o: Opening, v: Variation) {
       <div class="tag">${s.tag}</div>
       <h2 class="hero-title">${esc(s.title)}</h2><p class="lead">${esc(lead)}</p>
       ${fold(rest, s.list, 'Read more')}
-      ${boardFold('step-board', s.from ? board : undefined)}
+      ${s.viewer ? lineViewerSlot('step-view') : boardFold('step-board', s.from ? board : undefined)}
       <button class="btn primary big" id="go">${i === steps.length - 1 ? 'Show me the line' : 'Next: the strategy'}</button></main>`;
-    drawOnOpen('step-board', o, s.from, board);
+    if (s.viewer) mountLineViewer(document.getElementById('step-view')!, o, v); else drawOnOpen('step-board', o, s.from, board);
     document.getElementById('go')!.onclick = () => {
       if (i === 0 && steps.length === 2) markLearned(goalKey(o));
       if (i < steps.length - 1) { i++; showStep(); } else walk();
@@ -306,16 +341,16 @@ const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</b
 
 const endBtns = `<button class="btn primary" id="again" hidden>Again</button><button class="btn" id="done" hidden>Done</button>`;
 
-async function practice(o: Opening, v: Variation) {
+async function practice(o: Opening, v: Variation, startPly?: number) {
   const my = ++token;
   app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`);
   const run = async () => {
     btn('again').hidden = true; btn('done').hidden = true;
-    const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, onAttempt: a => logAttempt({ ...a, k: key(o, v), m: 'p' }) });
+    const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, ...(startPly ? { startPly } : {}), onAttempt: a => logAttempt({ ...a, k: key(o, v), m: 'p', ...(startPly ? { o: 1 as const } : {}) }) });
     if (my !== token) return;
-    if (mistakes === 0) { markLearned(key(o, v)); awardLineBonus(); }
+    if (mistakes === 0 && !startPly) { markLearned(key(o, v)); awardLineBonus(); } // starting mid-line is a spot check, not a whole line
     btn('again').hidden = false; btn('done').hidden = false;
-    btn('done').onclick = () => { location.hash = href('o', o.id); };
+    btn('done').onclick = () => { location.hash = startPly ? href('games') : href('o', o.id); };
     btn('again').onclick = () => { app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`); void run(); };
   };
   void run();
@@ -369,11 +404,12 @@ async function drill() {
 
 function route() {
   token++;
-  const [, a, b, c] = location.hash.split('/');
+  const [, a, b, c, d] = location.hash.split('/');
   const o = b ? findOpening(b) : undefined; const v = o && c ? findVariation(o, c) : undefined;
   if (a === 'o' && o) openingPage(o);
   else if (a === 'learn' && o && v) learn(o, v);
-  else if (a === 'practice' && o && v) void practice(o, v);
+  else if (a === 'practice' && o && v) void practice(o, v, d && Number(d) > 0 && Number(d) < v.moves.length ? Number(d) : undefined);
+  else if (a === 'games') gamesPage();
   else if (a === 'drill') void drill();
   else if (a === 'mistakes') mistakesPage();
   else if (a === 'ask') askPage();

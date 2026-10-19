@@ -71,3 +71,27 @@ assert.equal(m3.n, 3); assert.equal(m3.w, 2); assert.equal(m3.u, 'https://chess.
 assert.equal(both.games, 3); assert.equal(both.left, 3); assert.equal(both.last, 1_700_000_900);
 assert.equal(mergeImports(r, later, 1).mistakes.length, 1);
 console.log('incremental ok');
+// game recalls feed mastery
+import { gameAttempts } from '../src/games.ts';
+import { lineMastery } from '../src/mastery.ts';
+const k = `bird/${v.id}`;
+const day = (t: number) => Math.floor(t / 86400);
+assert.ok(r.recalls, 'recalls recorded');
+assert.deepEqual(r.recalls![`${k}#0`].ok, [day(1_700_000_000)], 'line move played: a clean day (both games the same day)');
+assert.deepEqual(r.recalls![`${k}#2`]?.bad ?? [], [], 'a deviation after one matching move is not a slip for mastery');
+// a game that follows the line for two of the owner's moves and then leaves it is a slip
+const c2 = new Chess(); sans.slice(0, 4).forEach(x => c2.move(x));
+const alt2 = c2.moves().find(x => !bird.variations.some(w => w.moves.length > 4 && w.moves.slice(0, 4).every((y, i) => y.san === sans[i]) && w.moves[4].san === x))!;
+const slip = analyzeGames([game([...sans.slice(0, 4), alt2], { end_time: 1_700_100_000 })], 'me', [bird]);
+assert.deepEqual(slip.recalls![`${k}#4`].bad, [day(1_700_100_000)]);
+const att = gameAttempts(slip, k);
+assert.ok(att.every(a => a.m === 'g' && a.h === 0 && a.k === k));
+assert.ok(att.some(a => a.p === 0 && a.ok === 1) && att.some(a => a.p === 4 && a.ok === 0));
+const lm = lineMastery(k, 'white', v.moves.length, att);
+assert.notEqual(lm.level, 'New', 'games alone move a line off New');
+assert.equal(lm.states.get(4)!.score, 0); assert.equal(lm.states.get(0)!.score, 1);
+// old imports without recalls give no attempts; merging keeps recalls from both
+assert.deepEqual(gameAttempts({ ...slip, recalls: undefined }, k), []);
+const mrg = mergeImports(r, slip);
+assert.equal(mrg.recalls![`${k}#4`].bad.length, 1); assert.equal(mrg.recalls![`${k}#0`].ok.length, 2);
+console.log('recalls ok');
