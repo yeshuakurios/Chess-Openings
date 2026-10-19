@@ -1,7 +1,7 @@
 import { createEmptyCard, fsrs, Rating, type Card } from 'ts-fsrs';
-import { MAX_ATTEMPTS, mergeProgress } from './merge.ts';
+import { MAX_ATTEMPTS, MAX_QUESTIONS, MAX_QUESTION_CHARS, mergeProgress } from './merge.ts';
 import { LINE_BONUS, dayKey, xpForAttempt } from './gamify.ts';
-import { flagKey, type Stamped } from './flags.ts';
+import type { GameImport } from './games.ts';
 
 /** One user move in a line. Short field names on purpose: the log is synced and the Worker caps the body at 256 KB. */
 export interface Attempt {
@@ -12,9 +12,16 @@ export interface Attempt {
   h: 0 | 1;        // 1 if Hint was pressed at this position first
   ms: number;      // time from the position appearing to this move
   t: number;       // epoch ms
-  m: 'p' | 'd';    // practice or drill
+  m: 'p' | 'd' | 'g'; // practice, drill, or a move from an imported chess.com game (only built for mastery, never stored in the log)
   o?: 1;           // 1 if the line was started from the middle (spot check)
   s?: string;      // the move played, kept only for wrong attempts
+}
+/** A question the owner asked in the app. Answers are not stored here: the daily review writes them to `src/answers.json` by `id`. */
+export interface Question {
+  id: string;
+  t: number;       // epoch ms
+  q: string;
+  k?: string;      // the move it is about: `opening/line#ply` (same id as a flag); absent for a general question
 }
 export interface Progress {
   learned: Record<string, true>;
@@ -25,12 +32,17 @@ export interface Progress {
   xp: Record<string, number>;
   /** Earned badge id -> day earned. Never removed. */
   badges: Record<string, string>;
+  /** Moves the owner marked "need more explanation": `opening/line#ply` -> epoch ms. Read at the start of a session (Settings copies them as a list; they also sync) so the next session can write the missing explanation. */
   /** Openings set aside with "Save for later". Per opening: `on` plus when it was last changed, so the newest change wins when two devices sync. Progress on a saved opening is kept. */
-  shelf: Record<string, Stamped>;
-  /** Moves marked "Needs more explanation", keyed by line and move index (see flagKey). Turned off, not deleted, so the change syncs. */
-  flags: Record<string, Stamped>;
+  shelf: Record<string, { on: boolean; t: number }>;
+  flags: Record<string, number>;
+  /** Moves flagged at or before this time were handed off and are gone. Merged by max so clearing on one device sticks. */
+  flagsClearedAt: number;
+  questions: Question[];
+  /** Mistakes found in the owner's chess.com games; they replace the hand-written ones in Practice and Drill. The newest import wins on merge. */
+  games?: GameImport;
 }
-const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {}, shelf: {}, flags: {} });
+const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {}, flags: {}, flagsClearedAt: 0, questions: [], shelf: {} });
 const DB = 'openings', STORE = 'kv', KEY = 'progress', TOKEN_KEY = 'syncToken';
 const scheduler = fsrs();
 
@@ -86,17 +98,6 @@ async function save(sync = true) {
 export const getProgress = () => progress;
 export const isLearned = (k: string) => !!progress.learned[k];
 export const isShelved = (openingId: string) => !!progress.shelf[openingId]?.on;
-export const isFlagged = (line: string, ply: number) => !!progress.flags[flagKey(line, ply)]?.on;
-export function setFlagged(line: string, ply: number, on: boolean) {
-  progress.flags[flagKey(line, ply)] = { on, t: Date.now() };
-  void save();
-}
-export const flaggedCount = () => Object.values(progress.flags).filter(f => f.on).length;
-export function clearFlags() {
-  const t = Date.now();
-  for (const [k, f] of Object.entries(progress.flags)) if (f.on) progress.flags[k] = { on: false, t };
-  void save();
-}
 export function setShelved(openingId: string, on: boolean) {
   progress.shelf[openingId] = { on, t: Date.now() };
   void save();
@@ -138,6 +139,28 @@ export function grantBadges(ids: string[]): string[] {
 }
 export function setBestCombo(n: number) {
   if (n > progress.bestCombo) { progress.bestCombo = n; void save(); }
+}
+export const flagKey = (variationKey: string, ply: number) => `${variationKey}#${ply}`;
+export const isFlagged = (fk: string) => !!progress.flags[fk];
+/** Toggle the flag; returns the new state. */
+export function toggleFlag(fk: string): boolean {
+  if (progress.flags[fk]) delete progress.flags[fk]; else progress.flags[fk] = Date.now();
+  void save();
+  return !!progress.flags[fk];
+}
+/** Keep the result of an import. An import with no mistakes brings the hand-written ones back, and being newer it wins the sync merge too. */
+export function setGames(g: GameImport) { progress.games = g; void save(); }
+/** Hand-off done: drop every flag made so far. */
+export function clearFlags() { progress.flags = {}; progress.flagsClearedAt = Date.now(); void save(); }
+/** Store a question; the daily review picks it up once it has synced. Returns false for an empty text. */
+export function addQuestion(text: string, k?: string): boolean {
+  const q = text.trim().slice(0, MAX_QUESTION_CHARS);
+  if (!q) return false;
+  const t = Date.now();
+  progress.questions.push({ id: t.toString(36) + Math.random().toString(36).slice(2, 6), t, q, ...(k ? { k } : {}) });
+  if (progress.questions.length > MAX_QUESTIONS) progress.questions.splice(0, progress.questions.length - MAX_QUESTIONS);
+  void save();
+  return true;
 }
 export const exportProgress = () => JSON.stringify(progress);
 export function importProgress(raw: string) { progress = parse(raw); void save(); }

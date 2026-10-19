@@ -115,7 +115,33 @@
             "w": 213302,
             "d": 17338,
             "b": 210807
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e4",
+              "line": [
+                "dxe4",
+                "Nc3",
+                "Nf6"
+              ],
+              "text": "The Bird is not a 1.e4 opening. Pushing e4 just hangs a pawn: after dxe4 you cannot win it back, and the f-pawn has already weakened your king side.",
+              "eval": -1.8
+            },
+            {
+              "san": "f5",
+              "line": [
+                "Bxf5"
+              ],
+              "text": "The f-pawn advance is a free pawn for Black: the bishop takes it and nothing guards f5.",
+              "eval": -3
+            }
+          ],
+          "versus": [
+            {
+              "line": "froms-gambit",
+              "text": "After 1...e5 (From's Gambit) the pawn is offered, so you take it. After 1...d5 nothing is offered, so you just develop and add a second guard of e5."
+            }
+          ]
         },
         {
           "san": "Nf6",
@@ -262,7 +288,28 @@
             "w": 176,
             "d": 14,
             "b": 230
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Ng5",
+              "line": [
+                "Ne4",
+                "d4",
+                "Nxg5",
+                "fxg5"
+              ],
+              "text": "After Ng5, Ne4 attacks your knight and opens the long diagonal: the bishop on g7 now hits your rook on a1. You cannot save both. Get the bishop to b2 first.",
+              "eval": -2.8
+            },
+            {
+              "san": "e4",
+              "line": [
+                "Nxe4"
+              ],
+              "text": "After b3 the rook on a1 depends on the long diagonal. Pushing e4 loses a pawn and lets the knight leave f6, which opens that diagonal for Black's bishop.",
+              "eval": -3.4
+            }
+          ]
         },
         {
           "san": "O-O",
@@ -366,7 +413,19 @@
             "w": 19,
             "d": 1,
             "b": 39
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Bxf6",
+              "line": [
+                "exf6",
+                "O-O",
+                "Nc6"
+              ],
+              "text": "Giving up your long-diagonal bishop for a knight leaves Black's own long-diagonal bishop unopposed and hands Black the bishop pair.",
+              "eval": -1.4
+            }
+          ]
         },
         {
           "san": "Nc6",
@@ -487,7 +546,13 @@
             "w": 45773,
             "d": 4869,
             "b": 43575
-          }
+          },
+          "versus": [
+            {
+              "line": "main-d5",
+              "text": "After 1...d5 there is no pawn to take, so you develop. Here Black has offered the e-pawn, so you accept it, then watch the diagonal to your king."
+            }
+          ]
         },
         {
           "san": "d6",
@@ -529,7 +594,20 @@
             "w": 3998,
             "d": 541,
             "b": 4816
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e4",
+              "line": [
+                "Qh4+",
+                "Ke2",
+                "Qxe4+",
+                "Kf2"
+              ],
+              "text": "With the f-pawn gone, the diagonal to your king is open: Qh4+ is check and Black then takes e4 with another check. Your king is stuck in the center.",
+              "eval": -3.3
+            }
+          ]
         },
         {
           "san": "Bxd6",
@@ -571,7 +649,33 @@
             "w": 1361,
             "d": 96,
             "b": 1662
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Nc3",
+              "line": [
+                "Qh4+",
+                "g3",
+                "Bxg3+",
+                "hxg3",
+                "Qxg3#"
+              ],
+              "text": "The classic From's Gambit trap: your f-pawn is gone, so Qh4+ is check, g3 is forced, and the bishop takes with check. Black mates on g3. Cover the h4 square before anything else.",
+              "eval": -100
+            },
+            {
+              "san": "e4",
+              "line": [
+                "Qh4+",
+                "Ke2",
+                "Qxe4+",
+                "Kf2",
+                "Bc5+"
+              ],
+              "text": "Pushing the e-pawn does not cover h4, so Qh4+ comes with check and Black takes e4 with check again. Your king is dragged into the open.",
+              "eval": -7.6
+            }
+          ]
         },
         {
           "san": "g5",
@@ -658,7 +762,29 @@
             "w": 13,
             "d": 0,
             "b": 16
-          }
+          },
+          "mistakes": [
+            {
+              "san": "d4",
+              "line": [
+                "gxf3",
+                "exf3",
+                "Qe7+"
+              ],
+              "text": "The pawn on g4 attacks your knight. Playing a different move lets it capture, and Black also gets a check on e7. Look at what the last pawn move attacked before you answer.",
+              "eval": -2.5
+            },
+            {
+              "san": "Nc3",
+              "line": [
+                "gxf3",
+                "d4",
+                "Qe7"
+              ],
+              "text": "The pawn on g4 attacks your knight. Developing a different piece lets it capture the knight for free. Look at what the last pawn move attacked before you answer.",
+              "eval": -2.6
+            }
+          ]
         },
         {
           "san": "Ne7",
@@ -725,7 +851,27 @@
             "w": 0,
             "d": 0,
             "b": 1
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Nf5",
+              "line": [
+                "Bxf5"
+              ],
+              "text": "The knight lands on f5 where Black's bishop takes it for free. It is protected by nothing.",
+              "eval": -3
+            },
+            {
+              "san": "Bg2",
+              "line": [
+                "Nxh4",
+                "gxh4",
+                "Qxh4+"
+              ],
+              "text": "Black's knight attacks your knight on h4. Ignoring it lets Black trade, wreck your pawns and check your king with the queen.",
+              "eval": -2
+            }
+          ]
         },
         {
           "san": "hxg6",
@@ -823,7 +969,17 @@
             "w": 31711,
             "d": 2585,
             "b": 31430
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e4",
+              "line": [
+                "Nxe4"
+              ],
+              "text": "Pushing e4 drops a pawn: the knight takes it, and the f-pawn has already left the squares that would protect it. Develop first.",
+              "eval": -1.1
+            }
+          ]
         },
         {
           "san": "g6",
@@ -1091,7 +1247,33 @@
             "w": 213302,
             "d": 17338,
             "b": 210807
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e4",
+              "line": [
+                "dxe4",
+                "Nc3",
+                "Nf6"
+              ],
+              "text": "The Bird is not a 1.e4 opening. Pushing e4 just hangs a pawn: after dxe4 you cannot win it back, and the f-pawn has already weakened your king side.",
+              "eval": -1.9
+            },
+            {
+              "san": "f5",
+              "line": [
+                "Bxf5"
+              ],
+              "text": "The f-pawn advance is a free pawn for Black: the bishop takes it and nothing guards f5.",
+              "eval": -3
+            }
+          ],
+          "versus": [
+            {
+              "line": "froms-gambit",
+              "text": "After 1...e5 (From's Gambit) the pawn is offered, so you take it. After 1...d5 nothing is offered, so you just develop and add a second guard of e5."
+            }
+          ]
         },
         {
           "san": "Nf6",
@@ -1182,7 +1364,19 @@
             "w": 495,
             "d": 31,
             "b": 409
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e4",
+              "line": [
+                "Nxe4",
+                "Nc3",
+                "Nf6"
+              ],
+              "text": "Pushing the e-pawn drops it: it is captured and nothing of yours can recapture, because the f-pawn has already moved. Finish developing first.",
+              "eval": -1.5
+            }
+          ]
         },
         {
           "san": "Nc6",
@@ -1540,7 +1734,20 @@
             "w": 526,
             "d": 38,
             "b": 467
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e4",
+              "line": [
+                "dxe4",
+                "Ne5",
+                "Nxe5",
+                "fxe5"
+              ],
+              "text": "Pushing the e-pawn drops it: it is captured and nothing of yours can recapture, because the f-pawn has already moved. Finish developing first.",
+              "eval": -1.2
+            }
+          ]
         },
         {
           "san": "Nf6",
@@ -1996,7 +2203,18 @@
             "w": 102,
             "d": 12,
             "b": 100
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e4",
+              "line": [
+                "Nxe4",
+                "a4"
+              ],
+              "text": "Pushing the e-pawn drops it: the knight takes and White's pawn on f4 can no longer recapture. Wait until the center is ready.",
+              "eval": -2.1
+            }
+          ]
         },
         {
           "san": "c5",
@@ -2375,7 +2593,20 @@
             "w": 8,
             "d": 1,
             "b": 3
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Bxh7+",
+              "line": [
+                "Nxh7",
+                "h4",
+                "c5",
+                "Ng5"
+              ],
+              "text": "The Greek-gift sacrifice needs a knight ready to join with check on g5 and the queen ready to follow. Without them the bishop is simply lost for a pawn.",
+              "eval": -3.1
+            }
+          ]
         },
         {
           "san": "Bb7",
@@ -2492,7 +2723,33 @@
             "w": 213302,
             "d": 17338,
             "b": 210807
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e4",
+              "line": [
+                "dxe4",
+                "Nc3",
+                "Nf6"
+              ],
+              "text": "The Bird is not a 1.e4 opening. Pushing e4 just hangs a pawn: after dxe4 you cannot win it back, and the f-pawn has already weakened your king side.",
+              "eval": -1.9
+            },
+            {
+              "san": "f5",
+              "line": [
+                "Bxf5"
+              ],
+              "text": "The f-pawn advance is a free pawn for Black: the bishop takes it and nothing guards f5.",
+              "eval": -2.9
+            }
+          ],
+          "versus": [
+            {
+              "line": "froms-gambit",
+              "text": "After 1...e5 (From's Gambit) the pawn is offered, so you take it. After 1...d5 nothing is offered, so you just develop and add a second guard of e5."
+            }
+          ]
         },
         {
           "san": "Nc6",
@@ -2667,7 +2924,21 @@
             "w": 132,
             "d": 10,
             "b": 102
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e4",
+              "line": [
+                "dxe4",
+                "Ne5",
+                "Bxe2",
+                "Qxe2",
+                "Qd4+"
+              ],
+              "text": "Pushing e4 opens the center before you are ready: Black wins a pawn and the queen comes in with check.",
+              "eval": -3.4
+            }
+          ]
         },
         {
           "san": "Bd6",
@@ -2970,7 +3241,18 @@
             "w": 12,
             "d": 1,
             "b": 15
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e4",
+              "line": [
+                "fxe4",
+                "Ne1"
+              ],
+              "text": "Pushing the e-pawn drops a pawn: fxe4 also attacks your knight, so you are a pawn down and losing time.",
+              "eval": -2.3
+            }
+          ]
         },
         {
           "san": "d6",
@@ -3273,7 +3555,18 @@
             "w": 102,
             "d": 12,
             "b": 100
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e4",
+              "line": [
+                "Nxe4",
+                "a4"
+              ],
+              "text": "Pushing the e-pawn drops it: the knight takes and White's pawn on f4 can no longer recapture. Wait until the center is ready.",
+              "eval": -2.1
+            }
+          ]
         },
         {
           "san": "c5",
@@ -3448,7 +3741,20 @@
             "w": 2133,
             "d": 162,
             "b": 1851
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e4",
+              "line": [
+                "dxe4",
+                "Ne5",
+                "Nxe5",
+                "fxe5"
+              ],
+              "text": "Pushing the e-pawn drops it: it is captured and nothing of yours can recapture, because the f-pawn has already moved. Finish developing first.",
+              "eval": -2.7
+            }
+          ]
         },
         {
           "san": "e6",
@@ -3649,7 +3955,33 @@
             "w": 213302,
             "d": 17338,
             "b": 210807
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e4",
+              "line": [
+                "dxe4",
+                "Nc3",
+                "Nf6"
+              ],
+              "text": "The Bird is not a 1.e4 opening. Pushing e4 just hangs a pawn: after dxe4 you cannot win it back, and the f-pawn has already weakened your king side.",
+              "eval": -1.8
+            },
+            {
+              "san": "f5",
+              "line": [
+                "Bxf5"
+              ],
+              "text": "The f-pawn advance is a free pawn for Black: the bishop takes it and nothing guards f5.",
+              "eval": -3
+            }
+          ],
+          "versus": [
+            {
+              "line": "froms-gambit",
+              "text": "After 1...e5 (From's Gambit) the pawn is offered, so you take it. After 1...d5 nothing is offered, so you just develop and add a second guard of e5."
+            }
+          ]
         },
         {
           "san": "Bf5",
@@ -3838,7 +4170,18 @@
             "w": 5,
             "d": 0,
             "b": 4
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e4",
+              "line": [
+                "dxe4",
+                "Ne5"
+              ],
+              "text": "Pushing the e-pawn drops it: it is captured and nothing of yours can recapture, because the f-pawn has already moved. Finish developing first.",
+              "eval": -2.4
+            }
+          ]
         },
         {
           "san": "O-O",
@@ -3929,7 +4272,33 @@
             "w": 213302,
             "d": 17338,
             "b": 210807
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e4",
+              "line": [
+                "dxe4",
+                "Nc3",
+                "Nf6"
+              ],
+              "text": "The Bird is not a 1.e4 opening. Pushing e4 just hangs a pawn: after dxe4 you cannot win it back, and the f-pawn has already weakened your king side.",
+              "eval": -1.9
+            },
+            {
+              "san": "f5",
+              "line": [
+                "Bxf5"
+              ],
+              "text": "The f-pawn advance is a free pawn for Black: the bishop takes it and nothing guards f5.",
+              "eval": -3
+            }
+          ],
+          "versus": [
+            {
+              "line": "froms-gambit",
+              "text": "After 1...e5 (From's Gambit) the pawn is offered, so you take it. After 1...d5 nothing is offered, so you just develop and add a second guard of e5."
+            }
+          ]
         },
         {
           "san": "e6",
@@ -4020,7 +4389,19 @@
             "w": 2327,
             "d": 143,
             "b": 1859
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e4",
+              "line": [
+                "Nxe4",
+                "Nc3",
+                "Be7"
+              ],
+              "text": "Pushing the e-pawn drops it: it is captured and nothing of yours can recapture, because the f-pawn has already moved. Finish developing first.",
+              "eval": -1.9
+            }
+          ]
         },
         {
           "san": "Be7",
