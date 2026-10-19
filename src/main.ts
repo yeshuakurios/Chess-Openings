@@ -16,6 +16,7 @@ import { answers } from './answers.ts';
 import type { Opening, PlanBoard, Variation } from './types.ts';
 
 const GEAR = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
+const DEFAULT_CC_USER = 'bibleoverthinker'; // the owner's chess.com name, prefilled in Settings
 const DRILL_CAP = 5; // lines per Drill session; a short, relaxed sitting. The rest stay due for next time
 /** Tell the user a new version is ready instead of reloading under them; applying it is their tap. */
 const updateSW = registerSW({
@@ -145,7 +146,7 @@ function settingsPage() {
     <div class="row"><button class="btn" id="exp">Export progress</button><button class="btn" id="imp">Import</button></div></div>
     <h2>Your chess.com games</h2>
     <div class="card"><p class="muted">Reads your latest ${FIRST_GAMES} games from chess.com the first time, then only games you have not imported yet (looking at the newest ${LATER_GAMES}). It is free public data: no key, no password. Those mistakes then replace the hand-written ones in Practice and Drill. Nothing is sent anywhere but chess.com.</p>
-    <input id="cc-user" type="text" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="chess.com username" aria-label="chess.com username" value="${esc(getProgress().games?.user ?? '')}">
+    <input id="cc-user" type="text" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="chess.com username" aria-label="chess.com username" value="${esc(getProgress().games?.user ?? DEFAULT_CC_USER)}">
     <div class="row"><button class="btn primary" id="cc-go">${getProgress().games?.games ? 'Import new games' : 'Import games'}</button><button class="btn" id="cc-clear" ${getProgress().games?.games ? '' : 'disabled'}>Use hand-written again</button></div>
     <p class="muted" id="cc-msg" role="status"></p>${gameFindings()}</div>
     <h2>Flagged for more explanation</h2>
