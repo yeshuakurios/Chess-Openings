@@ -2,6 +2,8 @@ import { createEmptyCard, fsrs, Rating, type Card } from 'ts-fsrs';
 import { MAX_ATTEMPTS, MAX_QUESTIONS, MAX_QUESTION_CHARS, mergeProgress } from './merge.ts';
 import { LINE_BONUS, dayKey, xpForAttempt } from './gamify.ts';
 import type { GameImport } from './games.ts';
+import { applyReview, reviveFix, syncFixes, type Fix } from './fixes.ts';
+import type { Grade } from 'ts-fsrs';
 
 /** One user move in a line. Short field names on purpose: the log is synced and the Worker caps the body at 256 KB. */
 export interface Attempt {
@@ -41,6 +43,8 @@ export interface Progress {
   questions: Question[];
   /** Mistakes found in the owner's chess.com games; they replace the hand-written ones in Practice and Drill. The newest import wins on merge. */
   games?: GameImport;
+  /** One review card per distinct mistake in the games (see `src/fixes.ts`). Built from `games` by `syncFixes`, reviewed in Drill. */
+  fixes?: Record<string, Fix>;
 }
 const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {}, flags: {}, flagsClearedAt: 0, questions: [], shelf: {} });
 const DB = 'openings', STORE = 'kv', KEY = 'progress', TOKEN_KEY = 'syncToken';
@@ -73,7 +77,7 @@ async function kvSet(k: string, v: string) {
 export async function loadProgress(): Promise<Progress> {
   try {
     const raw = await kvGet(KEY);
-    if (raw) progress = parse(raw);
+    if (raw) { progress = parse(raw); progress.fixes = syncFixes(progress.fixes ?? {}, progress.games); }
     token = (await kvGet(TOKEN_KEY)) ?? '';
   } catch { /* private mode: run in memory */ }
   void requestPersistence();
@@ -88,6 +92,7 @@ async function requestPersistence() {
 function parse(raw: string): Progress {
   const p = { ...empty(), ...JSON.parse(raw) } as Progress;
   for (const k of Object.keys(p.cards)) p.cards[k] = revive(p.cards[k]);
+  for (const id of Object.keys(p.fixes ?? {})) p.fixes![id] = reviveFix(p.fixes![id]);
   return p;
 }
 async function save(sync = true) {
@@ -149,7 +154,16 @@ export function toggleFlag(fk: string): boolean {
   return !!progress.flags[fk];
 }
 /** Keep the result of an import. An import with no mistakes brings the hand-written ones back, and being newer it wins the sync merge too. */
-export function setGames(g: GameImport) { progress.games = g; void save(); }
+export function setGames(g: GameImport) { progress.games = g; progress.fixes = syncFixes(progress.fixes ?? {}, g); void save(); }
+export const getFixes = () => progress.fixes ?? {};
+/** Record one review of a game mistake; returns the updated card. */
+export function reviewFix(id: string, rating: Grade): Fix | undefined {
+  const f = progress.fixes?.[id];
+  if (!f) return undefined;
+  progress.fixes![id] = applyReview(f, rating, Date.now());
+  void save();
+  return progress.fixes![id];
+}
 /** Hand-off done: drop every flag made so far. */
 export function clearFlags() { progress.flags = {}; progress.flagsClearedAt = Date.now(); void save(); }
 /** Store a question; the daily review picks it up once it has synced. Returns false for an empty text. */
@@ -189,7 +203,7 @@ export async function syncNow(): Promise<SyncStatus> {
     if (res.status === 401) return 'unauthorized';
     if (!res.ok) return 'offline';
     const remote = (await res.json()) as { data: string | null };
-    if (remote.data) progress = mergeProgress(progress, parse(remote.data));
+    if (remote.data) { progress = mergeProgress(progress, parse(remote.data)); progress.fixes = syncFixes(progress.fixes ?? {}, progress.games); }
     await save(false);
     const put = await fetch('./api/progress', { method: 'PUT', headers: { ...headers, 'content-type': 'application/json' }, body: JSON.stringify(progress) });
     return put.ok ? 'ok' : put.status === 401 ? 'unauthorized' : 'offline';

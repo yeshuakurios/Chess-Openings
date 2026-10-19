@@ -1,13 +1,15 @@
 import './style.css';
 import { registerSW } from 'virtual:pwa-register';
 import { openings, findOpening, findVariation, key } from './content.ts';
-import { addQuestion, awardLineBonus, clearFlags, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, isShelved, loadProgress, logAttempt, markLearned, review, setBestCombo, setGames, setShelved, setToken, syncNow, type SyncStatus } from './store.ts';
+import { getFixes, reviewFix, addQuestion, awardLineBonus, clearFlags, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, isShelved, loadProgress, logAttempt, markLearned, review, setBestCombo, setGames, setShelved, setToken, syncNow, type SyncStatus } from './store.ts';
 import { moveLabel, playLine, walkLine, type Ui } from './play.ts';
 import { fenAfter, staticBoard } from './board.ts';
 import { lineViewerSlot, mountLineViewer } from './lineview.ts';
-import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery.ts';
+import { LEVELS, SLOW_MS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery.ts';
+import { FIX_DAYS, dueFixes, fixCounts, fixId, whenText, isOpen } from './fixes.ts';
+import { Rating } from 'ts-fsrs';
 import { troubleSpots } from './mistakes.ts';
-import { analyzeGames, gameAttempts, gameMistakeText, gradeOf, mergeImports, IMPORT_VERSION } from './games.ts';
+import { analyzeGames, gameAttempts, gameMistakeText, gradeOf, mergeImports, IMPORT_VERSION, type GameMistake } from './games.ts';
 import { fmtEval } from './grade.ts';
 import { explainMistake } from './mistakestory.ts';
 import { mountMistakeStory } from './mistakeview.ts';
@@ -95,10 +97,10 @@ async function runSync(rerender: boolean) {
 }
 
 function home() {
-  const due = dueKeys().filter(k => lookup(k)).length;
+  const due = dueKeys().filter(k => lookup(k)).length + dueFixes(getFixes()).filter(f => lookup(f.k)).length;
   const trouble = troubleSpots(getProgress().attempts, lookup).length;
   const waiting = getProgress().questions.filter(q => !answers[q.id]).length;
-  const fromGames = gameSpots().length;
+  const fromGames = fixCounts(getFixes()).open;
   refreshBadges(); // still earned quietly in the background
   const prog = getProgress(), lv = levelFor(totalXp(prog.xp));
   let levelUp = false; // best effort: the last level shown is kept on this device only
@@ -267,41 +269,46 @@ function mistakesPage() {
   });
 }
 
-/** The positions where the owner left their line in real games, most frequent first, one row per position and move (a position can sit in several lines). */
-function gameSpots() {
-  const seen = new Set<string>();
-  return (getProgress().games?.mistakes ?? []).flatMap(x => {
-    const found = lookup(x.k), id = `${found?.[0].id}#${x.p}#${x.s}`;
-    if (!found || seen.has(id)) return [];
-    seen.add(id);
-    return [{ x, o: found[0], v: found[1] }];
-  });
+/** Each distinct game mistake with its review card, joined to the game data (counts, follow-up) and the line it belongs to. */
+function fixSpots() {
+  const byId = new Map<string, GameMistake>();
+  for (const x of getProgress().games?.mistakes ?? []) { const id = fixId(x); if (!byId.has(id)) byId.set(id, x); }
+  return Object.values(getFixes()).flatMap(f => { const x = byId.get(f.id), found = lookup(f.k); return x && found ? [{ f, x, o: found[0], v: found[1], gr: gradeOf(x, found[0].color) }] : []; });
 }
+type Spot = ReturnType<typeof fixSpots>[number];
 
 function gamesPage() {
-  const all = gameSpots(), spots = all.slice(0, 20), g = getProgress().games;
-  const graded = all.map(s => ({ ...s, gr: gradeOf(s.x, s.o.color) }));
-  const count = (grade: string) => graded.filter(s => s.gr?.grade === grade).reduce((n, s) => n + s.x.n, 0);
-  const summary = graded.some(s => s.gr)
-    ? `<div class="card"><b>Report card</b><p class="muted">${g!.games} games read. Where you left your lines: ${count('blunder')} blunders, ${count('mistake')} mistakes, ${count('inaccuracy')} inaccuracies, ${count('good')} playable moves that were simply not your line.</p></div>` : '';
-  const line = (s: (typeof graded)[number]) => {
+  const all = fixSpots(), g = getProgress().games, now = Date.now();
+  // open ones first: due before not due, then the ones that cost the most
+  const open = all.filter(s => isOpen(s.f)).sort((a, b) => (+(+b.f.card.due <= now) - +(+a.f.card.due <= now)) || b.x.n - a.x.n).slice(0, 30);
+  const cleared = all.filter(s => !isOpen(s.f)).sort((a, b) => b.f.clearedAt! - a.f.clearedAt!);
+  const c = fixCounts(getFixes(), now), total = c.open + c.cleared;
+  const summary = total ? `<div class="card"><b>${c.cleared} of ${total} mistakes cleared</b>
+      <div class="goal"><i style="width:${Math.round((c.cleared / total) * 100)}%"></i></div>
+      <p class="muted">A mistake is cleared when you play the right move cleanly on ${FIX_DAYS} different days and the scheduler says you will remember it for weeks. Playing the line's move in a later game counts too. Repeat the mistake in a game and it comes back.</p>
+      <div class="row">${c.due ? `<a class="btn primary" href="${href('drill')}">Drill ${c.due} due now</a>` : '<span class="muted">Nothing due right now.</span>'}</div></div>` : '';
+  const line = (s: Spot) => {
     const own = s.v.moves[s.x.p], mine = own.eval * (s.o.color === 'white' ? 1 : -1), e = s.gr;
     const top = e && e.best.san !== own.san && e.best.mine - mine >= 0.2 ? ` The engine's top move here is ${esc(e.best.san)} (${fmtEval(e.best.mine)}).` : '';
     return `<p><b>Your line plays ${esc(own.san)}</b> <span class="muted">(${fmtEval(mine)} for you)</span><br>${esc(own.note)}${top}</p>`;
   };
-  app.innerHTML = `<main class="page"><a class="back" data-goback href="#/">← Home</a><h1>From your games</h1>
-    <p class="muted">Where you left your line in your own chess.com games, graded by the engine. Practice starts at that position, and the slip plays out if you repeat it.</p>
-    ${summary}
-    ${spots.length ? spots.map(({ x, o, v }, i) => { const s = graded.find(t => t.x === x)!; return `<div class="card"><div class="tag">${esc(o.name)} · ${esc(v.name)}</div>
-      <b>Move ${Math.floor(x.p / 2) + 1}: you played ${esc(x.s)}${s.gr ? ` <span class="grade ${s.gr.grade}">${esc(s.gr.label)} ${esc(s.gr.mark)}</span>` : ''}</b>
-      <p>${esc(gameMistakeText(x, s.gr))}</p>
+  const dots = (s: Spot) => `<span class="dots" aria-label="Clean on ${s.f.days.length} of ${FIX_DAYS} days">${Array.from({ length: FIX_DAYS }, (_, i) => `<i class="${i < s.f.days.length ? 'on' : ''}"></i>`).join('')}</span>`;
+  const card = (s: Spot, i: number) => `<div class="card"><div class="tag">${esc(s.o.name)} · ${esc(s.v.name)}</div>
+      <b>Move ${Math.floor(s.x.p / 2) + 1}: you played ${esc(s.x.s)}${s.gr ? ` <span class="grade ${s.gr.grade}">${esc(s.gr.label)} ${esc(s.gr.mark)}</span>` : ''}</b>
+      <div class="fix-state">${isOpen(s.f) ? `${dots(s)}<span class="${+s.f.card.due <= now ? 'due' : 'muted'}">${esc(whenText(s.f, now))}</span>` : `<span class="cleared">Cleared ✓ ${esc(when(s.f.clearedAt!))}</span>`}</div>
+      <p>${esc(gameMistakeText(s.x, s.gr))}</p>
       ${line(s)}
-      ${x.line.length ? `<p class="muted">What followed in your game: ${esc(x.line.join(' '))}</p>` : ''}
-      ${boardFold('game-' + i, { ply: x.p, shapes: [] }, 'Show the position')}
-      <div class="row"><a class="btn primary" href="${href('fix', o.id, v.id, String(x.p), encodeURIComponent(x.s))}">Show me</a><a class="btn" href="${href('practice', o.id, v.id, String(x.p))}">Practice from here</a>${x.u ? `<a class="btn" href="${esc(x.u)}" target="_blank" rel="noopener">Open the game</a>` : ''}</div></div>`; }).join('')
-      : `<div class="card"><b>${g?.games ? 'No deviations found.' : 'No games imported yet.'}</b><p class="muted">${g?.games ? 'You followed your lines in the games read.' : 'Import your chess.com games in Settings.'}</p><div class="row"><a class="btn" href="${href('settings')}">Settings</a></div></div>`}
+      ${s.x.line.length ? `<p class="muted">What followed in your game: ${esc(s.x.line.join(' '))}</p>` : ''}
+      ${boardFold('game-' + i, { ply: s.x.p, shapes: [] }, 'Show the position')}
+      <div class="row"><a class="btn primary" href="${href('fix', s.o.id, s.v.id, String(s.x.p), encodeURIComponent(s.x.s))}">Show me</a>${isOpen(s.f) ? `<a class="btn" href="${href('fixit', encodeURIComponent(s.f.id))}">Drill this one</a>` : ''}<a class="btn" href="${href('practice', s.o.id, s.v.id, String(s.x.p))}">Practice the line</a>${s.x.u ? `<a class="btn" href="${esc(s.x.u)}" target="_blank" rel="noopener">Open the game</a>` : ''}</div></div>`;
+  const shown = [...open, ...cleared];
+  app.innerHTML = `<main class="page"><a class="back" data-goback href="#/">← Home</a><h1>From your games</h1>
+    <p class="muted">Each place you left your line in your own chess.com games is a mistake to clear. They come back in Drill on a schedule.</p>
+    ${summary}
+    ${open.length ? open.map((s, i) => card(s, i)).join('') : total ? '<div class="card"><b>All clear.</b><p class="muted">Every mistake from your games is cleared. New ones appear when you import more games.</p></div>' : `<div class="card"><b>${g?.games ? 'No deviations found.' : 'No games imported yet.'}</b><p class="muted">${g?.games ? 'You followed your lines in the games read.' : 'Import your chess.com games in Settings.'}</p><div class="row"><a class="btn" href="${href('settings')}">Settings</a></div></div>`}
+    ${cleared.length ? `<details class="more"><summary>Cleared · ${cleared.length}</summary>${cleared.map((s, i) => card(s, open.length + i)).join('')}</details>` : ''}
   </main>`;
-  spots.forEach(({ x, o, v }, i) => drawOnOpen('game-' + i, o, v, { ply: x.p, shapes: [] }));
+  shown.forEach((s, i) => drawOnOpen('game-' + i, s.o, s.v, { ply: s.x.p, shapes: [] }));
 }
 
 /** The visual walkthrough of one mistake from a game: the moves so far, your move, why it tempted you, why it fails, what to play. */
@@ -390,25 +397,64 @@ async function practice(o: Opening, v: Variation, startPly?: number) {
   void run();
 }
 
+/** Wait for "Next" or "That's enough for today"; true means keep going. */
+const goOn = () => new Promise<boolean>(res => {
+  const b = btn('nextline'), e = btn('enough');
+  b.hidden = false; e.hidden = false;
+  b.onclick = () => res(true); e.onclick = () => res(false);
+});
+const MAX_FIX_PER_DRILL = 3; // game mistakes asked first in a Drill session; the rest of the cap goes to lines
+
+/** Review game mistakes one at a time. Only the position where the owner slipped is asked, not the rest of the line. The answer is scheduled by FSRS. */
+async function reviewFixes(ids: string[], my: number, title = 'A mistake from your games'): Promise<{ done: number; more: boolean }> {
+  let done = 0;
+  for (const id of ids) {
+    const f = getFixes()[id], found = f && lookup(f.k);
+    if (!f || !found) continue;
+    const [o, v] = found;
+    app.innerHTML = screenShell(title, esc(o.name), `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`);
+    let wrong = 0, hinted = false, ms = 0;
+    await playLine(ui(), o, v, { stopped: () => my !== token, startPly: f.p, single: true, onAttempt: a => {
+      logAttempt({ ...a, k: f.k, m: 'd', o: 1 });
+      if (!a.ok) wrong++; else { hinted = hinted || !!a.h; ms = a.ms; }
+    } });
+    if (my !== token) return { done, more: false };
+    const nf = reviewFix(id, wrong ? Rating.Again : hinted || ms > SLOW_MS ? Rating.Hard : Rating.Good);
+    done++;
+    const msg = document.getElementById('msg');
+    if (msg && nf) msg.insertAdjacentHTML('beforeend', `<div class="stat">${nf.clearedAt ? '<b>Cleared ✓</b> You have this one.' : `${esc(whenText(nf))} · clean on ${nf.days.length} of ${FIX_DAYS} days`}</div>`);
+    if (!(await goOn()) || my !== token) return { done, more: false };
+  }
+  return { done, more: true };
+}
+
+/** One mistake on its own, from the "From your games" list. */
+async function fixDrillOne(id: string) {
+  const my = ++token;
+  if (!getFixes()[id]) { location.hash = href('games'); return; }
+  await reviewFixes([id], my);
+  if (my === token) location.hash = href('games');
+}
+
 async function drill() {
   const my = ++token;
   const allDue = dueKeys().filter(k => lookup(k));
-  const queue = allDue.slice(0, DRILL_CAP);
-  if (!queue.length) {
+  const fixIds = dueFixes(getFixes()).filter(f => lookup(f.k)).slice(0, MAX_FIX_PER_DRILL).map(f => f.id); // game mistakes come first
+  const queue = allDue.slice(0, DRILL_CAP - fixIds.length);
+  if (!queue.length && !fixIds.length) {
     const learned = Object.keys(getProgress().cards).length;
     app.innerHTML = `<main class="page"><a class="back" data-goback href="#/">← Home</a><h1>Drill</h1>
       <div class="card"><b>${learned ? 'Nothing is due right now.' : 'Nothing to drill yet.'}</b>
       <p class="muted">${learned ? 'Come back later; the scheduler will bring lines back just before you would forget them.' : 'Learn a variation first and it will appear here.'}</p></div></main>`;
     return;
   }
-  let combo = 0, played = 0;
-  /** Wait for "Next" or "That's enough for today"; true means keep going. */
-  const goOn = () => new Promise<boolean>(res => {
-    const b = btn('nextline'), e = btn('enough');
-    b.hidden = false; e.hidden = false;
-    b.onclick = () => res(true); e.onclick = () => res(false);
-  });
-  for (const k of queue) {
+  let combo = 0, played = 0, fixesDone = 0, stopped = false;
+  if (fixIds.length) {
+    const r = await reviewFixes(fixIds, my);
+    if (my !== token) return;
+    fixesDone = r.done; stopped = !r.more;
+  }
+  for (const k of stopped ? [] : queue) {
     const [o, v] = lookup(k)!;
     app.innerHTML = screenShell('Drill', `${esc(o.name)}`, `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`);
     const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, onAttempt: a => logAttempt({ ...a, k: key(o, v), m: 'd' }) });
@@ -430,8 +476,9 @@ async function drill() {
       if (my !== token) return;
     }
   }
-  const left = allDue.length - played;
-  app.innerHTML = `<main class="page"><h1>Nice work</h1><div class="card"><b>${played} ${played === 1 ? 'line' : 'lines'} played.</b>
+  const left = allDue.length - played + dueFixes(getFixes()).filter(f => lookup(f.k)).length;
+  const parts = [played ? `${played} ${played === 1 ? 'line' : 'lines'}` : '', fixesDone ? `${fixesDone} ${fixesDone === 1 ? 'mistake' : 'mistakes'} from your games` : ''].filter(Boolean).join(' and ');
+  app.innerHTML = `<main class="page"><h1>Nice work</h1><div class="card"><b>${parts || 'Nothing'} played.</b>
     <p class="muted">${left > 0 ? 'The rest will be waiting whenever you feel like more.' : 'Everything is up to date. Come back whenever you like.'}</p></div>
     <a class="btn primary big" href="#/" data-goto>Done</a>${left > 0 ? `<a class="btn big" href="${href('drill')}">A few more</a>` : ''}</main>`;
 }
@@ -447,6 +494,7 @@ function route() {
   else if (a === 'practice' && o && v) void practice(o, v, d && Number(d) > 0 && Number(d) < v.moves.length ? Number(d) : undefined);
   else if (a === 'games') gamesPage();
   else if (a === 'fix' && o && v && d) fixPage(o, v, Number(d), decodeURIComponent(e ?? ''));
+  else if (a === 'fixit' && b) void fixDrillOne(decodeURIComponent(b));
   else if (a === 'drill') void drill();
   else if (a === 'mistakes') mistakesPage();
   else if (a === 'ask') askPage();
