@@ -33,6 +33,8 @@ export interface Progress {
   /** Earned badge id -> day earned. Never removed. */
   badges: Record<string, string>;
   /** Moves the owner marked "need more explanation": `opening/line#ply` -> epoch ms. Read at the start of a session (Settings copies them as a list; they also sync) so the next session can write the missing explanation. */
+  /** Openings set aside with "Save for later". Per opening: `on` plus when it was last changed, so the newest change wins when two devices sync. Progress on a saved opening is kept. */
+  shelf: Record<string, { on: boolean; t: number }>;
   flags: Record<string, number>;
   /** Moves flagged at or before this time were handed off and are gone. Merged by max so clearing on one device sticks. */
   flagsClearedAt: number;
@@ -40,7 +42,7 @@ export interface Progress {
   /** Mistakes found in the owner's chess.com games; they replace the hand-written ones in Practice and Drill. The newest import wins on merge. */
   games?: GameImport;
 }
-const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {}, flags: {}, flagsClearedAt: 0, questions: [] });
+const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {}, flags: {}, flagsClearedAt: 0, questions: [], shelf: {} });
 const DB = 'openings', STORE = 'kv', KEY = 'progress', TOKEN_KEY = 'syncToken';
 const scheduler = fsrs();
 
@@ -95,6 +97,11 @@ async function save(sync = true) {
 
 export const getProgress = () => progress;
 export const isLearned = (k: string) => !!progress.learned[k];
+export const isShelved = (openingId: string) => !!progress.shelf[openingId]?.on;
+export function setShelved(openingId: string, on: boolean) {
+  progress.shelf[openingId] = { on, t: Date.now() };
+  void save();
+}
 
 export function markLearned(k: string) {
   progress.learned[k] = true;

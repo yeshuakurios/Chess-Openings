@@ -1,7 +1,7 @@
 import './style.css';
 import { registerSW } from 'virtual:pwa-register';
 import { openings, findOpening, findVariation, key } from './content.ts';
-import { addQuestion, awardLineBonus, clearFlags, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, loadProgress, logAttempt, markLearned, review, setBestCombo, setGames, setToken, syncNow, type SyncStatus } from './store.ts';
+import { addQuestion, awardLineBonus, clearFlags, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, isShelved, loadProgress, logAttempt, markLearned, review, setBestCombo, setGames, setShelved, setToken, syncNow, type SyncStatus } from './store.ts';
 import { moveLabel, playLine, walkLine, type Ui } from './play.ts';
 import { fenAfter, staticBoard } from './board.ts';
 import { lineViewerSlot, mountLineViewer } from './lineview.ts';
@@ -75,7 +75,7 @@ const refreshBadges = () => grantBadges(earnedNow({
 const goalKey = (o: Opening) => `goal:${o.id}`;
 const lookup = (k: string): [Opening, Variation] | undefined => {
   const [oid, vid] = k.split('/'); const o = findOpening(oid); const v = o && findVariation(o, vid);
-  return o && v ? [o, v] : undefined;
+  return o && v && !isShelved(o.id) ? [o, v] : undefined; // saved-for-later openings stay out of Drill and Mistakes
 };
 
 const SYNC_TEXT: Record<SyncStatus, string> = {
@@ -102,6 +102,7 @@ function home() {
   try { const seen = Number(localStorage.getItem('level-seen') ?? 0); levelUp = seen > 0 && lv.n > seen; localStorage.setItem('level-seen', String(lv.n)); } catch { /* storage unavailable */ }
   const progressCard = `<div class="quiet"><span>${esc(lv.title)}</span>${levelUp ? '<span class="tag">Level up!</span>' : ''}
     <div class="goal"><i style="width:${lv.span ? Math.round((lv.into / lv.span) * 100) : 100}%"></i></div></div>`;
+  const saved = openings.filter(o => isShelved(o.id));
   app.innerHTML = `
   <main class="page">
     <div class="row between head"><h1>Opening Goals</h1><a class="gear" href="${href('settings')}" aria-label="Settings">${GEAR}</a></div>
@@ -110,15 +111,22 @@ function home() {
     <a class="btn primary big" href="${href('drill')}">${due ? 'Play a few lines' : 'Nothing to review. Enjoy your day.'}</a>
     <div class="row links"><a href="${href('mistakes')}">Tricky spots${trouble ? ` (${trouble})` : ''}</a><a href="${href('ask')}">Questions${waiting ? ` (${waiting})` : ''}</a>${fromGames ? `<a href="${href('games')}">From your games (${fromGames})</a>` : ''}</div>
     <h2>Openings</h2>
-    ${openings.map(o => {
+    ${openings.filter(o => !isShelved(o.id)).map(o => {
       const done = o.variations.filter(v => isLearned(key(o, v))).length;
       const solid = o.variations.filter(v => LEVELS.indexOf(masteryOf(o, v).level) >= 3).length;
-      return `<a class="card link" href="${href('o', o.id)}">
+      return `<div class="card opening"><a class="link" href="${href('o', o.id)}">
         <span class="dot ${o.color}"></span><div><b>${esc(o.name)}</b>
         <div class="muted">${esc(o.summary)}</div>
-        <div class="tag">${o.color === 'white' ? 'White' : 'Black'} · ${done}/${o.variations.length} learned${solid ? ` · ${solid} solid` : ''}${o.status === 'draft' ? ' · draft' : ''}</div></div></a>`;
+        <div class="tag">${o.color === 'white' ? 'White' : 'Black'} · ${done}/${o.variations.length} learned${solid ? ` · ${solid} solid` : ''}${o.status === 'draft' ? ' · draft' : ''}</div></div></a>
+        <div class="row"><button class="pill" type="button" data-later="${o.id}">Save for later</button></div></div>`;
     }).join('')}
+    ${saved.length ? `<details class="more saved"><summary>Saved for later · ${saved.length}</summary>
+      ${saved.map(o => `<div class="saved-row"><a href="${href('o', o.id)}"><b>${esc(o.name)}</b><span class="muted"> · ${o.color === 'white' ? 'White' : 'Black'}</span></a>
+        <button class="pill" type="button" data-back="${o.id}">Bring back</button></div>`).join('')}
+      <p class="muted">Saved openings are hidden here and left out of Drill and Mistakes. Your progress on them is kept.</p></details>` : ''}
   </main>`;
+  app.querySelectorAll<HTMLButtonElement>('[data-later]').forEach(b => { b.onclick = () => { setShelved(b.dataset.later!, true); route(); }; });
+  app.querySelectorAll<HTMLButtonElement>('[data-back]').forEach(b => { b.onclick = () => { setShelved(b.dataset.back!, false); route(); }; });
 }
 
 /** The flagged moves as readable lines, newest first. Each carries the stable id (`opening/line#ply`) that HANDOFF.md and the content files use. */
@@ -297,6 +305,7 @@ function openingPage(o: Opening) {
   app.innerHTML = `
   <main class="page"><a class="back" href="#/">← Openings</a>
     <h1>${esc(o.name)}</h1>
+    <div class="row"><button class="pill" type="button" id="shelve">${isShelved(o.id) ? 'Bring back to Home' : 'Save for later'}</button></div>
     <div class="card hero-card"><div class="tag">Positional goal</div>
       <h3>${esc(o.goal.title)}</h3><p class="lead">${esc(splitLead(o.goal.text)[0])}</p>
       ${fold(splitLead(o.goal.text)[1], o.goal.plans, 'The full plan')}
@@ -314,6 +323,7 @@ function openingPage(o: Opening) {
   </main>`;
   drawOnOpen('goal-board', o, goalVariation(o), o.goal.board);
   o.variations.forEach((v, i) => mountOnOpen('lv-' + i, o, v));
+  document.getElementById('shelve')!.onclick = () => { setShelved(o.id, !isShelved(o.id)); location.hash = '#/'; };
 }
 
 function learn(o: Opening, v: Variation) {

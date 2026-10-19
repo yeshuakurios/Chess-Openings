@@ -5,7 +5,7 @@ export const LEVELS = ['New', 'Learning', 'Familiar', 'Solid', 'Mastered'] as co
 export type Level = typeof LEVELS[number];
 
 /** Placeholder thresholds from the owner-approved definition (docs/HANDOFF.md); tune with real data. */
-export const SLOW_MS = 10_000;           // a correct move slower than this is not a clean recall
+export const SLOW_MS = 10_000;           // in Drill, a correct move slower than this is not a clean recall (Practice is for learning, so speed is not judged there)
 const SAME_VISIT_MS = 30 * 60 * 1000;    // attempts at one position this close together belong to one visit
 export const SOLID_STABILITY = 7;        // FSRS stability in days
 export const MASTERED_STABILITY = 21;
@@ -14,7 +14,7 @@ export const MASTERED_OOO_SHARE = 0.5;   // share of positions that need a clean
 const dayOf = (t: number) => new Date(t).toLocaleDateString('en-CA'); // local calendar day
 
 export interface PositionState {
-  /** Distinct days of clean recall. A slip (wrong move, hint or slow move) takes one off instead of resetting to zero. */
+  /** Distinct days of clean recall. A slip (wrong move, hint or, in Drill, a slow move) takes one off instead of resetting to zero. */
   score: number;
   /** True if at least one clean recall happened when the line was started from the middle. */
   outOfOrder: boolean;
@@ -36,7 +36,7 @@ export function positionState(attempts: Attempt[]): PositionState {
   let score = 0, outOfOrder = false, lastCleanDay = '';
   for (const v of visits) {
     const last = v[v.length - 1];
-    const clean = v.length === 1 && last.ok === 1 && last.h === 0 && last.ms <= SLOW_MS;
+    const clean = v.length === 1 && last.ok === 1 && last.h === 0 && (last.m === 'p' || last.ms <= SLOW_MS);
     if (clean) {
       const d = dayOf(last.t);
       if (d !== lastCleanDay) { score++; lastCleanDay = d; }
@@ -76,7 +76,9 @@ export function lineMastery(lineKey: string, color: 'white' | 'black', movesLeng
     else if (min >= 1) level = 'Familiar';
     else level = 'Learning';
   }
-  return { level, states, hint: HINTS[level] };
+  // Tell the user when speed is the only thing holding a line back, so "Learning" never looks like a bug after a flawless run.
+  const tooSlow = level === 'Learning' && mine.some(a => a.m === 'd' && a.ok === 1 && a.h === 0 && a.ms > SLOW_MS);
+  return { level, states, hint: tooSlow ? `Every move was right, but some took over ${SLOW_MS / 1000} seconds in Drill. Next: recall each move a little faster.` : HINTS[level] };
 }
 
 /** Pick a user position to start a spot check from: prefer ones never recalled cleanly from the middle, never the first move. */

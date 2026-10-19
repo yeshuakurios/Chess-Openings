@@ -133,3 +133,15 @@ textarea,input[type=text]{width:100%;box-sizing:border-box;background:var(--pane
 .grade.mistake{color:#fdba74;background:rgba(251,146,60,.12);border-color:rgba(251,146,60,.4)}
 .grade.inaccuracy{color:#fde68a;background:rgba(250,204,21,.1);border-color:rgba(250,204,21,.35)}
 .grade.good{color:#86efac;background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.35)}
+
+/* save for later */
+.card.opening{padding:0;display:block}
+.card.opening .link{display:flex;gap:14px;align-items:flex-start;padding:16px 16px 6px;transition:transform .15s}
+.card.opening .link:active{transform:scale(.98)}
+.card.opening .row{margin:0;padding:4px 16px 14px}
+.pill{appearance:none;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);border-radius:999px;padding:6px 14px;font:inherit;font-size:13px;font-weight:650;cursor:pointer;transition:transform .12s,color .15s,border-color .15s}
+.pill:active{transform:scale(.95);color:var(--amber);border-color:var(--orange)}
+.saved{margin-top:22px}
+.saved summary{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.saved-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.saved-row a{min-width:0}

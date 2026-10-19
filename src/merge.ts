@@ -34,6 +34,13 @@ const mergeEarliest = (a: Record<string, string>, b: Record<string, string>) => 
   return out;
 };
 
+/** Per opening, the most recent change wins, so bringing an opening back on one device is not undone by an older copy on another. */
+const mergeShelf = (a: Progress['shelf'], b: Progress['shelf']) => {
+  const out = { ...a };
+  for (const [k, v] of Object.entries(b)) if (!out[k] || v.t > out[k].t) out[k] = v;
+  return out;
+};
+
 /** Flags are a union; a clear on either device (flagsClearedAt) removes every flag made before it. */
 function mergeFlags(a: Progress, b: Progress): Pick<Progress, 'flags' | 'flagsClearedAt'> {
   const cleared = Math.max(a.flagsClearedAt ?? 0, b.flagsClearedAt ?? 0);
@@ -51,5 +58,5 @@ export function mergeProgress(a: Progress, b: Progress): Progress {
   }
   const games = (b.games?.at ?? -1) > (a.games?.at ?? -1) ? b.games : a.games;
   return { learned: { ...a.learned, ...b.learned }, cards, bestCombo: Math.max(a.bestCombo, b.bestCombo), attempts: mergeAttempts(a.attempts, b.attempts),
-    xp: mergeMax(a.xp, b.xp), badges: mergeEarliest(a.badges, b.badges), ...mergeFlags(a, b), questions: mergeQuestions(a.questions ?? [], b.questions ?? []), ...(games ? { games } : {}) };
+    xp: mergeMax(a.xp, b.xp), badges: mergeEarliest(a.badges, b.badges), ...mergeFlags(a, b), questions: mergeQuestions(a.questions ?? [], b.questions ?? []), shelf: mergeShelf(a.shelf ?? {}, b.shelf ?? {}), ...(games ? { games } : {}) };
 }
