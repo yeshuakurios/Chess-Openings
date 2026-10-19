@@ -7,12 +7,12 @@ export interface PlanBoard { ply: number; shapes: Shape[] }
 export interface MoveStats { total: number; n: number; w: number; d: number; b: number; alts?: { san: string; n: number }[] }
 export interface Mistake { san: string; line: string[]; text: string; eval?: number }
 export interface Versus { line: string; text: string }
-export interface Move { san: string; note: string; eval?: number; why?: Record<string, string>; mistakes?: Mistake[]; versus?: Versus[]; caps?: Alt[]; stats?: MoveStats; shapes?: Shape[] }
-export interface Variation { id: string; name: string; strategy: string; board?: PlanBoard; moves: Move[] }
+export interface Move { san: string; note: string; eval?: number; why?: Record<string, string>; mistakes?: Mistake[]; versus?: Versus[]; caps?: Alt[]; stats?: MoveStats; shapes?: Shape[]; narration?: string }
+export interface Variation { id: string; name: string; strategy: string; board?: PlanBoard; narration?: string; moves: Move[] }
 export interface Opening {
   id: string; name: string; color: 'white' | 'black'; summary: string;
   status: 'draft' | 'reviewed';
-  goal: { title: string; text: string; plans: string[]; board?: PlanBoard & { variation: string } };
+  goal: { title: string; text: string; plans: string[]; narration?: string; board?: PlanBoard & { variation: string } };
   variations: Variation[];
 }
 

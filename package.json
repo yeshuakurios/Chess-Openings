@@ -14,11 +14,14 @@
     "try": "tsx scripts/try-line.ts",
     "probe": "tsx scripts/probe.ts",
     "pv": "tsx scripts/pv.ts",
-    "test": "tsx scripts/test-merge.ts && tsx scripts/test-mastery.ts && tsx scripts/test-mistakes.ts && tsx scripts/test-explain.ts && tsx worker/test-explain.ts && tsx worker/test-questions.ts && tsx scripts/test-gamify.ts && tsx scripts/test-stats.ts && tsx scripts/test-games.ts && tsx scripts/test-grade.ts && tsx scripts/test-unanswered.ts"
+    "test": "tsx scripts/test-merge.ts && tsx scripts/test-mastery.ts && tsx scripts/test-mistakes.ts && tsx scripts/test-explain.ts && tsx worker/test-explain.ts && tsx worker/test-questions.ts && tsx scripts/test-gamify.ts && tsx scripts/test-stats.ts && tsx scripts/test-games.ts && tsx scripts/test-grade.ts && tsx scripts/test-unanswered.ts",
+    "video": "tsx video/render.ts",
+    "video:status": "tsx video/status.ts"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261011.1",
     "@types/node": "^26.6.5",
+    "playwright": "1.56.1",
     "stockfish": "^19.0.1",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",

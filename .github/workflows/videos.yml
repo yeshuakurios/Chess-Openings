@@ -1,0 +1,40 @@
+name: Videos
+# Re-renders only the narrated videos whose data or narration changed, flags them in the summary, and uploads the MP4s as an artifact.
+# Nothing is uploaded to YouTube. To keep the new videos, download the artifact and commit `videos/`.
+on:
+  push:
+    branches: [main]
+    paths: ['content/**', 'src/segments.ts', 'src/autoplay.ts', 'video/**', 'package.json']
+  workflow_dispatch:
+permissions: { contents: read }
+concurrency: { group: videos, cancel-in-progress: true }
+jobs:
+  videos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: npm ci
+      - run: pip install piper-tts
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
+      - run: npx playwright install --with-deps chromium
+      - uses: actions/cache@v4
+        with: { path: video/.cache, key: piper-voice-en_US-ryan-medium }
+      - name: Flag stale videos
+        run: npm run -s video:status
+      - name: Re-render stale videos
+        run: npm run video -- --changed
+      - name: Summarize
+        if: always()
+        run: |
+          CHANGED=$(git status --porcelain videos | grep '\.mp4$' || true)
+          { echo "### Re-rendered"; echo
+            if [ -z "$CHANGED" ]; then echo "Nothing: every narrated video is fresh."
+            else echo '```'; echo "$CHANGED"; echo '```'; echo "Download the **videos** artifact and commit \`videos/\` (including manifest.json) to clear the stale flags."; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with: { name: videos, path: videos/, if-no-files-found: ignore }

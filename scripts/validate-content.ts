@@ -17,6 +17,14 @@ for (const file of listContentFiles()) {
   if (!o.goal?.text || !o.goal.plans?.length) fail(name, 'missing goal text/plans');
   if (!o.variations?.length) fail(name, 'no variations');
   const plain = (where: string, text: string) => { const m = NOTATION.exec(text); if (m) fail(where, `plain-language text contains notation "${m[0]}": ${text.slice(0, 60)}`); };
+  /** Narration is read aloud by a TTS voice: write moves in words ("bishop to g7"), never as notation (Bg7, O-O, 4...). Bare squares are fine. */
+  const SPOKEN = /\b([NBRQK][a-h]?[1-8]?x?[a-h][1-8]|O-O(-O)?|\d+\.{1,3})(?![a-z])/;
+  const spoken = (where: string, text: string | undefined) => {
+    if (text === undefined) return;
+    if (!text.trim()) fail(where, 'narration is empty');
+    const m = SPOKEN.exec(text); if (m) fail(where, `narration contains notation "${m[0]}": write it in words`);
+  };
+  spoken(`${name}/goal narration`, o.goal?.narration);
   plain(`${name}/summary`, o.summary ?? '');
   plain(`${name}/goal`, `${o.goal?.title} ${o.goal?.text}`);
   (o.goal?.plans ?? []).forEach(p => plain(`${name}/goal plan`, p));
@@ -39,12 +47,14 @@ for (const file of listContentFiles()) {
     ids.add(v.id);
     if (!v.strategy || !v.name) fail(tag, 'missing name/strategy');
     plain(`${tag}/strategy`, v.strategy ?? '');
+    spoken(`${tag}/narration`, v.narration);
     if (v.board) {
       if (!Number.isInteger(v.board.ply) || v.board.ply < 0 || v.board.ply > v.moves.length) fail(tag, `board ply ${v.board.ply} out of range`);
       checkShapes(`${tag} board`, v.board.shapes);
     }
     const chess = new Chess();
     v.moves.forEach((m, i) => {
+      spoken(`${tag} ply ${i + 1} narration`, m.narration);
       for (const w of Object.keys(m.why ?? {})) {
         const legal = chess.moves();
         if (!legal.includes(w) || w === m.san) fail(tag, `ply ${i + 1}: why["${w}"] is not a legal alternative to ${m.san}`);
