@@ -1,3 +1,8 @@
+import { Chess } from 'chess.js';
+import { gradeMove, gradeText } from './grade.ts';
+import { grades } from './gradeData.ts';
+import { mistakesAt } from './games.ts';
+import { getProgress } from './store.ts';
 import type { Move, Opening, Variation } from './types.ts';
 
 const PIECE: Record<string, string> = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' };
@@ -5,7 +10,8 @@ const fmt = (n: number) => (n > 0 ? `+${n.toFixed(1)}` : n.toFixed(1));
 
 /** Hand-written reason for a wrong move: a `why`, a common-mistake text, or the contrast with the similar position of another line where this very move is played. */
 export function authoredWhy(o: Opening, line: Move, tried: string, v?: Variation, idx?: number): string | undefined {
-  const own = line.why?.[tried] ?? line.mistakes?.find(x => x.san === tried)?.text;
+  const mistakes = v && idx !== undefined ? mistakesAt(getProgress().games, `${o.id}/${v.id}`, idx, line.mistakes, o.color) : line.mistakes;
+  const own = line.why?.[tried] ?? mistakes?.find(x => x.san === tried)?.text;
   if (own) return own;
   if (v && idx !== undefined) for (const x of line.versus ?? []) if (o.variations.find(w => w.id === x.line)?.moves[idx]?.san === tried) return x.text;
   return undefined;
@@ -17,7 +23,7 @@ export function whyNot(o: Opening, line: Move, tried: { san: string; captured?: 
   const authored = authoredWhy(o, line, tried.san, v, idx);
   if (authored) return `${head} ${authored}`;
   const alt = line.caps?.find(c => c.san === tried.san);
-  if (!alt) return head;
+  if (!alt) return `${head}${gradeSentence(o, tried.san, v, idx)}`;
   const what = tried.captured ? `It takes a ${PIECE[tried.captured]}, but` : 'It gives check, but';
   const worse = (line.eval - alt.eval) * (o.color === 'white' ? 1 : -1); // > 0: worse for the user than the line
   const reply = alt.reply ? `the engine's best reply is ${alt.reply} (${fmt(alt.eval)})` : 'the engine finds a good answer';
@@ -26,3 +32,13 @@ export function whyNot(o: Opening, line: Move, tried: { san: string; captured?: 
   return `${head} ${what} ${reply}${verdict}`;
 }
 
+
+/** The engine's verdict on a wrong move, when the grade table covers the position. Says nothing about the line's own move. */
+function gradeSentence(o: Opening, san: string, v?: Variation, idx?: number): string {
+  if (!v || idx === undefined) return '';
+  try {
+    const c = new Chess(); for (let i = 0; i < idx; i++) c.move(v.moves[i].san);
+    const g = gradeMove(grades, c.fen(), san, o.color);
+    return g ? ` ${gradeText(g, san)}` : '';
+  } catch { return ''; }
+}

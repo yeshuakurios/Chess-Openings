@@ -7,7 +7,7 @@ import { Chess } from 'chess.js';
 import 'chessground/assets/chessground.base.css';
 import 'chessground/assets/chessground.cburnett.css';
 
-const toDraw = (shapes: Shape[] = []): DrawShape[] =>
+export const toDraw = (shapes: Shape[] = []): DrawShape[] =>
   shapes.map(s => ({ orig: s.from as Key, dest: s.to as Key | undefined, brush: s.color ?? 'green' }));
 
 /** Read-only board showing one position with shapes on it. */

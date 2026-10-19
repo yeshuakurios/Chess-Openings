@@ -26,7 +26,12 @@ const ooo = (day: number) => POS.slice(0, 2).map(p => att(p, day, { o: 1 }));
 assert.equal(level([...clean(0), ...clean(1), ...clean(2), ...ooo(3)], card(30)), 'Mastered');
 // hint and slow moves are not clean
 assert.equal(positionState([att(0, 0, { h: 1 })]).score, 0);
-assert.equal(positionState([att(0, 0, { ms: 20000 })]).score, 0);
+assert.equal(positionState([att(0, 0, { ms: 20000 })]).score, 0);                 // slow in Drill
+assert.equal(positionState([att(0, 0, { ms: 20000, m: 'p' })]).score, 1);         // slow in Practice is fine: the line is still being learned
+assert.equal(level(POS.map(p => att(p, 0, { ms: 20000, m: 'p' }))), 'Familiar');  // a flawless but slow Practice run is not stuck on Learning
+const slowDrill = lineMastery('x/1', WHITE, LEN, POS.map(p => att(p, 0, { ms: 20000 })));
+assert.equal(slowDrill.level, 'Learning');
+assert.match(slowDrill.hint, /took over 10 seconds/);                             // and the hint says why
 // soft slip: one wrong move at one position takes one day off that position only
 const slip = [att(4, 3, { ok: 0 }), att(4, 3.001)];
 const after = lineMastery('x/1', WHITE, LEN, [...clean(0), ...clean(1), ...clean(2), ...ooo(3), ...slip], card(30));
