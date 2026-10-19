@@ -370,8 +370,8 @@ function learn(o: Opening, v: Variation) {
 }
 
 const btn = (id: string) => document.getElementById(id) as HTMLButtonElement;
-const ui = (): Ui => ({ board: document.getElementById('board')!, hint: btn('hint'), prev: btn('prev'), fwd: btn('fwd'), resume: (document.getElementById('resume') as HTMLButtonElement | null) ?? undefined, flag: (document.getElementById('flag') as HTMLButtonElement | null) ?? undefined, ask: (document.getElementById('ask') as HTMLButtonElement | null) ?? undefined });
-const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</button><button class="ctl" id="hint">Hint</button><button class="ctl" id="fwd" aria-label="Forward one move">›</button><button class="btn primary" id="resume" hidden>Back to the line</button><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button>`;
+const ui = (): Ui => ({ board: document.getElementById('board')!, hint: btn('hint'), prev: btn('prev'), fwd: btn('fwd'), resume: (document.getElementById('resume') as HTMLButtonElement | null) ?? undefined, why: (document.getElementById('why') as HTMLButtonElement | null) ?? undefined, flag: (document.getElementById('flag') as HTMLButtonElement | null) ?? undefined, ask: (document.getElementById('ask') as HTMLButtonElement | null) ?? undefined });
+const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</button><button class="ctl" id="hint">Hint</button><button class="ctl" id="fwd" aria-label="Forward one move">›</button><button class="btn primary" id="resume" hidden>Back to the line</button><button class="btn" id="why" hidden>Show me why</button><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button>`;
 
 const endBtns = `<button class="btn primary" id="again" hidden>Again</button><button class="btn" id="done" hidden>Done</button>`;
 
@@ -437,6 +437,7 @@ async function drill() {
 }
 
 function route() {
+  document.querySelector('.mv-overlay')?.remove();
   trackEntry();
   token++;
   const [, a, b, c, d, e] = location.hash.split('/');
