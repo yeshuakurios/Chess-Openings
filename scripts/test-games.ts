@@ -55,9 +55,19 @@ const fake = (async (url: string) => {
   if (url.endsWith('/archives')) return Response.json({ archives: ['https://api.chess.com/pub/player/meme/games/2026/08', 'https://api.chess.com/pub/player/meme/games/2026/09', 'https://evil.example/x'] });
   return Response.json({ games: [{ url: url + '#a' }, { url: url + '#b' }] });
 }) as unknown as typeof fetch;
-const got = await fetchGames(' Meme ', { get: fake, months: 2 });
+const got = await fetchGames(' Meme ', { get: fake, months: 2, max: 100 });
 assert.deepEqual(urls.slice(1), ['https://api.chess.com/pub/player/meme/games/2026/09', 'https://api.chess.com/pub/player/meme/games/2026/08']);
 assert.equal(got.length, 4); assert.ok(got[0].url!.endsWith('09#b'));
-await assert.rejects(fetchGames('a b', { get: fake }), /username/);
-await assert.rejects(fetchGames('nobody', { get: (async () => new Response('', { status: 404 })) as unknown as typeof fetch }), /No chess.com player/);
+await assert.rejects(fetchGames('a b', { get: fake, months: 1, max: 1 }), /username/);
+await assert.rejects(fetchGames('nobody', { get: (async () => new Response('', { status: 404 })) as unknown as typeof fetch, months: 1, max: 1 }), /No chess.com player/);
 console.log('games ok');
+// incremental: counts add up, `last` moves forward, the latest follow-up wins, the cap holds
+import { mergeImports } from '../src/games.ts';
+assert.equal(r.last, 1_700_000_100);
+const later = analyzeGames([game([...dev(), reply], { url: 'https://chess.com/game/3', end_time: 1_700_000_900 }, 'white', 'win')], 'me', [bird]);
+const both = mergeImports(r, later);
+const m3 = both.mistakes.find(x => x.p === 2 && x.s === alt && x.k === m.k)!;
+assert.equal(m3.n, 3); assert.equal(m3.w, 2); assert.equal(m3.u, 'https://chess.com/game/3');
+assert.equal(both.games, 3); assert.equal(both.left, 3); assert.equal(both.last, 1_700_000_900);
+assert.equal(mergeImports(r, later, 1).mistakes.length, 1);
+console.log('incremental ok');

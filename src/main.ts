@@ -6,8 +6,8 @@ import { moveLabel, playLine, walkLine, type Ui } from './play.ts';
 import { fenAfter, staticBoard } from './board.ts';
 import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery.ts';
 import { troubleSpots } from './mistakes.ts';
-import { analyzeGames } from './games.ts';
-import { fetchGames, USERNAME } from './chesscom.ts';
+import { analyzeGames, mergeImports } from './games.ts';
+import { fetchGames, FIRST_GAMES, LATER_GAMES, USERNAME } from './chesscom.ts';
 import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
 import { earnedNow, levelFor, totalXp } from './gamify.ts';
@@ -132,7 +132,7 @@ function gameFindings() {
     seen.add(id);
     return [`<li>${esc(found[0].name)} · ${esc(found[1].name)} · move ${Math.floor(x.p / 2) + 1}: you played <b>${esc(x.s)}</b> ${x.n}× (${x.w} won, ${x.d} drawn, ${x.l} lost)</li>`];
   }).slice(0, 8);
-  return `<p class="muted">${g.games} games read for ${esc(g.user)} on ${esc(new Date(g.at).toLocaleDateString())}. You left your line on your own move in ${g.left} and followed it until the opponent left in ${g.kept}. Practice and Drill now show these mistakes instead of the hand-written ones, on every move that has one.</p>
+  return `<p class="muted">${g.games} games read for ${esc(g.user)} on ${esc(new Date(g.at).toLocaleDateString())}. You left your line on your own move in ${g.left} and followed it until the opponent left in ${g.kept}. Each import adds only games you have not imported yet. Practice and Drill now show these mistakes instead of the hand-written ones, on every move that has one.</p>
     ${rows.length ? `<ul>${rows.join('')}</ul>` : '<p class="muted">No deviations found. The hand-written mistakes stay.</p>'}`;
 }
 
@@ -144,9 +144,9 @@ function settingsPage() {
     <div class="row"><button class="btn" id="sync">${hasToken() ? 'Sync now' : 'Set up sync'}</button><span class="muted" id="sync-msg">${esc(syncText)}</span></div>
     <div class="row"><button class="btn" id="exp">Export progress</button><button class="btn" id="imp">Import</button></div></div>
     <h2>Your chess.com games</h2>
-    <div class="card"><p class="muted">Reads your last three months of games from chess.com (free public data, no password) and finds where you left your lines. Those mistakes then replace the hand-written ones in Practice and Drill. Nothing is sent anywhere but chess.com.</p>
+    <div class="card"><p class="muted">Reads your latest ${FIRST_GAMES} games from chess.com the first time, then only games you have not imported yet (looking at the newest ${LATER_GAMES}). It is free public data: no key, no password. Those mistakes then replace the hand-written ones in Practice and Drill. Nothing is sent anywhere but chess.com.</p>
     <input id="cc-user" type="text" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="chess.com username" aria-label="chess.com username" value="${esc(getProgress().games?.user ?? '')}">
-    <div class="row"><button class="btn primary" id="cc-go">Import games</button><button class="btn" id="cc-clear" ${getProgress().games?.games ? '' : 'disabled'}>Use hand-written again</button></div>
+    <div class="row"><button class="btn primary" id="cc-go">${getProgress().games?.games ? 'Import new games' : 'Import games'}</button><button class="btn" id="cc-clear" ${getProgress().games?.games ? '' : 'disabled'}>Use hand-written again</button></div>
     <p class="muted" id="cc-msg" role="status"></p>${gameFindings()}</div>
     <h2>Flagged for more explanation</h2>
     <div class="card"><p class="muted">Moves you marked with "Need more explanation". Copy the list and paste it at the start of the next session (with sync on, they also travel with your progress) so the explanation gets written; clear it once handed over.</p>
@@ -173,14 +173,16 @@ function settingsPage() {
     if (!navigator.onLine) return ccMsg('You are offline. Try again with a connection.');
     const go = btn('cc-go'); go.disabled = true;
     try {
-      const raw = await fetchGames(user, { progress: ccMsg });
-      if (!raw.length) { ccMsg('No games found for that user in the last months.'); return; }
-      const result = analyzeGames(raw, user, openings);
-      if (!result.games) { ccMsg(`Found ${raw.length} games but none were standard chess played by ${user}.`); return; }
-      setGames(result); settingsPage();
+      const prev = getProgress().games, more = !!prev?.games && prev.user.toLowerCase() === user.toLowerCase(); // same user again: only what is new
+      const raw = await fetchGames(user, { progress: ccMsg, max: more ? LATER_GAMES : FIRST_GAMES, months: more ? 2 : 6 });
+      const fresh = more ? raw.filter(g => (g.end_time ?? 0) > prev!.last) : raw;
+      if (!fresh.length) { ccMsg(more ? 'No new games since your last import.' : 'No games found for that user.'); go.disabled = false; return; }
+      const result = analyzeGames(fresh, user, openings);
+      if (!more && !result.games) { ccMsg(`Found ${raw.length} games but none were standard chess played by ${user}.`); go.disabled = false; return; }
+      setGames(more ? mergeImports(prev!, result) : result); settingsPage();
     } catch (e) { ccMsg(e instanceof Error ? e.message : 'Could not read your games.'); go.disabled = false; }
   };
-  document.getElementById('cc-clear')!.onclick = () => { if (confirm('Go back to the hand-written mistakes?')) { const g = getProgress().games; setGames({ user: g?.user ?? '', at: Date.now(), games: 0, left: 0, kept: 0, mistakes: [] }); settingsPage(); } };
+  document.getElementById('cc-clear')!.onclick = () => { if (confirm('Go back to the hand-written mistakes?')) { const g = getProgress().games; setGames({ user: g?.user ?? '', at: Date.now(), last: 0, games: 0, left: 0, kept: 0, mistakes: [] }); settingsPage(); } };
   document.getElementById('fcopy')!.onclick = async () => {
     const text = `Moves flagged "need more explanation":\n${flagged.map(f => `- ${f.label}`).join('\n')}`;
     try { await navigator.clipboard.writeText(text); alert('Copied. Paste it into the next session.'); } catch { prompt('Copy this list:', text); }

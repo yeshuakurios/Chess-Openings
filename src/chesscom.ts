@@ -2,14 +2,14 @@ import type { RawGame } from './games.ts';
 
 const API = 'https://api.chess.com/pub/player/';
 export const USERNAME = /^[A-Za-z0-9_-]{3,25}$/;
-export const MONTHS = 3;       // newest monthly archives read
-export const MAX_GAMES = 400;  // newest games kept from those
+export const FIRST_GAMES = 100; // the first import takes the newest games
+export const LATER_GAMES = 10;  // later imports look at this many and keep the ones not imported yet
 
-/** Fetch the user's recent standard games from chess.com's free public API (no key; the API allows browser requests). Archives are read one at a time, newest first, as the API asks. */
-export async function fetchGames(user: string, opts: { months?: number; max?: number; get?: typeof fetch; progress?: (msg: string) => void } = {}): Promise<RawGame[]> {
+/** Fetch the user's newest `max` games (reading at most `months` monthly archives) from chess.com's free public API (no key; the API allows browser requests). Archives are read one at a time, newest first, as the API asks. */
+export async function fetchGames(user: string, opts: { months: number; max: number; get?: typeof fetch; progress?: (msg: string) => void }): Promise<RawGame[]> {
   const name = user.trim().toLowerCase();
   if (!USERNAME.test(name)) throw new Error('That does not look like a chess.com username.');
-  const get = opts.get ?? fetch, months = opts.months ?? MONTHS, max = opts.max ?? MAX_GAMES;
+  const get = opts.get ?? fetch, { months, max } = opts;
   const json = async (url: string) => {
     const res = await get(url);
     if (res.status === 404) throw new Error(`No chess.com player called "${name}".`);

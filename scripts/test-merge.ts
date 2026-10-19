@@ -24,7 +24,7 @@ const capped = mergeAttempts(many, []);
 assert.equal(capped.length, MAX_ATTEMPTS);
 assert.equal(capped[0].id, 'n10');            // oldest dropped
 // imported chess.com games: the newer import wins, including an empty one that restores the hand-written mistakes
-const imp = (at: number, n: number) => ({ user: 'me', at, games: n, left: 0, kept: 0, mistakes: [] });
+const imp = (at: number, n: number) => ({ user: 'me', at, last: 0, games: n, left: 0, kept: 0, mistakes: [] });
 assert.equal(mergeProgress({ ...a, games: imp(1, 1) }, { ...b, games: imp(2, 2) }).games?.games, 2);
 assert.equal(mergeProgress({ ...a, games: imp(5, 1) }, { ...b, games: imp(2, 2) }).games?.games, 1);
 assert.equal(mergeProgress({ ...a, games: imp(1, 1) }, b).games?.games, 1);

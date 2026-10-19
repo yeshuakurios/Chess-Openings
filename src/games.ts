@@ -16,9 +16,10 @@ export interface GameMistake {
   t: number;       // epoch ms of the latest game
   u?: string;      // link to the latest game
 }
-/** The result of one import. A new import replaces the old one, so re-importing never double counts. */
+/** What the imports found so far. Each import adds only games newer than `last` (see mergeImports), so nothing is counted twice. */
 export interface GameImport {
   user: string; at: number;
+  last: number;    // end time (epoch seconds) of the newest game imported; later imports only take games after it
   games: number;   // standard games read for this user
   left: number;    // games in which the user left their line on their own move
   kept: number;    // games in which the user followed the line until the opponent left it or it ended
@@ -46,6 +47,7 @@ function sideOf(g: RawGame, user: string): { color: 'white' | 'black'; res: 'w' 
  */
 export function analyzeGames(games: RawGame[], user: string, openings: Opening[], now = Date.now(), maxItems = MAX_GAME_MISTAKES): GameImport {
   const found = new Map<string, GameMistake>();
+  const last = Math.max(0, ...games.map(g => g.end_time ?? 0));
   let read = 0, left = 0, kept = 0;
   for (const g of games) {
     const side = sideOf(g, user);
@@ -83,7 +85,7 @@ export function analyzeGames(games: RawGame[], user: string, openings: Opening[]
     if (leftHere) left++; else if (keptHere) kept++;
   }
   const mistakes = [...found.values()].sort((a, b) => b.n - a.n || b.t - a.t).slice(0, maxItems);
-  return { user, at: now, games: read, left, kept, mistakes };
+  return { user, at: now, last, games: read, left, kept, mistakes };
 }
 
 /** "You played Nc3 here in 3 of your games (1 won, 0 drawn, 2 lost)." Never names the line's own move. */
@@ -96,4 +98,18 @@ export function gameMistakeText(x: GameMistake): string {
 export function mistakesAt(imp: GameImport | undefined, k: string, ply: number, hand: Mistake[] | undefined): Mistake[] {
   const own = imp?.mistakes.filter(x => x.k === k && x.p === ply);
   return own?.length ? own.map(x => ({ san: x.s, line: x.line, text: gameMistakeText(x) })) : hand ?? [];
+}
+
+/** Add a newer import (only games after `old.last`) to the earlier one: counts add up, the latest game's follow-up wins, the biggest MAX_GAME_MISTAKES stay. */
+export function mergeImports(old: GameImport, fresh: GameImport, maxItems = MAX_GAME_MISTAKES): GameImport {
+  const id = (x: GameMistake) => `${x.k}#${x.p}#${x.s}`;
+  const by = new Map(old.mistakes.map(x => [id(x), { ...x }]));
+  for (const x of fresh.mistakes) {
+    const o = by.get(id(x));
+    if (!o) { by.set(id(x), { ...x }); continue; }
+    o.n += x.n; o.w += x.w; o.d += x.d; o.l += x.l;
+    if (x.t >= o.t) { o.t = x.t; o.line = x.line; if (x.u) o.u = x.u; }
+  }
+  return { user: fresh.user, at: fresh.at, last: Math.max(old.last, fresh.last), games: old.games + fresh.games, left: old.left + fresh.left, kept: old.kept + fresh.kept,
+    mistakes: [...by.values()].sort((a, b) => b.n - a.n || b.t - a.t).slice(0, maxItems) };
 }
