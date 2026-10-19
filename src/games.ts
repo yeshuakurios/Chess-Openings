@@ -128,7 +128,7 @@ export function mistakesAt(imp: GameImport | undefined, k: string, ply: number, 
   const own = imp?.mistakes.filter(x => x.k === k && x.p === ply);
   return own?.length ? own.map(x => {
     const g = color ? gradeOf(x, color, table) : undefined;
-    return { san: x.s, line: x.line, text: gameMistakeText(x, g), ...(g ? { mark: g.mark, eval: g.eval } : {}) };
+    return { san: x.s, line: g?.reply ? [g.reply] : x.line, text: gameMistakeText(x, g), ...(g ? { mark: g.mark, eval: g.eval } : {}) }; // graded: play out the engine's reply, which the text names; the game's own follow-up is on the review screen
   }) : hand ?? [];
 }
 
