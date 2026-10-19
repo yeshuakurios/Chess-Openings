@@ -124,7 +124,16 @@
             "w": 603643,
             "d": 47438,
             "b": 614348
-          }
+          },
+          "why": {
+            "Qxd5": "This is the main-line Scandinavian. It is playable, but the queen comes out early and Nc3 hits it at once, so White develops with tempo. This gambit gets the other pieces out first."
+          },
+          "versus": [
+            {
+              "line": "e5-bf5",
+              "text": "After 2.exd5 the pawn is the target, so you attack it with a developing move. After 2.e5 there is no pawn to win, so you develop your bishop outside the chain instead."
+            }
+          ]
         },
         {
           "san": "d4",
@@ -188,7 +197,13 @@
             "w": 1831,
             "d": 115,
             "b": 1821
-          }
+          },
+          "versus": [
+            {
+              "line": "nc3-nxd5",
+              "text": "With the pawn already on d4 White has a big center, so you develop with tempo first. After 3.Nc3 White has not built that center, so recapturing at once is enough."
+            }
+          ]
         },
         {
           "san": "f3",
@@ -253,7 +268,31 @@
             "w": 411,
             "d": 28,
             "b": 455
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Qxd5",
+              "line": [
+                "fxg4"
+              ],
+              "text": "The f-pawn attacks your bishop. Grabbing a pawn with the queen leaves the bishop to be captured for nothing: a whole piece for a pawn.",
+              "eval": 4.5
+            },
+            {
+              "san": "Bxf3",
+              "line": [
+                "Nxf3"
+              ],
+              "text": "Taking the f-pawn gives up the bishop for one pawn: the knight just recaptures and White is a piece up.",
+              "eval": 6.5
+            }
+          ],
+          "versus": [
+            {
+              "line": "nf3-nxd5",
+              "text": "After 4.Nf3 or 4.Be2 you can trade your bishop. After 4.f3 the pawn attacks it and there is nothing to trade with, so keep the bishop active."
+            }
+          ]
         },
         {
           "san": "c4",
@@ -312,7 +351,20 @@
             "w": 18,
             "d": 1,
             "b": 16
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Nxd5",
+              "line": [
+                "cxd5",
+                "Qxd5",
+                "Nc3",
+                "Qd6"
+              ],
+              "text": "Two attackers on d5 look like enough, but White's c-pawn recaptures first. You gave a knight for two pawns and the queen is chased away.",
+              "eval": 5.1
+            }
+          ]
         },
         {
           "san": "dxc6",
@@ -383,7 +435,19 @@
             "w": 10,
             "d": 1,
             "b": 13
-          }
+          },
+          "mistakes": [
+            {
+              "san": "bxc6",
+              "line": [
+                "g4",
+                "Bg6",
+                "Nc3"
+              ],
+              "text": "Recapturing with the b-pawn wrecks your pawn structure and develops nothing. White then gains time with g4 and Nc3 and keeps the extra center pawn.",
+              "eval": 1.8
+            }
+          ]
         }
       ],
       "board": {
@@ -495,7 +559,16 @@
             "w": 603643,
             "d": 47438,
             "b": 614348
-          }
+          },
+          "why": {
+            "Qxd5": "This is the main-line Scandinavian. It is playable, but the queen comes out early and Nc3 hits it at once, so White develops with tempo. This gambit gets the other pieces out first."
+          },
+          "versus": [
+            {
+              "line": "e5-bf5",
+              "text": "After 2.exd5 the pawn is the target, so you attack it with a developing move. After 2.e5 there is no pawn to win, so you develop your bishop outside the chain instead."
+            }
+          ]
         },
         {
           "san": "d4",
@@ -559,7 +632,13 @@
             "w": 1831,
             "d": 115,
             "b": 1821
-          }
+          },
+          "versus": [
+            {
+              "line": "nc3-nxd5",
+              "text": "With the pawn already on d4 White has a big center, so you develop with tempo first. After 3.Nc3 White has not built that center, so recapturing at once is enough."
+            }
+          ]
         },
         {
           "san": "Nf3",
@@ -619,7 +698,25 @@
             "w": 197,
             "d": 12,
             "b": 184
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e6",
+              "line": [
+                "dxe6",
+                "Bxe6",
+                "Nc3"
+              ],
+              "text": "Pushing the e-pawn offers a pawn: dxe6 and you are down material with your pieces still at home. Get the material level before you open lines.",
+              "eval": 1.6
+            }
+          ],
+          "versus": [
+            {
+              "line": "nf3-bxf3",
+              "text": "Same position as the line that trades bishop for knight to damage White's pawns. Here you keep the bishop and win the pawn back. Check which line you are drilling."
+            }
+          ]
         },
         {
           "san": "Be2",
@@ -668,7 +765,18 @@
             "w": 607,
             "d": 28,
             "b": 482
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Bxf3",
+              "line": [
+                "Bxf3",
+                "c6"
+              ],
+              "text": "Trading now lets White recapture with the bishop: no doubled pawns, and White keeps both bishops. The trade only pays when the recapture damages White's pawns.",
+              "eval": 1.3
+            }
+          ]
         },
         {
           "san": "O-O",
@@ -843,7 +951,16 @@
             "w": 603643,
             "d": 47438,
             "b": 614348
-          }
+          },
+          "why": {
+            "Qxd5": "This is the main-line Scandinavian. It is playable, but the queen comes out early and Nc3 hits it at once, so White develops with tempo. This gambit gets the other pieces out first."
+          },
+          "versus": [
+            {
+              "line": "e5-bf5",
+              "text": "After 2.exd5 the pawn is the target, so you attack it with a developing move. After 2.e5 there is no pawn to win, so you develop your bishop outside the chain instead."
+            }
+          ]
         },
         {
           "san": "d4",
@@ -904,7 +1021,13 @@
             "w": 1831,
             "d": 115,
             "b": 1821
-          }
+          },
+          "versus": [
+            {
+              "line": "nc3-nxd5",
+              "text": "With the pawn already on d4 White has a big center, so you develop with tempo first. After 3.Nc3 White has not built that center, so recapturing at once is enough."
+            }
+          ]
         },
         {
           "san": "Be2",
@@ -958,7 +1081,31 @@
             "w": 418,
             "d": 30,
             "b": 380
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Nxd5",
+              "line": [
+                "Bxg4"
+              ],
+              "text": "White's bishop attacks yours and it is your move. Grabbing a pawn instead loses a whole piece.",
+              "eval": 6.5
+            },
+            {
+              "san": "Qxd5",
+              "line": [
+                "Bxg4"
+              ],
+              "text": "White's bishop attacks yours and it is your move. Grabbing a pawn with the queen loses a whole piece.",
+              "eval": 5.7
+            }
+          ],
+          "versus": [
+            {
+              "line": "f3-bf5",
+              "text": "After 4.f3 the bishop is attacked and cannot trade. After 4.Be2 White blocks the pin with a piece you can swap off, so trade and win the pawn back."
+            }
+          ]
         },
         {
           "san": "Qxe2",
@@ -1076,7 +1223,17 @@
             "w": 66,
             "d": 5,
             "b": 45
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Qxa2",
+              "line": [
+                "Rxa2"
+              ],
+              "text": "The a-pawn looks free, but the rook on a1 guards it. Taking it loses your queen for a pawn.",
+              "eval": 8.1
+            }
+          ]
         },
         {
           "san": "O-O",
@@ -1140,7 +1297,17 @@
             "w": 2,
             "d": 0,
             "b": 0
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Qxa2",
+              "line": [
+                "Rxa2"
+              ],
+              "text": "The a-pawn looks free, but the rook on a1 guards it. Taking it loses your queen for a pawn.",
+              "eval": 8.4
+            }
+          ]
         }
       ]
     },
@@ -1251,7 +1418,16 @@
             "w": 603643,
             "d": 47438,
             "b": 614348
-          }
+          },
+          "why": {
+            "Qxd5": "This is the main-line Scandinavian. It is playable, but the queen comes out early and Nc3 hits it at once, so White develops with tempo. This gambit gets the other pieces out first."
+          },
+          "versus": [
+            {
+              "line": "e5-bf5",
+              "text": "After 2.exd5 the pawn is the target, so you attack it with a developing move. After 2.e5 there is no pawn to win, so you develop your bishop outside the chain instead."
+            }
+          ]
         },
         {
           "san": "d4",
@@ -1312,7 +1488,13 @@
             "w": 1831,
             "d": 115,
             "b": 1821
-          }
+          },
+          "versus": [
+            {
+              "line": "nc3-nxd5",
+              "text": "With the pawn already on d4 White has a big center, so you develop with tempo first. After 3.Nc3 White has not built that center, so recapturing at once is enough."
+            }
+          ]
         },
         {
           "san": "Nf3",
@@ -1373,7 +1555,25 @@
             "w": 34,
             "d": 6,
             "b": 45
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e6",
+              "line": [
+                "dxe6",
+                "Bxe6",
+                "Nc3"
+              ],
+              "text": "Pushing the e-pawn offers a pawn: dxe6 and you are down material with your pieces still at home. Get the material level before you open lines.",
+              "eval": 1.6
+            }
+          ],
+          "versus": [
+            {
+              "line": "nf3-nxd5",
+              "text": "Same position as the line that wins the pawn back with a knight. Here you trade the bishop for the knight to double White's pawns. Check which line you are drilling."
+            }
+          ]
         },
         {
           "san": "gxf3",
@@ -1543,7 +1743,25 @@
             "w": 1,
             "d": 0,
             "b": 0
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Qxf3",
+              "line": [
+                "Qxf3"
+              ],
+              "text": "White's queen guards the f3 pawn, so taking it just loses your queen for a pawn. Count the defenders before the queen grabs anything.",
+              "eval": 8.1
+            },
+            {
+              "san": "Qxd4",
+              "line": [
+                "Bxd4"
+              ],
+              "text": "White's bishop and queen both guard d4, so taking it just loses your queen for a pawn. Count the defenders before the queen grabs anything.",
+              "eval": 6.7
+            }
+          ]
         }
       ]
     },
@@ -1660,7 +1878,16 @@
             "w": 603643,
             "d": 47438,
             "b": 614348
-          }
+          },
+          "why": {
+            "Qxd5": "This is the main-line Scandinavian. It is playable, but the queen comes out early and Nc3 hits it at once, so White develops with tempo. This gambit gets the other pieces out first."
+          },
+          "versus": [
+            {
+              "line": "e5-bf5",
+              "text": "After 2.exd5 the pawn is the target, so you attack it with a developing move. After 2.e5 there is no pawn to win, so you develop your bishop outside the chain instead."
+            }
+          ]
         },
         {
           "san": "Nc3",
@@ -1715,7 +1942,24 @@
             "w": 302493,
             "d": 29039,
             "b": 312096
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Qxd5",
+              "line": [
+                "Nxd5",
+                "Nxd5"
+              ],
+              "text": "The knight on c3 guards d5, so the queen is captured and you only get a knight back. Check who defends a pawn before the queen takes it.",
+              "eval": 6.9
+            }
+          ],
+          "versus": [
+            {
+              "line": "f3-bf5",
+              "text": "After 3.d4 recapturing at once is met by c4. Here there is no pawn on d4 yet, so you can simply take the pawn back with a piece."
+            }
+          ]
         },
         {
           "san": "Nf3",
@@ -1764,7 +2008,21 @@
             "w": 2524,
             "d": 176,
             "b": 2486
-          }
+          },
+          "mistakes": [
+            {
+              "san": "e5",
+              "line": [
+                "Nxe5",
+                "Nxc3",
+                "dxc3",
+                "Qxd1+",
+                "Kxd1"
+              ],
+              "text": "The pawn push just drops a pawn: the knight takes e5 and the queen trade that follows leaves you a pawn down in an ending.",
+              "eval": 1.4
+            }
+          ]
         },
         {
           "san": "d4",
@@ -1825,7 +2083,17 @@
             "w": 1134,
             "d": 76,
             "b": 997
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Nxd4",
+              "line": [
+                "Nxd4"
+              ],
+              "text": "The pawn on d4 is defended by the knight and the queen. Taking it with the knight just trades your knight for a pawn.",
+              "eval": 4.6
+            }
+          ]
         },
         {
           "san": "Be2",
@@ -2050,7 +2318,16 @@
             "w": 603643,
             "d": 47438,
             "b": 614348
-          }
+          },
+          "why": {
+            "Qxd5": "This is the main-line Scandinavian. It is playable, but the queen comes out early and Nc3 hits it at once, so White develops with tempo. This gambit gets the other pieces out first."
+          },
+          "versus": [
+            {
+              "line": "e5-bf5",
+              "text": "After 2.exd5 the pawn is the target, so you attack it with a developing move. After 2.e5 there is no pawn to win, so you develop your bishop outside the chain instead."
+            }
+          ]
         },
         {
           "san": "c4",
@@ -2111,7 +2388,13 @@
             "w": 33273,
             "d": 2650,
             "b": 39915
-          }
+          },
+          "versus": [
+            {
+              "line": "f3-bf5",
+              "text": "After 3.d4 you develop first. White chose c4 instead and left d4 alone, so hit the center at once with the side pawn."
+            }
+          ]
         },
         {
           "san": "dxc6",
@@ -2429,7 +2712,16 @@
             "w": 603643,
             "d": 47438,
             "b": 614348
-          }
+          },
+          "why": {
+            "Qxd5": "This is the main-line Scandinavian. It is playable, but the queen comes out early and Nc3 hits it at once, so White develops with tempo. This gambit gets the other pieces out first."
+          },
+          "versus": [
+            {
+              "line": "e5-bf5",
+              "text": "After 2.exd5 the pawn is the target, so you attack it with a developing move. After 2.e5 there is no pawn to win, so you develop your bishop outside the chain instead."
+            }
+          ]
         },
         {
           "san": "Nc3",
@@ -2478,7 +2770,24 @@
             "w": 302493,
             "d": 29039,
             "b": 312096
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Qxd5",
+              "line": [
+                "Nxd5",
+                "Nxd5"
+              ],
+              "text": "The knight on c3 guards d5, so the queen is captured and you only get a knight back. Check who defends a pawn before the queen takes it.",
+              "eval": 6.8
+            }
+          ],
+          "versus": [
+            {
+              "line": "f3-bf5",
+              "text": "After 3.d4 recapturing at once is met by c4. Here there is no pawn on d4 yet, so you can simply take the pawn back with a piece."
+            }
+          ]
         },
         {
           "san": "Nxd5",
@@ -2843,7 +3152,13 @@
             "w": 230285,
             "d": 15975,
             "b": 220517
-          }
+          },
+          "versus": [
+            {
+              "line": "f3-bf5",
+              "text": "After 2.exd5 you attack the pawn. White pushed past instead, so there is nothing to win: get the light-squared bishop out before the pawn chain closes it in."
+            }
+          ]
         },
         {
           "san": "Nf3",
@@ -2892,7 +3207,18 @@
             "w": 14982,
             "d": 1065,
             "b": 15487
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Nf6",
+              "line": [
+                "exf6",
+                "gxf6"
+              ],
+              "text": "White's pawn on e5 attacks f6, so the knight is simply captured. In this closed structure White's advanced pawn controls f6.",
+              "eval": 5.1
+            }
+          ]
         },
         {
           "san": "d4",
@@ -2946,7 +3272,18 @@
             "w": 9629,
             "d": 643,
             "b": 9745
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Nf6",
+              "line": [
+                "exf6",
+                "Qxf6"
+              ],
+              "text": "White's pawn on e5 attacks f6, so the knight is simply captured. In this closed structure White's advanced pawn controls f6.",
+              "eval": 4.7
+            }
+          ]
         },
         {
           "san": "c3",
@@ -3064,7 +3401,18 @@
             "w": 37,
             "d": 1,
             "b": 45
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Nf6",
+              "line": [
+                "exf6",
+                "Qxf6"
+              ],
+              "text": "White's pawn on e5 attacks f6, so the knight is simply captured. In this closed structure White's advanced pawn controls f6.",
+              "eval": 5.1
+            }
+          ]
         }
       ]
     },
@@ -3162,7 +3510,13 @@
             "w": 592285,
             "d": 57204,
             "b": 771143
-          }
+          },
+          "versus": [
+            {
+              "line": "f3-bf5",
+              "text": "After 2.exd5 you attack the pawn. White did not take, so you gain space with a pawn and kick the knight away."
+            }
+          ]
         },
         {
           "san": "Nce2",
@@ -3295,7 +3649,17 @@
             "w": 16,
             "d": 0,
             "b": 9
-          }
+          },
+          "mistakes": [
+            {
+              "san": "Nxe4",
+              "line": [
+                "Nxe4"
+              ],
+              "text": "The e4 pawn is guarded by the knight on g3, so this just gives a knight for a pawn.",
+              "eval": 3.9
+            }
+          ]
         },
         {
           "san": "d3",
