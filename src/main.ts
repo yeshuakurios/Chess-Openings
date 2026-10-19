@@ -9,6 +9,8 @@ import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery
 import { troubleSpots } from './mistakes.ts';
 import { analyzeGames, gameAttempts, gameMistakeText, gradeOf, mergeImports, IMPORT_VERSION } from './games.ts';
 import { fmtEval } from './grade.ts';
+import { explainMistake } from './mistakestory.ts';
+import { mountMistakeStory } from './mistakeview.ts';
 import { fetchGames, FIRST_GAMES, LATER_GAMES, USERNAME } from './chesscom.ts';
 import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
@@ -296,10 +298,17 @@ function gamesPage() {
       ${line(s)}
       ${x.line.length ? `<p class="muted">What followed in your game: ${esc(x.line.join(' '))}</p>` : ''}
       ${boardFold('game-' + i, { ply: x.p, shapes: [] }, 'Show the position')}
-      <div class="row"><a class="btn primary" href="${href('practice', o.id, v.id, String(x.p))}">Practice from here</a>${x.u ? `<a class="btn" href="${esc(x.u)}" target="_blank" rel="noopener">Open the game</a>` : ''}</div></div>`; }).join('')
+      <div class="row"><a class="btn primary" href="${href('fix', o.id, v.id, String(x.p), encodeURIComponent(x.s))}">Show me</a><a class="btn" href="${href('practice', o.id, v.id, String(x.p))}">Practice from here</a>${x.u ? `<a class="btn" href="${esc(x.u)}" target="_blank" rel="noopener">Open the game</a>` : ''}</div></div>`; }).join('')
       : `<div class="card"><b>${g?.games ? 'No deviations found.' : 'No games imported yet.'}</b><p class="muted">${g?.games ? 'You followed your lines in the games read.' : 'Import your chess.com games in Settings.'}</p><div class="row"><a class="btn" href="${href('settings')}">Settings</a></div></div>`}
   </main>`;
   spots.forEach(({ x, o, v }, i) => drawOnOpen('game-' + i, o, v, { ply: x.p, shapes: [] }));
+}
+
+/** The visual walkthrough of one mistake from a game: the moves so far, your move, why it tempted you, why it fails, what to play. */
+function fixPage(o: Opening, v: Variation, ply: number, san: string) {
+  const my = ++token, story = explainMistake(o, v, ply, san);
+  if (!story) { app.innerHTML = `<main class="page"><a class="back" data-goback href="${href('games')}">← Back</a><h1>Mistake</h1><div class="card"><b>That position is no longer in your lines.</b></div></main>`; return; }
+  mountMistakeStory(app, story, { o, v, backHref: href('games'), practiceHref: href('practice', o.id, v.id, String(ply)) }, () => my === token);
 }
 
 function openingPage(o: Opening) {
@@ -430,12 +439,13 @@ async function drill() {
 function route() {
   trackEntry();
   token++;
-  const [, a, b, c, d] = location.hash.split('/');
+  const [, a, b, c, d, e] = location.hash.split('/');
   const o = b ? findOpening(b) : undefined; const v = o && c ? findVariation(o, c) : undefined;
   if (a === 'o' && o) openingPage(o);
   else if (a === 'learn' && o && v) learn(o, v);
   else if (a === 'practice' && o && v) void practice(o, v, d && Number(d) > 0 && Number(d) < v.moves.length ? Number(d) : undefined);
   else if (a === 'games') gamesPage();
+  else if (a === 'fix' && o && v && d) fixPage(o, v, Number(d), decodeURIComponent(e ?? ''));
   else if (a === 'drill') void drill();
   else if (a === 'mistakes') mistakesPage();
   else if (a === 'ask') askPage();
