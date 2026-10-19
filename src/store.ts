@@ -1,6 +1,7 @@
 import { createEmptyCard, fsrs, Rating, type Card } from 'ts-fsrs';
 import { MAX_ATTEMPTS, MAX_QUESTIONS, MAX_QUESTION_CHARS, mergeProgress } from './merge.ts';
 import { LINE_BONUS, dayKey, xpForAttempt } from './gamify.ts';
+import type { GameImport } from './games.ts';
 
 /** One user move in a line. Short field names on purpose: the log is synced and the Worker caps the body at 256 KB. */
 export interface Attempt {
@@ -11,7 +12,7 @@ export interface Attempt {
   h: 0 | 1;        // 1 if Hint was pressed at this position first
   ms: number;      // time from the position appearing to this move
   t: number;       // epoch ms
-  m: 'p' | 'd';    // practice or drill
+  m: 'p' | 'd' | 'g'; // practice, drill, or a move from an imported chess.com game (only built for mastery, never stored in the log)
   o?: 1;           // 1 if the line was started from the middle (spot check)
   s?: string;      // the move played, kept only for wrong attempts
 }
@@ -32,12 +33,16 @@ export interface Progress {
   /** Earned badge id -> day earned. Never removed. */
   badges: Record<string, string>;
   /** Moves the owner marked "need more explanation": `opening/line#ply` -> epoch ms. Read at the start of a session (Settings copies them as a list; they also sync) so the next session can write the missing explanation. */
+  /** Openings set aside with "Save for later". Per opening: `on` plus when it was last changed, so the newest change wins when two devices sync. Progress on a saved opening is kept. */
+  shelf: Record<string, { on: boolean; t: number }>;
   flags: Record<string, number>;
   /** Moves flagged at or before this time were handed off and are gone. Merged by max so clearing on one device sticks. */
   flagsClearedAt: number;
   questions: Question[];
+  /** Mistakes found in the owner's chess.com games; they replace the hand-written ones in Practice and Drill. The newest import wins on merge. */
+  games?: GameImport;
 }
-const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {}, flags: {}, flagsClearedAt: 0, questions: [] });
+const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {}, flags: {}, flagsClearedAt: 0, questions: [], shelf: {} });
 const DB = 'openings', STORE = 'kv', KEY = 'progress', TOKEN_KEY = 'syncToken';
 const scheduler = fsrs();
 
@@ -92,6 +97,11 @@ async function save(sync = true) {
 
 export const getProgress = () => progress;
 export const isLearned = (k: string) => !!progress.learned[k];
+export const isShelved = (openingId: string) => !!progress.shelf[openingId]?.on;
+export function setShelved(openingId: string, on: boolean) {
+  progress.shelf[openingId] = { on, t: Date.now() };
+  void save();
+}
 
 export function markLearned(k: string) {
   progress.learned[k] = true;
@@ -138,6 +148,8 @@ export function toggleFlag(fk: string): boolean {
   void save();
   return !!progress.flags[fk];
 }
+/** Keep the result of an import. An import with no mistakes brings the hand-written ones back, and being newer it wins the sync merge too. */
+export function setGames(g: GameImport) { progress.games = g; void save(); }
 /** Hand-off done: drop every flag made so far. */
 export function clearFlags() { progress.flags = {}; progress.flagsClearedAt = Date.now(); void save(); }
 /** Store a question; the daily review picks it up once it has synced. Returns false for an empty text. */

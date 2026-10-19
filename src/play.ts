@@ -4,7 +4,8 @@ import { createBoard, type Board } from './board.ts';
 import { esc, setEval, setMessage, setProgress } from './ui.ts';
 import { whyNot } from './why.ts';
 import { movePopularity } from './stats.ts';
-import { addQuestion, flagKey, isFlagged, toggleFlag } from './store.ts';
+import { addQuestion, flagKey, getProgress, isFlagged, toggleFlag } from './store.ts';
+import { mistakesAt } from './games.ts';
 import { key } from './content.ts';
 import type { Mistake, Move, Opening, Variation } from './types.ts';
 
@@ -15,6 +16,8 @@ export interface Ui { board: HTMLElement; hint: HTMLButtonElement; prev: HTMLBut
 
 export const FLAG_TEXT = { off: 'Need more explanation', on: 'Flagged ✓ (tap to undo)' };
 export const ASK_TEXT = { idle: 'Ask a question', saved: 'Question saved ✓' };
+/** The mistakes to play out at move `ply` of a line: from the owner's chess.com games when imported, the hand-written ones otherwise. */
+const mistakesFor = (o: Opening, v: Variation, ply: number) => mistakesAt(getProgress().games, key(o, v), ply, v.moves[ply]?.mistakes, o.color);
 /** Wire an "Ask a question" button to one move: a native prompt takes the text, the question is stored with the move's id. */
 function wireAsk(btn: HTMLButtonElement | undefined, k: string, ply: () => number | undefined) {
   if (!btn) return () => {};
@@ -55,7 +58,7 @@ export async function showMistake(board: Board, fen: string, x: Mistake, stopped
     await wait(san === x.san ? 800 : 900);
   }
   if (typeof x.eval === 'number') setEval(x.eval);
-  setMessage(`<b>${x.san}?</b> ${x.text}`); // the head already said it; keep the card for the lesson
+  setMessage(`<b>${x.san}${x.mark ?? '?'}</b> ${x.text}`); // the head already said it; keep the card for the lesson
   return true;
 }
 
@@ -143,7 +146,7 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
         void next();
       } else {
         chess.undo(); mistakes++;
-        const x = v.moves[idx].mistakes?.find(q => q.san === m.san);
+        const x = mistakesFor(o, v, idx).find(q => q.san === m.san);
         if (x) void demo(x);
         else {
           setMessage(whyNot(o, v.moves[idx], m, v, idx));
@@ -171,7 +174,8 @@ export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTM
     token++; demoing = false;
     const chess = new Chess(); let last: [Key, Key] | undefined;
     for (let i = 0; i < idx; i++) { const m = chess.move(v.moves[i].san); last = [m.from as Key, m.to as Key]; }
-    board.show(chess, last); board.shapes(idx ? v.moves[idx - 1].shapes : []);
+    board.show(chess, last);
+    board.shapes(idx ? (v.moves[idx - 1].shapes?.length ? v.moves[idx - 1].shapes : last ? [{ from: last[0], to: last[1], color: (idx - 1) % 2 === 0 === (o.color === 'white') ? 'green' : 'blue' }] : []) : []);
     setEval(idx ? v.moves[idx - 1].eval : START_EVAL); setProgress(idx / v.moves.length);
     const m = v.moves[idx - 1];
     const pop = idx && !m.versus?.length ? movePopularity(m, (idx - 1) % 2 === 0 === (o.color === 'white')) : ''; // the contrast text needs the room
@@ -180,14 +184,14 @@ export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTM
     controls.next.textContent = idx === v.moves.length ? 'Finish' : 'Next';
     syncFlag(); syncAsk();
     if (controls.trap) {
-      const n = m?.mistakes?.length ?? 0;
+      const n = idx ? mistakesFor(o, v, idx - 1).length : 0;
       controls.trap.hidden = !n; controls.trap.disabled = false;
       controls.trap.textContent = n > 1 ? `Common mistakes (${n})` : 'Common mistake';
     }
   };
   const showTrap = async () => {
-    const m = v.moves[idx - 1], list = m?.mistakes;
-    if (!list?.length) return;
+    const list = idx ? mistakesFor(o, v, idx - 1) : [];
+    if (!list.length) return;
     const x = list[shown++ % list.length], my = ++token;
     demoing = true; syncFlag(); syncAsk(); controls.prev.disabled = true; controls.trap!.disabled = true; controls.next.disabled = true;
     const before = new Chess(); for (let i = 0; i < idx - 1; i++) before.move(v.moves[i].san);
