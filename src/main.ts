@@ -324,7 +324,7 @@ function openingPage(o: Opening) {
   </main>`;
   drawOnOpen('goal-board', o, goalVariation(o), o.goal.board);
   o.variations.forEach((v, i) => mountOnOpen('lv-' + i, o, v));
-  document.getElementById('shelve')!.onclick = () => { setShelved(o.id, !isShelved(o.id)); location.hash = '#/'; };
+  document.getElementById('shelve')!.onclick = () => { setShelved(o.id, !isShelved(o.id)); goTo('#/'); };
 }
 
 function learn(o: Opening, v: Variation) {
