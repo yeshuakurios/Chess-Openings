@@ -149,3 +149,28 @@ textarea,input[type=text]{width:100%;box-sizing:border-box;background:var(--pane
 .saved summary{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
 .saved-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
 .saved-row a{min-width:0}
+
+/* mistake walkthrough: boards, rings and bars carry the story */
+.mv .steps{margin-top:6px}
+.mv .steps i.on{background:var(--amber)}
+.mv-title{margin:10px 0 0;text-align:center}
+.mv .board-wrap.hero{margin:8px auto}
+.mv-panel{margin-top:8px;min-height:92px}
+.mv-nav{justify-content:space-between;margin-top:10px}
+.mv-play{justify-content:center;margin-top:4px}
+.mv-played{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;font-size:22px;padding:6px 0}
+.mv-piece{font-size:34px;line-height:1}
+.mv-reasons{display:flex;flex-direction:column;gap:8px}
+.rs{appearance:none;display:flex;align-items:center;gap:10px;text-align:left;font:inherit;font-size:16px;font-weight:650;padding:10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.rs b{font-size:20px;width:26px;text-align:center;color:var(--amber)}
+.rs.on{border-color:var(--amber);background:rgba(245,158,11,.12)}
+.mv-row{display:flex;align-items:center;gap:10px;margin:8px 0}
+.mv-row span{width:44px;font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.mv-row b{width:48px;text-align:right;font-size:15px}
+.mv-bar{position:relative;flex:1;height:16px;border-radius:8px;background:#2b3040;overflow:hidden}
+.mv-bar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#e5e7eb,#fff);transition:width .5s}
+.mv-bar.good i{background:#4ade80}.mv-bar.bad i{background:#f87171}
+.mv-bar u{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(45deg,#f87171,#f87171 4px,#b91c1c 4px,#b91c1c 8px);text-decoration:none}
+.mv-reply{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px}
+.mv-lost{font-size:18px;font-weight:700;color:#fca5a5}
+.mv-drop{margin-left:auto;font-size:26px;font-weight:800;color:#f87171}
