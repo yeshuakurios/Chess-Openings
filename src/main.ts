@@ -1,11 +1,13 @@
 import './style.css';
 import { registerSW } from 'virtual:pwa-register';
 import { openings, findOpening, findVariation, key } from './content.ts';
-import { addQuestion, awardLineBonus, clearFlags, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, loadProgress, logAttempt, markLearned, review, setBestCombo, setToken, syncNow, type SyncStatus } from './store.ts';
+import { addQuestion, awardLineBonus, clearFlags, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, loadProgress, logAttempt, markLearned, review, setBestCombo, setGames, setToken, syncNow, type SyncStatus } from './store.ts';
 import { moveLabel, playLine, walkLine, type Ui } from './play.ts';
 import { fenAfter, staticBoard } from './board.ts';
 import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery.ts';
 import { troubleSpots } from './mistakes.ts';
+import { analyzeGames } from './games.ts';
+import { fetchGames, USERNAME } from './chesscom.ts';
 import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
 import { earnedNow, levelFor, totalXp } from './gamify.ts';
@@ -119,6 +121,21 @@ function flaggedMoves() {
   });
 }
 
+/** What the last chess.com import found, as readable lines (the worst spots first). */
+function gameFindings() {
+  const g = getProgress().games;
+  if (!g?.games) return '';
+  const seen = new Set<string>(); // one position can sit in several lines of an opening; list it once
+  const rows = g.mistakes.flatMap(x => {
+    const found = lookup(x.k), id = `${found?.[0].id}#${x.p}#${x.s}`;
+    if (!found || seen.has(id)) return [];
+    seen.add(id);
+    return [`<li>${esc(found[0].name)} · ${esc(found[1].name)} · move ${Math.floor(x.p / 2) + 1}: you played <b>${esc(x.s)}</b> ${x.n}× (${x.w} won, ${x.d} drawn, ${x.l} lost)</li>`];
+  }).slice(0, 8);
+  return `<p class="muted">${g.games} games read for ${esc(g.user)} on ${esc(new Date(g.at).toLocaleDateString())}. You left your line on your own move in ${g.left} and followed it until the opponent left in ${g.kept}. Practice and Drill now show these mistakes instead of the hand-written ones, on every move that has one.</p>
+    ${rows.length ? `<ul>${rows.join('')}</ul>` : '<p class="muted">No deviations found. The hand-written mistakes stay.</p>'}`;
+}
+
 function settingsPage() {
   const flagged = flaggedMoves();
   app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>Settings</h1>
@@ -126,6 +143,11 @@ function settingsPage() {
     <div class="card"><p class="muted">Your progress lives on this device. Sync copies it to your own Cloudflare Worker so another device can pick it up; export keeps a copy you can paste somewhere safe.</p>
     <div class="row"><button class="btn" id="sync">${hasToken() ? 'Sync now' : 'Set up sync'}</button><span class="muted" id="sync-msg">${esc(syncText)}</span></div>
     <div class="row"><button class="btn" id="exp">Export progress</button><button class="btn" id="imp">Import</button></div></div>
+    <h2>Your chess.com games</h2>
+    <div class="card"><p class="muted">Reads your last three months of games from chess.com (free public data, no password) and finds where you left your lines. Those mistakes then replace the hand-written ones in Practice and Drill. Nothing is sent anywhere but chess.com.</p>
+    <input id="cc-user" type="text" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="chess.com username" aria-label="chess.com username" value="${esc(getProgress().games?.user ?? '')}">
+    <div class="row"><button class="btn primary" id="cc-go">Import games</button><button class="btn" id="cc-clear" ${getProgress().games?.games ? '' : 'disabled'}>Use hand-written again</button></div>
+    <p class="muted" id="cc-msg" role="status"></p>${gameFindings()}</div>
     <h2>Flagged for more explanation</h2>
     <div class="card"><p class="muted">Moves you marked with "Need more explanation". Copy the list and paste it at the start of the next session (with sync on, they also travel with your progress) so the explanation gets written; clear it once handed over.</p>
     ${flagged.length ? `<ul>${flagged.map(f => `<li>${esc(f.label)}</li>`).join('')}</ul>` : '<p class="muted">Nothing flagged.</p>'}
@@ -144,6 +166,21 @@ function settingsPage() {
     try { await navigator.clipboard.writeText(data); alert('Progress copied to the clipboard. Paste it somewhere safe.'); }
     catch { prompt('Copy your progress:', data); }
   };
+  const ccMsg = (t: string) => { document.getElementById('cc-msg')!.textContent = t; };
+  document.getElementById('cc-go')!.onclick = async () => {
+    const user = (document.getElementById('cc-user') as HTMLInputElement).value.trim();
+    if (!USERNAME.test(user)) return ccMsg('Type your chess.com username first.');
+    if (!navigator.onLine) return ccMsg('You are offline. Try again with a connection.');
+    const go = btn('cc-go'); go.disabled = true;
+    try {
+      const raw = await fetchGames(user, { progress: ccMsg });
+      if (!raw.length) { ccMsg('No games found for that user in the last months.'); return; }
+      const result = analyzeGames(raw, user, openings);
+      if (!result.games) { ccMsg(`Found ${raw.length} games but none were standard chess played by ${user}.`); return; }
+      setGames(result); settingsPage();
+    } catch (e) { ccMsg(e instanceof Error ? e.message : 'Could not read your games.'); go.disabled = false; }
+  };
+  document.getElementById('cc-clear')!.onclick = () => { if (confirm('Go back to the hand-written mistakes?')) { const g = getProgress().games; setGames({ user: g?.user ?? '', at: Date.now(), games: 0, left: 0, kept: 0, mistakes: [] }); settingsPage(); } };
   document.getElementById('fcopy')!.onclick = async () => {
     const text = `Moves flagged "need more explanation":\n${flagged.map(f => `- ${f.label}`).join('\n')}`;
     try { await navigator.clipboard.writeText(text); alert('Copied. Paste it into the next session.'); } catch { prompt('Copy this list:', text); }

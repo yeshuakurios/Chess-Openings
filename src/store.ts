@@ -1,6 +1,7 @@
 import { createEmptyCard, fsrs, Rating, type Card } from 'ts-fsrs';
 import { MAX_ATTEMPTS, MAX_QUESTIONS, MAX_QUESTION_CHARS, mergeProgress } from './merge.ts';
 import { LINE_BONUS, dayKey, xpForAttempt } from './gamify.ts';
+import type { GameImport } from './games.ts';
 
 /** One user move in a line. Short field names on purpose: the log is synced and the Worker caps the body at 256 KB. */
 export interface Attempt {
@@ -36,6 +37,8 @@ export interface Progress {
   /** Moves flagged at or before this time were handed off and are gone. Merged by max so clearing on one device sticks. */
   flagsClearedAt: number;
   questions: Question[];
+  /** Mistakes found in the owner's chess.com games; they replace the hand-written ones in Practice and Drill. The newest import wins on merge. */
+  games?: GameImport;
 }
 const empty = (): Progress => ({ learned: {}, cards: {}, bestCombo: 0, attempts: [], xp: {}, badges: {}, flags: {}, flagsClearedAt: 0, questions: [] });
 const DB = 'openings', STORE = 'kv', KEY = 'progress', TOKEN_KEY = 'syncToken';
@@ -138,6 +141,8 @@ export function toggleFlag(fk: string): boolean {
   void save();
   return !!progress.flags[fk];
 }
+/** Keep the result of an import. An import with no mistakes brings the hand-written ones back, and being newer it wins the sync merge too. */
+export function setGames(g: GameImport) { progress.games = g; void save(); }
 /** Hand-off done: drop every flag made so far. */
 export function clearFlags() { progress.flags = {}; progress.flagsClearedAt = Date.now(); void save(); }
 /** Store a question; the daily review picks it up once it has synced. Returns false for an empty text. */

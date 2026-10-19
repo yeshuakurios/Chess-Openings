@@ -1,3 +1,5 @@
+import { mistakesAt } from './games.ts';
+import { getProgress } from './store.ts';
 import type { Move, Opening, Variation } from './types.ts';
 
 const PIECE: Record<string, string> = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' };
@@ -5,7 +7,8 @@ const fmt = (n: number) => (n > 0 ? `+${n.toFixed(1)}` : n.toFixed(1));
 
 /** Hand-written reason for a wrong move: a `why`, a common-mistake text, or the contrast with the similar position of another line where this very move is played. */
 export function authoredWhy(o: Opening, line: Move, tried: string, v?: Variation, idx?: number): string | undefined {
-  const own = line.why?.[tried] ?? line.mistakes?.find(x => x.san === tried)?.text;
+  const mistakes = v && idx !== undefined ? mistakesAt(getProgress().games, `${o.id}/${v.id}`, idx, line.mistakes) : line.mistakes;
+  const own = line.why?.[tried] ?? mistakes?.find(x => x.san === tried)?.text;
   if (own) return own;
   if (v && idx !== undefined) for (const x of line.versus ?? []) if (o.variations.find(w => w.id === x.line)?.moves[idx]?.san === tried) return x.text;
   return undefined;
