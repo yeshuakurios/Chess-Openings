@@ -65,7 +65,7 @@ export async function showMistake(board: Board, fen: string, x: Mistake, stopped
 }
 
 /** The user plays their side from memory. Only the line's move is accepted. Arrows let them look back and forth. Resolves with the mistake count. */
-export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () => boolean; startPly?: number; onAttempt?: (a: { p: number; ok: 0 | 1; h: 0 | 1; ms: number; s?: string }) => void }): Promise<number> {
+export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () => boolean; startPly?: number; single?: boolean; onAttempt?: (a: { p: number; ok: 0 | 1; h: 0 | 1; ms: number; s?: string }) => void }): Promise<number> {
   return new Promise(resolve => {
     const chess = new Chess();
     const board = createBoard(ui.board, o.color);
@@ -148,6 +148,13 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
         showWhy(false); wrong = undefined;
         last = [from, to]; lasts[++idx] = last; view = idx;
         setEval(v.moves[idx - 1].eval); setProgress(idx / v.moves.length);
+        if (opts.single) { // a mistake card: only this one position is asked
+          finished = true; board.lock(); board.clearArrow(); setProgress(1); syncArrows();
+          setMessage(`<b>${mistakes === 0 ? 'That is the move.' : 'Found it.'}</b> ${noteWithVersus(v.moves[idx - 1])}`, mistakes === 0);
+          ui.hint.onclick = null; showWhy(false);
+          resolve(mistakes);
+          return;
+        }
         setMessage(noteWithVersus(v.moves[idx - 1]));
         void next();
       } else {
@@ -164,7 +171,7 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
     if (opts.startPly) { // spot check: set the position up without animation, then play on from there
       for (let i = 0; i < opts.startPly; i++) { const m = chess.move(v.moves[i].san); last = [m.from as Key, m.to as Key]; lasts[++idx] = last; }
       view = idx; setEval(v.moves[idx - 1].eval); setProgress(idx / v.moves.length);
-      setMessage('<b>Spot check</b><br>Pick up the line from this position.');
+      setMessage(opts.single ? '<b>A mistake from your games</b><br>Find the move that fits the plan.' : '<b>Spot check</b><br>Pick up the line from this position.');
     }
     void next();
   });

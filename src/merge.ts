@@ -1,5 +1,6 @@
 import type { Card } from 'ts-fsrs';
 import type { Attempt, Progress, Question } from './store.ts';
+import { mergeFixes } from './fixes.ts';
 
 const reviewedAt = (c?: Card) => (c?.last_review ? +new Date(c.last_review) : 0);
 
@@ -58,5 +59,5 @@ export function mergeProgress(a: Progress, b: Progress): Progress {
   }
   const games = (b.games?.at ?? -1) > (a.games?.at ?? -1) ? b.games : a.games;
   return { learned: { ...a.learned, ...b.learned }, cards, bestCombo: Math.max(a.bestCombo, b.bestCombo), attempts: mergeAttempts(a.attempts, b.attempts),
-    xp: mergeMax(a.xp, b.xp), badges: mergeEarliest(a.badges, b.badges), ...mergeFlags(a, b), questions: mergeQuestions(a.questions ?? [], b.questions ?? []), shelf: mergeShelf(a.shelf ?? {}, b.shelf ?? {}), ...(games ? { games } : {}) };
+    xp: mergeMax(a.xp, b.xp), badges: mergeEarliest(a.badges, b.badges), ...mergeFlags(a, b), questions: mergeQuestions(a.questions ?? [], b.questions ?? []), shelf: mergeShelf(a.shelf ?? {}, b.shelf ?? {}), ...(games ? { games } : {}), fixes: mergeFixes(a.fixes ?? {}, b.fixes ?? {}) };
 }

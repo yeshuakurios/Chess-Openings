@@ -177,3 +177,9 @@ textarea,input[type=text]{width:100%;box-sizing:border-box;background:var(--pane
 
 .mv-overlay{position:fixed;inset:0;z-index:60;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
 button.back{appearance:none;background:none;border:0;font:inherit;font-weight:600;cursor:pointer;text-align:left}
+
+.fix-state{display:flex;align-items:center;gap:12px;margin:6px 0 2px;font-size:14px;font-weight:650}
+.fix-state .due{color:var(--amber)}.fix-state .cleared{color:#86efac}
+.dots{display:inline-flex;gap:5px}
+.dots i{width:10px;height:10px;border-radius:50%;border:2px solid var(--muted);display:block}
+.dots i.on{background:#4ade80;border-color:#4ade80}
