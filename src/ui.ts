@@ -14,7 +14,7 @@ export const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<'
 /** Shared play screen shell: header, progress, message card, eval bar, board, controls. */
 export function screenShell(title: string, subtitle: string, controls: string): string {
   return `
-  <header class="top"><a class="back" href="#/" id="back" aria-label="Back">←</a>
+  <header class="top"><a class="back" href="#/" id="back" data-goback aria-label="Back">←</a>
     <div class="title"><b>${title}</b><span>${subtitle}</span></div></header>
   <div class="bar"><div id="bar-fill"></div></div>
   <div class="msg" id="msg" role="status" aria-live="polite"></div>

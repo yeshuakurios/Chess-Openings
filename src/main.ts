@@ -14,6 +14,7 @@ import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
 import { earnedNow, levelFor, totalXp } from './gamify.ts';
 import { esc, screenShell } from './ui.ts';
+import { goTo, installNavLinks, trackEntry } from './nav.ts';
 import { answers } from './answers.ts';
 import type { Opening, PlanBoard, Variation } from './types.ts';
 
@@ -156,7 +157,7 @@ function gameFindings() {
 
 function settingsPage() {
   const flagged = flaggedMoves();
-  app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>Settings</h1>
+  app.innerHTML = `<main class="page"><a class="back" data-goback href="#/">← Home</a><h1>Settings</h1>
     <h2>Backup &amp; sync</h2>
     <div class="card"><p class="muted">Your progress lives on this device. Sync copies it to your own Cloudflare Worker so another device can pick it up; export keeps a copy you can paste somewhere safe.</p>
     <div class="row"><button class="btn" id="sync">${hasToken() ? 'Sync now' : 'Set up sync'}</button><span class="muted" id="sync-msg">${esc(syncText)}</span></div>
@@ -222,7 +223,7 @@ const when = (t: number) => new Date(t).toLocaleDateString(undefined, { day: 'nu
 
 function askPage() {
   const list = [...getProgress().questions].reverse();
-  app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>Ask a question</h1>
+  app.innerHTML = `<main class="page"><a class="back" data-goback href="#/">← Home</a><h1>Ask a question</h1>
     <p class="muted">Anything about an opening, a line or a move. Questions are stored with your progress and reviewed once a day; the answer appears here after the next update. To ask about one move, use "Ask a question" while you learn or practice it.</p>
     ${hasToken() ? '' : '<div class="card"><b>Sync is off.</b><p class="muted">The daily review reads questions from your synced copy, so set up sync in Settings first or it will never see them.</p></div>'}
     <div class="card"><textarea id="qtext" rows="3" maxlength="500" placeholder="Your question" aria-label="Your question"></textarea>
@@ -241,7 +242,7 @@ function askPage() {
 function mistakesPage() {
   const spots = troubleSpots(getProgress().attempts, lookup);
   const times = (n: number, what: string) => (n ? `${what} ${n}×` : '');
-  app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>Mistakes</h1>
+  app.innerHTML = `<main class="page"><a class="back" data-goback href="#/">← Home</a><h1>Mistakes</h1>
     <p class="muted">The positions that cost you the most in the last 30 days. The explanations come from the line itself and never show the answer.</p>
     ${spots.length ? spots.map((t, i) => { const [o, v] = lookup(t.k)!; return `<div class="card">
       <div class="tag">${esc(o.name)} · ${esc(v.name)}</div><b>Move ${Math.floor(t.p / 2) + 1}</b>
@@ -286,7 +287,7 @@ function gamesPage() {
     const top = e && e.best.san !== own.san && e.best.mine - mine >= 0.2 ? ` The engine's top move here is ${esc(e.best.san)} (${fmtEval(e.best.mine)}).` : '';
     return `<p><b>Your line plays ${esc(own.san)}</b> <span class="muted">(${fmtEval(mine)} for you)</span><br>${esc(own.note)}${top}</p>`;
   };
-  app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>From your games</h1>
+  app.innerHTML = `<main class="page"><a class="back" data-goback href="#/">← Home</a><h1>From your games</h1>
     <p class="muted">Where you left your line in your own chess.com games, graded by the engine. Practice starts at that position, and the slip plays out if you repeat it.</p>
     ${summary}
     ${spots.length ? spots.map(({ x, o, v }, i) => { const s = graded.find(t => t.x === x)!; return `<div class="card"><div class="tag">${esc(o.name)} · ${esc(v.name)}</div>
@@ -303,7 +304,7 @@ function gamesPage() {
 
 function openingPage(o: Opening) {
   app.innerHTML = `
-  <main class="page"><a class="back" href="#/">← Openings</a>
+  <main class="page"><a class="back" data-goback href="#/">← Openings</a>
     <h1>${esc(o.name)}</h1>
     <div class="row"><button class="pill" type="button" id="shelve">${isShelved(o.id) ? 'Bring back to Home' : 'Save for later'}</button></div>
     <div class="card hero-card"><div class="tag">Positional goal</div>
@@ -337,7 +338,7 @@ function learn(o: Opening, v: Variation) {
     const s = steps[i];
     const [lead, rest] = splitLead(s.body);
     const board = s.board ?? (s.from ? { ply: s.from.moves.length, shapes: [] } : undefined); // no hand-made board: show where the line ends
-    app.innerHTML = `<main class="page learn"><a class="back" href="${href('o', o.id)}">← ${esc(o.name)}</a>
+    app.innerHTML = `<main class="page learn"><a class="back" data-goback href="${href('o', o.id)}">← ${esc(o.name)}</a>
       <div class="steps" aria-hidden="true">${steps.map((_, n) => `<i class="${n <= i ? 'on' : ''}"></i>`).join('')}</div>
       <div class="tag">${s.tag}</div>
       <h2 class="hero-title">${esc(s.title)}</h2><p class="lead">${esc(lead)}</p>
@@ -374,7 +375,7 @@ async function practice(o: Opening, v: Variation, startPly?: number) {
     if (my !== token) return;
     if (mistakes === 0 && !startPly) { markLearned(key(o, v)); awardLineBonus(); } // starting mid-line is a spot check, not a whole line
     btn('again').hidden = false; btn('done').hidden = false;
-    btn('done').onclick = () => { location.hash = startPly ? href('games') : href('o', o.id); };
+    btn('done').onclick = () => goTo(startPly ? href('games') : href('o', o.id));
     btn('again').onclick = () => { app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`); void run(); };
   };
   void run();
@@ -386,7 +387,7 @@ async function drill() {
   const queue = allDue.slice(0, DRILL_CAP);
   if (!queue.length) {
     const learned = Object.keys(getProgress().cards).length;
-    app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>Drill</h1>
+    app.innerHTML = `<main class="page"><a class="back" data-goback href="#/">← Home</a><h1>Drill</h1>
       <div class="card"><b>${learned ? 'Nothing is due right now.' : 'Nothing to drill yet.'}</b>
       <p class="muted">${learned ? 'Come back later; the scheduler will bring lines back just before you would forget them.' : 'Learn a variation first and it will appear here.'}</p></div></main>`;
     return;
@@ -423,10 +424,11 @@ async function drill() {
   const left = allDue.length - played;
   app.innerHTML = `<main class="page"><h1>Nice work</h1><div class="card"><b>${played} ${played === 1 ? 'line' : 'lines'} played.</b>
     <p class="muted">${left > 0 ? 'The rest will be waiting whenever you feel like more.' : 'Everything is up to date. Come back whenever you like.'}</p></div>
-    <a class="btn primary big" href="#/">Done</a>${left > 0 ? `<a class="btn big" href="${href('drill')}">A few more</a>` : ''}</main>`;
+    <a class="btn primary big" href="#/" data-goto>Done</a>${left > 0 ? `<a class="btn big" href="${href('drill')}">A few more</a>` : ''}</main>`;
 }
 
 function route() {
+  trackEntry();
   token++;
   const [, a, b, c, d] = location.hash.split('/');
   const o = b ? findOpening(b) : undefined; const v = o && c ? findVariation(o, c) : undefined;
@@ -445,5 +447,6 @@ function route() {
 void navigator.storage?.persist?.().catch(() => {});
 await loadProgress();
 window.addEventListener('hashchange', route);
+installNavLinks(route);
 route();
 if (hasToken()) void runSync(true).then(() => { if (!location.hash.slice(2)) route(); });
