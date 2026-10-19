@@ -17,7 +17,7 @@ export interface Ui { board: HTMLElement; hint: HTMLButtonElement; prev: HTMLBut
 export const FLAG_TEXT = { off: 'Need more explanation', on: 'Flagged ✓ (tap to undo)' };
 export const ASK_TEXT = { idle: 'Ask a question', saved: 'Question saved ✓' };
 /** The mistakes to play out at move `ply` of a line: from the owner's chess.com games when imported, the hand-written ones otherwise. */
-const mistakesFor = (o: Opening, v: Variation, ply: number) => mistakesAt(getProgress().games, key(o, v), ply, v.moves[ply]?.mistakes);
+const mistakesFor = (o: Opening, v: Variation, ply: number) => mistakesAt(getProgress().games, key(o, v), ply, v.moves[ply]?.mistakes, o.color);
 /** Wire an "Ask a question" button to one move: a native prompt takes the text, the question is stored with the move's id. */
 function wireAsk(btn: HTMLButtonElement | undefined, k: string, ply: () => number | undefined) {
   if (!btn) return () => {};
@@ -58,7 +58,7 @@ export async function showMistake(board: Board, fen: string, x: Mistake, stopped
     await wait(san === x.san ? 800 : 900);
   }
   if (typeof x.eval === 'number') setEval(x.eval);
-  setMessage(`<b>${x.san}?</b> ${x.text}`); // the head already said it; keep the card for the lesson
+  setMessage(`<b>${x.san}${x.mark ?? '?'}</b> ${x.text}`); // the head already said it; keep the card for the lesson
   return true;
 }
 
