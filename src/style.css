@@ -127,3 +127,9 @@ textarea,input[type=text]{width:100%;box-sizing:border-box;background:var(--pane
 .lv-key{font-size:11.5px;color:var(--muted);text-align:center;line-height:1.5}
 .lv-key i{display:inline-block;width:14px;height:3px;border-radius:2px;margin:0 3px 3px 6px;vertical-align:middle}
 .lv-key i.mine{background:#4ade80}.lv-key i.theirs{background:#60a5fa}
+
+.grade{display:inline-block;margin-left:6px;padding:1px 9px;border-radius:999px;font-size:12.5px;font-weight:750;vertical-align:middle;border:1px solid}
+.grade.blunder{color:#fca5a5;background:rgba(248,113,113,.12);border-color:rgba(248,113,113,.4)}
+.grade.mistake{color:#fdba74;background:rgba(251,146,60,.12);border-color:rgba(251,146,60,.4)}
+.grade.inaccuracy{color:#fde68a;background:rgba(250,204,21,.1);border-color:rgba(250,204,21,.35)}
+.grade.good{color:#86efac;background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.35)}

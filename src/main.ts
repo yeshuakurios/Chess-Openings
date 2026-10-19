@@ -7,7 +7,8 @@ import { fenAfter, staticBoard } from './board.ts';
 import { lineViewerSlot, mountLineViewer } from './lineview.ts';
 import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery.ts';
 import { troubleSpots } from './mistakes.ts';
-import { analyzeGames, gameAttempts, gameMistakeText, mergeImports } from './games.ts';
+import { analyzeGames, gameAttempts, gameMistakeText, gradeOf, mergeImports, IMPORT_VERSION } from './games.ts';
+import { fmtEval } from './grade.ts';
 import { fetchGames, FIRST_GAMES, LATER_GAMES, USERNAME } from './chesscom.ts';
 import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
@@ -182,7 +183,7 @@ function settingsPage() {
     if (!navigator.onLine) return ccMsg('You are offline. Try again with a connection.');
     const go = btn('cc-go'); go.disabled = true;
     try {
-      const prev = getProgress().games, more = !!prev?.games && !!prev.recalls && prev.user.toLowerCase() === user.toLowerCase(); // same user again: only what is new (an import from before game mastery is read again in full)
+      const prev = getProgress().games, more = !!prev?.games && prev.ver === IMPORT_VERSION && prev.user.toLowerCase() === user.toLowerCase(); // same user again: only what is new (an import from before grading is read again in full)
       const raw = await fetchGames(user, { progress: ccMsg, max: more ? LATER_GAMES : FIRST_GAMES, months: more ? 2 : 6 });
       const fresh = more ? raw.filter(g => (g.end_time ?? 0) > prev!.last) : raw;
       if (!fresh.length) { ccMsg(more ? 'No new games since your last import.' : 'No games found for that user.'); go.disabled = false; return; }
@@ -267,13 +268,26 @@ function gameSpots() {
 }
 
 function gamesPage() {
-  const spots = gameSpots().slice(0, 20), g = getProgress().games;
+  const all = gameSpots(), spots = all.slice(0, 20), g = getProgress().games;
+  const graded = all.map(s => ({ ...s, gr: gradeOf(s.x, s.o.color) }));
+  const count = (grade: string) => graded.filter(s => s.gr?.grade === grade).reduce((n, s) => n + s.x.n, 0);
+  const summary = graded.some(s => s.gr)
+    ? `<div class="card"><b>Report card</b><p class="muted">${g!.games} games read. Where you left your lines: ${count('blunder')} blunders, ${count('mistake')} mistakes, ${count('inaccuracy')} inaccuracies, ${count('good')} playable moves that were simply not your line.</p></div>` : '';
+  const line = (s: (typeof graded)[number]) => {
+    const own = s.v.moves[s.x.p], mine = own.eval * (s.o.color === 'white' ? 1 : -1), e = s.gr;
+    const top = e && e.best.san !== own.san && e.best.mine - mine >= 0.2 ? ` The engine's top move here is ${esc(e.best.san)} (${fmtEval(e.best.mine)}).` : '';
+    return `<p><b>Your line plays ${esc(own.san)}</b> <span class="muted">(${fmtEval(mine)} for you)</span><br>${esc(own.note)}${top}</p>`;
+  };
   app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>From your games</h1>
-    <p class="muted">Where you left your line in your own chess.com games. Practice starts at that position, and the slip plays out if you repeat it.</p>
-    ${spots.length ? spots.map(({ x, o, v }, i) => `<div class="card"><div class="tag">${esc(o.name)} · ${esc(v.name)}</div>
-      <b>Move ${Math.floor(x.p / 2) + 1}</b><p>${esc(gameMistakeText(x))}</p>
+    <p class="muted">Where you left your line in your own chess.com games, graded by the engine. Practice starts at that position, and the slip plays out if you repeat it.</p>
+    ${summary}
+    ${spots.length ? spots.map(({ x, o, v }, i) => { const s = graded.find(t => t.x === x)!; return `<div class="card"><div class="tag">${esc(o.name)} · ${esc(v.name)}</div>
+      <b>Move ${Math.floor(x.p / 2) + 1}: you played ${esc(x.s)}${s.gr ? ` <span class="grade ${s.gr.grade}">${esc(s.gr.label)} ${esc(s.gr.mark)}</span>` : ''}</b>
+      <p>${esc(gameMistakeText(x, s.gr))}</p>
+      ${line(s)}
+      ${x.line.length ? `<p class="muted">What followed in your game: ${esc(x.line.join(' '))}</p>` : ''}
       ${boardFold('game-' + i, { ply: x.p, shapes: [] }, 'Show the position')}
-      <div class="row"><a class="btn primary" href="${href('practice', o.id, v.id, String(x.p))}">Practice from here</a>${x.u ? `<a class="btn" href="${esc(x.u)}" target="_blank" rel="noopener">Open the game</a>` : ''}</div></div>`).join('')
+      <div class="row"><a class="btn primary" href="${href('practice', o.id, v.id, String(x.p))}">Practice from here</a>${x.u ? `<a class="btn" href="${esc(x.u)}" target="_blank" rel="noopener">Open the game</a>` : ''}</div></div>`; }).join('')
       : `<div class="card"><b>${g?.games ? 'No deviations found.' : 'No games imported yet.'}</b><p class="muted">${g?.games ? 'You followed your lines in the games read.' : 'Import your chess.com games in Settings.'}</p><div class="row"><a class="btn" href="${href('settings')}">Settings</a></div></div>`}
   </main>`;
   spots.forEach(({ x, o, v }, i) => drawOnOpen('game-' + i, o, v, { ply: x.p, shapes: [] }));

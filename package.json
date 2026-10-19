@@ -10,10 +10,11 @@
     "validate": "tsx scripts/validate-content.ts",
     "evals": "tsx scripts/add-evals.ts && tsx scripts/add-evals.ts --mistakes",
     "stats": "tsx scripts/stats.ts",
+    "grades": "tsx scripts/grades.ts",
     "try": "tsx scripts/try-line.ts",
     "probe": "tsx scripts/probe.ts",
     "pv": "tsx scripts/pv.ts",
-    "test": "tsx scripts/test-merge.ts && tsx scripts/test-mastery.ts && tsx scripts/test-mistakes.ts && tsx scripts/test-explain.ts && tsx worker/test-explain.ts && tsx worker/test-questions.ts && tsx scripts/test-gamify.ts && tsx scripts/test-stats.ts && tsx scripts/test-games.ts"
+    "test": "tsx scripts/test-merge.ts && tsx scripts/test-mastery.ts && tsx scripts/test-mistakes.ts && tsx scripts/test-explain.ts && tsx worker/test-explain.ts && tsx worker/test-questions.ts && tsx scripts/test-gamify.ts && tsx scripts/test-stats.ts && tsx scripts/test-games.ts && tsx scripts/test-grade.ts"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261011.1",

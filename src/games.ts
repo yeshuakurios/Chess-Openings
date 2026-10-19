@@ -1,4 +1,6 @@
 import { Chess } from 'chess.js';
+import { gradeMove, gradeText, posKey, type GradeTable, type Graded } from './grade.ts';
+import { grades } from './gradeData.ts';
 import type { Attempt } from './store.ts';
 import type { Mistake, Opening } from './types.ts';
 
@@ -10,6 +12,7 @@ export interface RawGame {
 /** A move the user played in their own games where their line says something else. Short names: it is synced with progress. */
 export interface GameMistake {
   k: string;       // variation key, same as the FSRS card key
+  f: string;       // the position before the move (FEN without counters), to look the move up in the engine grades
   p: number;       // index of the line move that was skipped
   s: string;       // the move played instead
   n: number; w: number; d: number; l: number; // games / wins / draws / losses for the user
@@ -20,6 +23,7 @@ export interface GameMistake {
 /** What the imports found so far. Each import adds only games newer than `last` (see mergeImports), so nothing is counted twice. */
 export interface GameImport {
   user: string; at: number;
+  ver?: number;    // 2 once mistakes carry the position (`f`) so they can be graded
   last: number;    // end time (epoch seconds) of the newest game imported; later imports only take games after it
   games: number;   // standard games read for this user
   left: number;    // games in which the user left their line on their own move
@@ -30,6 +34,7 @@ export interface GameImport {
 }
 export interface Recalls { ok: number[]; bad: number[] }
 
+export const IMPORT_VERSION = 2;
 export const MAX_GAME_MISTAKES = 150; // about 150 bytes each: far below the Worker's 256 KB sync limit
 const FOLLOW_UP = 4;                  // plies shown after the wrong move
 const RECALL_DAYS = 60;               // newest days kept per position
@@ -69,6 +74,8 @@ export function analyzeGames(games: RawGame[], user: string, openings: Opening[]
     const sans = chess.history();
     if (!sans.length) continue;
     read++;
+    const fens: string[] = []; // the position before each ply
+    const rep = new Chess(); for (const s of sans) { fens.push(posKey(rep.fen())); rep.move(s); }
     const t = (g.end_time ?? 0) * 1000, day = Math.floor((g.end_time ?? 0) / 86400);
     let leftHere = false, keptHere = false;
     for (const o of openings) {
@@ -88,7 +95,7 @@ export function analyzeGames(games: RawGame[], user: string, openings: Opening[]
           if (day && own >= 2) for (const v of cands) mark(`${o.id}/${v.id}`, p, 'bad', day); // one matching move can be a different opening; two is a real try
           for (const v of cands) {
             const id = `${o.id}/${v.id}#${p}#${sans[p]}`;
-            const x = found.get(id) ?? { k: `${o.id}/${v.id}`, p, s: sans[p], n: 0, w: 0, d: 0, l: 0, line: [], t: -1 };
+            const x = found.get(id) ?? { k: `${o.id}/${v.id}`, f: fens[p], p, s: sans[p], n: 0, w: 0, d: 0, l: 0, line: [], t: -1 };
             x.n++; x[side.res]++;
             if (t >= x.t) { x.t = t; x.line = sans.slice(p + 1, p + 1 + FOLLOW_UP); if (g.url) x.u = g.url; }
             found.set(id, x);
@@ -103,19 +110,26 @@ export function analyzeGames(games: RawGame[], user: string, openings: Opening[]
   const mistakes = [...found.values()].sort((a, b) => b.n - a.n || b.t - a.t).slice(0, maxItems);
   const recalls: Record<string, Recalls> = {};
   for (const [id, r] of rec) recalls[id] = { ok: newest(r.ok), bad: newest(r.bad) };
-  return { user, at: now, last, games: read, left, kept, mistakes, recalls };
+  return { user, at: now, ver: IMPORT_VERSION, last, games: read, left, kept, mistakes, recalls };
 }
 
-/** "You played Nc3 here in 3 of your games (1 won, 0 drawn, 2 lost)." Never names the line's own move. */
-export function gameMistakeText(x: GameMistake): string {
-  const rec = x.n === 1 ? (x.w ? 'you won' : x.d ? 'a draw' : 'you lost') : `${x.w} won, ${x.d} drawn, ${x.l} lost`;
-  return `You played ${x.s} here in ${x.n === 1 ? 'one of your games' : `${x.n} of your games`} (${rec}).`;
+const record = (x: GameMistake) => (x.n === 1 ? `In your game ${x.w ? 'you won' : x.d ? 'it was drawn' : 'you lost'}.` : `Played in ${x.n} of your games: ${x.w} won, ${x.d} drawn, ${x.l} lost.`);
+
+/** What to tell the owner about a move they played in a game. With engine data: the grade, what it cost and the engine's reply. Never names the line's own move. */
+export function gameMistakeText(x: GameMistake, g?: Graded): string {
+  return g ? `${gradeText(g, x.s)} ${record(x)}` : `You played ${x.s} here in ${x.n === 1 ? 'one of your games' : `${x.n} of your games`} (${x.n === 1 ? (x.w ? 'you won' : x.d ? 'a draw' : 'you lost') : `${x.w} won, ${x.d} drawn, ${x.l} lost`}).`;
 }
 
-/** The mistakes to play out at one move of a line: the ones from the user's own games when there are any, the hand-written ones otherwise. */
-export function mistakesAt(imp: GameImport | undefined, k: string, ply: number, hand: Mistake[] | undefined): Mistake[] {
+/** The engine's grade for a game mistake, when its position is in the table. */
+export const gradeOf = (x: GameMistake, color: 'white' | 'black', table: GradeTable = grades) => (x.f ? gradeMove(table, x.f, x.s, color) : undefined);
+
+/** The mistakes to play out at one move of a line: the ones from the user's own games when there are any (graded when the engine data covers them), the hand-written ones otherwise. */
+export function mistakesAt(imp: GameImport | undefined, k: string, ply: number, hand: Mistake[] | undefined, color?: 'white' | 'black', table: GradeTable = grades): Mistake[] {
   const own = imp?.mistakes.filter(x => x.k === k && x.p === ply);
-  return own?.length ? own.map(x => ({ san: x.s, line: x.line, text: gameMistakeText(x) })) : hand ?? [];
+  return own?.length ? own.map(x => {
+    const g = color ? gradeOf(x, color, table) : undefined;
+    return { san: x.s, line: g?.reply ? [g.reply] : x.line, text: gameMistakeText(x, g), ...(g ? { mark: g.mark, eval: g.eval } : {}) }; // graded: play out the engine's reply, which the text names; the game's own follow-up is on the review screen
+  }) : hand ?? [];
 }
 
 /** Add a newer import (only games after `old.last`) to the earlier one: counts add up, the latest game's follow-up wins, the biggest MAX_GAME_MISTAKES stay. */
