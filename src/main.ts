@@ -1,11 +1,13 @@
 import './style.css';
 import { registerSW } from 'virtual:pwa-register';
 import { openings, findOpening, findVariation, key } from './content.ts';
-import { addQuestion, awardLineBonus, clearFlags, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, loadProgress, logAttempt, markLearned, review, setBestCombo, setToken, syncNow, type SyncStatus } from './store.ts';
+import { addQuestion, awardLineBonus, clearFlags, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, loadProgress, logAttempt, markLearned, review, setBestCombo, setGames, setToken, syncNow, type SyncStatus } from './store.ts';
 import { moveLabel, playLine, walkLine, type Ui } from './play.ts';
 import { fenAfter, staticBoard } from './board.ts';
 import { LEVELS, hadSpotCheckToday, lineMastery, pickSpotCheck } from './mastery.ts';
 import { troubleSpots } from './mistakes.ts';
+import { analyzeGames, mergeImports } from './games.ts';
+import { fetchGames, FIRST_GAMES, LATER_GAMES, USERNAME } from './chesscom.ts';
 import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
 import { earnedNow, levelFor, totalXp } from './gamify.ts';
@@ -14,6 +16,7 @@ import { answers } from './answers.ts';
 import type { Opening, PlanBoard, Variation } from './types.ts';
 
 const GEAR = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
+const DEFAULT_CC_USER = 'bibleoverthinker'; // the owner's chess.com name, prefilled in Settings
 const DRILL_CAP = 5; // lines per Drill session; a short, relaxed sitting. The rest stay due for next time
 /** Tell the user a new version is ready instead of reloading under them; applying it is their tap. */
 const updateSW = registerSW({
@@ -119,6 +122,21 @@ function flaggedMoves() {
   });
 }
 
+/** What the last chess.com import found, as readable lines (the worst spots first). */
+function gameFindings() {
+  const g = getProgress().games;
+  if (!g?.games) return '';
+  const seen = new Set<string>(); // one position can sit in several lines of an opening; list it once
+  const rows = g.mistakes.flatMap(x => {
+    const found = lookup(x.k), id = `${found?.[0].id}#${x.p}#${x.s}`;
+    if (!found || seen.has(id)) return [];
+    seen.add(id);
+    return [`<li>${esc(found[0].name)} · ${esc(found[1].name)} · move ${Math.floor(x.p / 2) + 1}: you played <b>${esc(x.s)}</b> ${x.n}× (${x.w} won, ${x.d} drawn, ${x.l} lost)</li>`];
+  }).slice(0, 8);
+  return `<p class="muted">${g.games} games read for ${esc(g.user)} on ${esc(new Date(g.at).toLocaleDateString())}. You left your line on your own move in ${g.left} and followed it until the opponent left in ${g.kept}. Each import adds only games you have not imported yet. Practice and Drill now show these mistakes instead of the hand-written ones, on every move that has one.</p>
+    ${rows.length ? `<ul>${rows.join('')}</ul>` : '<p class="muted">No deviations found. The hand-written mistakes stay.</p>'}`;
+}
+
 function settingsPage() {
   const flagged = flaggedMoves();
   app.innerHTML = `<main class="page"><a class="back" href="#/">← Home</a><h1>Settings</h1>
@@ -126,6 +144,11 @@ function settingsPage() {
     <div class="card"><p class="muted">Your progress lives on this device. Sync copies it to your own Cloudflare Worker so another device can pick it up; export keeps a copy you can paste somewhere safe.</p>
     <div class="row"><button class="btn" id="sync">${hasToken() ? 'Sync now' : 'Set up sync'}</button><span class="muted" id="sync-msg">${esc(syncText)}</span></div>
     <div class="row"><button class="btn" id="exp">Export progress</button><button class="btn" id="imp">Import</button></div></div>
+    <h2>Your chess.com games</h2>
+    <div class="card"><p class="muted">Reads your latest ${FIRST_GAMES} games from chess.com the first time, then only games you have not imported yet (looking at the newest ${LATER_GAMES}). It is free public data: no key, no password. Those mistakes then replace the hand-written ones in Practice and Drill. Nothing is sent anywhere but chess.com.</p>
+    <input id="cc-user" type="text" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="chess.com username" aria-label="chess.com username" value="${esc(getProgress().games?.user ?? DEFAULT_CC_USER)}">
+    <div class="row"><button class="btn primary" id="cc-go">${getProgress().games?.games ? 'Import new games' : 'Import games'}</button><button class="btn" id="cc-clear" ${getProgress().games?.games ? '' : 'disabled'}>Use hand-written again</button></div>
+    <p class="muted" id="cc-msg" role="status"></p>${gameFindings()}</div>
     <h2>Flagged for more explanation</h2>
     <div class="card"><p class="muted">Moves you marked with "Need more explanation". Copy the list and paste it at the start of the next session (with sync on, they also travel with your progress) so the explanation gets written; clear it once handed over.</p>
     ${flagged.length ? `<ul>${flagged.map(f => `<li>${esc(f.label)}</li>`).join('')}</ul>` : '<p class="muted">Nothing flagged.</p>'}
@@ -144,6 +167,23 @@ function settingsPage() {
     try { await navigator.clipboard.writeText(data); alert('Progress copied to the clipboard. Paste it somewhere safe.'); }
     catch { prompt('Copy your progress:', data); }
   };
+  const ccMsg = (t: string) => { document.getElementById('cc-msg')!.textContent = t; };
+  document.getElementById('cc-go')!.onclick = async () => {
+    const user = (document.getElementById('cc-user') as HTMLInputElement).value.trim();
+    if (!USERNAME.test(user)) return ccMsg('Type your chess.com username first.');
+    if (!navigator.onLine) return ccMsg('You are offline. Try again with a connection.');
+    const go = btn('cc-go'); go.disabled = true;
+    try {
+      const prev = getProgress().games, more = !!prev?.games && prev.user.toLowerCase() === user.toLowerCase(); // same user again: only what is new
+      const raw = await fetchGames(user, { progress: ccMsg, max: more ? LATER_GAMES : FIRST_GAMES, months: more ? 2 : 6 });
+      const fresh = more ? raw.filter(g => (g.end_time ?? 0) > prev!.last) : raw;
+      if (!fresh.length) { ccMsg(more ? 'No new games since your last import.' : 'No games found for that user.'); go.disabled = false; return; }
+      const result = analyzeGames(fresh, user, openings);
+      if (!more && !result.games) { ccMsg(`Found ${raw.length} games but none were standard chess played by ${user}.`); go.disabled = false; return; }
+      setGames(more ? mergeImports(prev!, result) : result); settingsPage();
+    } catch (e) { ccMsg(e instanceof Error ? e.message : 'Could not read your games.'); go.disabled = false; }
+  };
+  document.getElementById('cc-clear')!.onclick = () => { if (confirm('Go back to the hand-written mistakes?')) { const g = getProgress().games; setGames({ user: g?.user ?? '', at: Date.now(), last: 0, games: 0, left: 0, kept: 0, mistakes: [] }); settingsPage(); } };
   document.getElementById('fcopy')!.onclick = async () => {
     const text = `Moves flagged "need more explanation":\n${flagged.map(f => `- ${f.label}`).join('\n')}`;
     try { await navigator.clipboard.writeText(text); alert('Copied. Paste it into the next session.'); } catch { prompt('Copy this list:', text); }

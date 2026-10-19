@@ -49,6 +49,7 @@ export function mergeProgress(a: Progress, b: Progress): Progress {
     const x = a.cards[k], y = b.cards[k];
     cards[k] = !x ? y : !y ? x : reviewedAt(y) > reviewedAt(x) ? y : x;
   }
+  const games = (b.games?.at ?? -1) > (a.games?.at ?? -1) ? b.games : a.games;
   return { learned: { ...a.learned, ...b.learned }, cards, bestCombo: Math.max(a.bestCombo, b.bestCombo), attempts: mergeAttempts(a.attempts, b.attempts),
-    xp: mergeMax(a.xp, b.xp), badges: mergeEarliest(a.badges, b.badges), ...mergeFlags(a, b), questions: mergeQuestions(a.questions ?? [], b.questions ?? []) };
+    xp: mergeMax(a.xp, b.xp), badges: mergeEarliest(a.badges, b.badges), ...mergeFlags(a, b), questions: mergeQuestions(a.questions ?? [], b.questions ?? []), ...(games ? { games } : {}) };
 }
