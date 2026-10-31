@@ -1,6 +1,8 @@
 # Opening Goals (PWA)
 Chess opening trainer: for every variation, teach the positional goal, then the strategy, then drill the line with spaced repetition. Personal app, installed on iPhone via Add to Home Screen.
 
+Also check the shared Repo Rules doc (Drive, PWAs folder) at session start if it hasn't been checked in the last 24h — enforced by `.claude/hooks/session-start-repo-rules.sh`: https://docs.google.com/document/d/1jrT4eRP6ZEYjZxcc9kvkOfrgfiCJFl6wkbZ7LivLMIU/edit
+
 ## Stack
 Vite + TypeScript (no UI framework), Chessground (board), chess.js (rules), ts-fsrs (scheduling), vite-plugin-pwa (offline). Progress in IndexedDB, optionally synced to Cloudflare D1 through one Worker (`worker/`, `wrangler.toml`, `docs/deploy-cloudflare.md`).
 
