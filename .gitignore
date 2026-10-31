@@ -5,3 +5,4 @@ dist
 .wrangler
 video/.cache
 video/.tmp
+.claude/.repo-rules-last-check
