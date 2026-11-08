@@ -28,6 +28,14 @@ const DRILL_CAP = 5; // lines per Drill session; a short, relaxed sitting. The r
 /** Tell the user a new version is ready instead of reloading under them; applying it is their tap. */
 const updateSW = registerSW({
   immediate: true,
+  onRegisteredSW(_url, registration) {
+    // The browser only checks for a new service worker on navigation; a PWA opened from the
+    // home screen can sit on the same page for days. Poll, and check again whenever it comes
+    // back to the foreground, so "a new version is ready" actually shows up after every deploy.
+    if (!registration) return;
+    setInterval(() => void registration.update(), 60 * 60 * 1000);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') void registration.update(); });
+  },
   onNeedRefresh() {
     const bar = document.createElement('div');
     bar.className = 'update'; bar.setAttribute('role', 'status');

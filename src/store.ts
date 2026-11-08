@@ -194,6 +194,14 @@ function scheduleSync() {
   clearTimeout(timer);
   timer = setTimeout(() => void syncNow(), 3000);
 }
+// A drill often ends with the app being closed or backgrounded well inside the 3s debounce
+// (home button, switching apps), which would otherwise drop the pending push. Flush right away
+// once the page is no longer the one the person is looking at.
+if (typeof document !== 'undefined') {
+  const flush = () => { if (timer !== undefined) { clearTimeout(timer); timer = undefined; void syncNow(); } };
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
+  document.addEventListener('pagehide', flush);
+}
 /** Pull the remote copy, merge it with the local one, store the result both places. */
 export async function syncNow(): Promise<SyncStatus> {
   if (!token) return 'off';
