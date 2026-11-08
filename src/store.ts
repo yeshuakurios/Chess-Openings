@@ -71,7 +71,12 @@ async function kvGet(k: string): Promise<string | undefined> {
 }
 async function kvSet(k: string, v: string) {
   const db = await open();
-  db.transaction(STORE, 'readwrite').objectStore(STORE).put(v, k);
+  return new Promise<void>((res, rej) => {
+    const tx = db.transaction(STORE, 'readwrite');
+    tx.objectStore(STORE).put(v, k);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+  });
 }
 
 export async function loadProgress(): Promise<Progress> {
