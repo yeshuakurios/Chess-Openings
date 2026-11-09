@@ -4,7 +4,7 @@ import { grades } from './gradeData.ts';
 import type { Attempt } from './store.ts';
 import type { Mistake, Opening } from './types.ts';
 
-/** One finished game as chess.com's public API returns it (only the fields we read). */
+/** One finished game, mapped from the import source's public API to the fields we read (see `src/lichess.ts`). */
 export interface RawGame {
   url?: string; pgn?: string; rules?: string; end_time?: number;
   white: { username: string; result: string }; black: { username: string; result: string };

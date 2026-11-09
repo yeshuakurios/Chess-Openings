@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { Chess } from 'chess.js';
 import { analyzeGames, gameMistakeText, mistakesAt, type RawGame } from '../src/games.ts';
-import { fetchGames } from '../src/chesscom.ts';
+import { fetchGames } from '../src/lichess.ts';
 import { listContentFiles, loadOpening } from './shared.ts';
 import type { Opening } from '../src/types.ts';
 
@@ -48,18 +48,16 @@ assert.equal(mistakesAt(undefined, m.k, 2, hand)[0].text, 'hand');
 assert.equal(mistakesAt(r, m.k, 3, hand)[0].text, 'hand', 'no game data at that move: hand-written stays');
 assert.equal(mistakesAt(r, m.k, 2, hand)[0].san, alt, 'game data replaces hand-written');
 assert.deepEqual(mistakesAt({ ...r, mistakes: [] }, m.k, 2, hand), hand, 'an empty import restores them');
-// fetching: newest archives first, newest games first, bad names and errors
-const urls: string[] = [];
-const fake = (async (url: string) => {
-  urls.push(url);
-  if (url.endsWith('/archives')) return Response.json({ archives: ['https://api.chess.com/pub/player/meme/games/2026/08', 'https://api.chess.com/pub/player/meme/games/2026/09', 'https://evil.example/x'] });
-  return Response.json({ games: [{ url: url + '#a' }, { url: url + '#b' }] });
-}) as unknown as typeof fetch;
-const got = await fetchGames(' Meme ', { get: fake, months: 2, max: 100 });
-assert.deepEqual(urls.slice(1), ['https://api.chess.com/pub/player/meme/games/2026/09', 'https://api.chess.com/pub/player/meme/games/2026/08']);
-assert.equal(got.length, 4); assert.ok(got[0].url!.endsWith('09#b'));
-await assert.rejects(fetchGames('a b', { get: fake, months: 1, max: 1 }), /username/);
-await assert.rejects(fetchGames('nobody', { get: (async () => new Response('', { status: 404 })) as unknown as typeof fetch, months: 1, max: 1 }), /No chess.com player/);
+// fetching: ndjson parsed, bad names and errors
+const ndjson = (rows: object[]) => new Response(rows.map(r => JSON.stringify(r)).join('\n'));
+const fake = (async () => ndjson([
+  { id: 'a', variant: 'standard', status: 'resign', winner: 'white', createdAt: 1_700_000_000_000, pgn: '1. e4', players: { white: { user: { name: 'Meme' } }, black: {} } },
+  { id: 'b', variant: 'standard', status: 'draw', createdAt: 1_700_000_100_000, pgn: '1. d4', players: { white: {}, black: { user: { name: 'Meme' } } } },
+])) as unknown as typeof fetch;
+const got = await fetchGames(' Meme ', { get: fake, max: 100 });
+assert.equal(got.length, 2); assert.ok(got[0].url!.endsWith('/a'));
+await assert.rejects(fetchGames('a b', { get: fake, max: 1 }), /username/);
+await assert.rejects(fetchGames('nobody', { get: (async () => new Response('', { status: 404 })) as unknown as typeof fetch, max: 1 }), /No Lichess player/);
 console.log('games ok');
 // incremental: counts add up, `last` moves forward, the latest follow-up wins, the cap holds
 import { mergeImports } from '../src/games.ts';
