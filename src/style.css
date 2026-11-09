@@ -138,6 +138,9 @@ textarea,input[type=text]{width:100%;box-sizing:border-box;background:var(--pane
 .grade.inaccuracy{color:#fde68a;background:rgba(250,204,21,.1);border-color:rgba(250,204,21,.35)}
 .grade.good{color:#86efac;background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.35)}
 
+.recent-games{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.recent-games li{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+
 /* save for later */
 .card.opening{padding:0;display:block}
 .card.opening .link{display:flex;gap:14px;align-items:flex-start;padding:16px 16px 6px;transition:transform .15s}

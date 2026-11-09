@@ -9,7 +9,7 @@ import { LEVELS, SLOW_MS, hadSpotCheckToday, lineMastery, pickSpotCheck } from '
 import { FIX_DAYS, dueFixes, fixCounts, fixId, whenText, isOpen } from './fixes.ts';
 import { Rating } from 'ts-fsrs';
 import { troubleSpots } from './mistakes.ts';
-import { analyzeGames, gameAttempts, gameMistakeText, gradeOf, mergeImports, IMPORT_VERSION, type GameMistake } from './games.ts';
+import { analyzeGames, gameAttempts, gameMistakeText, gradeOf, mergeImports, IMPORT_VERSION, type GameImport, type GameMistake } from './games.ts';
 import { fmtEval } from './grade.ts';
 import { explainMistake } from './mistakestory.ts';
 import { mountMistakeStory } from './mistakeview.ts';
@@ -116,6 +116,9 @@ function home() {
   const progressCard = `<div class="quiet"><span>${esc(lv.title)}</span>${levelUp ? '<span class="tag">Level up!</span>' : ''}
     <div class="goal"><i style="width:${lv.span ? Math.round((lv.into / lv.span) * 100) : 100}%"></i></div></div>`;
   const saved = openings.filter(o => isShelved(o.id));
+  const byOpening = getProgress().games?.byOpening ?? {};
+  const shown = openings.filter(o => !isShelved(o.id)).slice()
+    .sort((a, b) => (byOpening[b.id]?.losses ?? 0) - (byOpening[a.id]?.losses ?? 0)); // most games lost in your own games first
   app.innerHTML = `
   <main class="page">
     <div class="row between head"><h1>Opening Goals</h1><a class="gear" href="${href('settings')}" aria-label="Settings">${GEAR}</a></div>
@@ -124,13 +127,14 @@ function home() {
     <a class="btn primary big" href="${href('drill')}">${due ? 'Play a few lines' : 'Nothing to review. Enjoy your day.'}</a>
     <div class="row links"><a href="${href('mistakes')}">Tricky spots${trouble ? ` (${trouble})` : ''}</a><a href="${href('ask')}">Questions${waiting ? ` (${waiting})` : ''}</a>${fromGames ? `<a href="${href('games')}">From your games (${fromGames})</a>` : ''}</div>
     <h2>Openings</h2>
-    ${openings.filter(o => !isShelved(o.id)).map(o => {
+    ${shown.map(o => {
       const done = o.variations.filter(v => isLearned(key(o, v))).length;
       const solid = o.variations.filter(v => LEVELS.indexOf(masteryOf(o, v).level) >= 3).length;
+      const losses = byOpening[o.id]?.losses ?? 0;
       return `<div class="card opening"><a class="link" href="${href('o', o.id)}">
         <span class="dot ${o.color}"></span><div><b>${esc(o.name)}</b>
         <div class="muted">${esc(o.summary)}</div>
-        <div class="tag">${o.color === 'white' ? 'White' : 'Black'} · ${done}/${o.variations.length} learned${solid ? ` · ${solid} solid` : ''}${o.status === 'draft' ? ' · draft' : ''}</div></div></a>
+        <div class="tag">${o.color === 'white' ? 'White' : 'Black'} · ${done}/${o.variations.length} learned${solid ? ` · ${solid} solid` : ''}${losses ? ` · lost ${losses}` : ''}${o.status === 'draft' ? ' · draft' : ''}</div></div></a>
         <div class="row"><button class="pill" type="button" data-later="${o.id}">Save for later</button></div></div>`;
     }).join('')}
     ${saved.length ? `<details class="more saved"><summary>Saved for later · ${saved.length}</summary>
@@ -285,6 +289,16 @@ function fixSpots() {
 }
 type Spot = ReturnType<typeof fixSpots>[number];
 
+/** The newest games read, each tagged with the worst grade found in it (see `GameSummary`); result only when nothing in it was graded. */
+function recentGamesCard(g?: GameImport) {
+  if (!g?.recent?.length) return '';
+  const resText = { w: 'Won', d: 'Drawn', l: 'Lost' } as const;
+  const rows = g.recent.map(x => `<li>${esc(when(x.t))} vs. ${esc(x.opponent || '?')} — ${resText[x.res]}
+      ${x.grade ? `<span class="grade ${x.grade}">${esc(x.label ?? '')} ${esc(x.mark ?? '')}</span>` : x.deviated ? '<span class="muted">left the line, not graded</span>' : ''}
+      ${x.u ? `<a href="${esc(x.u)}" target="_blank" rel="noopener">Open</a>` : ''}</li>`).join('');
+  return `<h2>Recent games</h2><div class="card"><ul class="recent-games">${rows}</ul></div>`;
+}
+
 function gamesPage() {
   const all = fixSpots(), g = getProgress().games, now = Date.now();
   // open ones first: due before not due, then the ones that cost the most
@@ -312,6 +326,7 @@ function gamesPage() {
   const shown = [...open, ...cleared];
   app.innerHTML = `<main class="page"><a class="back" data-goback href="#/">← Home</a><h1>From your games</h1>
     <p class="muted">Each place you left your line in your own Lichess games is a mistake to clear. They come back in Drill on a schedule.</p>
+    ${recentGamesCard(g)}
     ${summary}
     ${open.length ? open.map((s, i) => card(s, i)).join('') : total ? '<div class="card"><b>All clear.</b><p class="muted">Every mistake from your games is cleared. New ones appear when you import more games.</p></div>' : `<div class="card"><b>${g?.games ? 'No deviations found.' : 'No games imported yet.'}</b><p class="muted">${g?.games ? 'You followed your lines in the games read.' : 'Import your Lichess games in Settings.'}</p><div class="row"><a class="btn" href="${href('settings')}">Settings</a></div></div>`}
     ${cleared.length ? `<details class="more"><summary>Cleared · ${cleared.length}</summary>${cleared.map((s, i) => card(s, open.length + i)).join('')}</details>` : ''}

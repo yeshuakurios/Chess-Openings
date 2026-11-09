@@ -1,5 +1,5 @@
 import { Chess } from 'chess.js';
-import { gradeMove, gradeText, posKey, type GradeTable, type Graded } from './grade.ts';
+import { gradeMove, gradeText, posKey, type Grade, type GradeTable, type Graded } from './grade.ts';
 import { grades } from './gradeData.ts';
 import type { Attempt } from './store.ts';
 import type { Mistake, Opening } from './types.ts';
@@ -31,11 +31,20 @@ export interface GameImport {
   mistakes: GameMistake[];
   /** Days (epoch days) on which the owner played the line's move at a position (`ok`) or left the line there (`bad`), keyed `variation#ply`. Feeds mastery. Absent in imports made before this existed. */
   recalls?: Record<string, Recalls>;
+  /** The newest `RECENT_GAMES` games, newest first, each with a per-game grade. Absent in imports made before this existed. */
+  recent?: GameSummary[];
+  /** Games played/lost per opening id, across every import. Feeds the Home page's "most losses first" ordering. Absent in imports made before this existed. */
+  byOpening?: Record<string, OpeningStats>;
 }
 export interface Recalls { ok: number[]; bad: number[] }
+/** One of the owner's own games, newest `RECENT_GAMES` kept. `mark`/`label` are the worst grade (see `src/grade.ts`) among the line deviations found in it; absent when the game had none graded. */
+export interface GameSummary { t: number; u?: string; opponent: string; res: 'w' | 'd' | 'l'; deviated: boolean; grade?: Grade; mark?: string; label?: string }
+/** Games lost vs. played in one opening, across every import. */
+export interface OpeningStats { games: number; losses: number }
 
 export const IMPORT_VERSION = 2;
 export const MAX_GAME_MISTAKES = 150; // about 150 bytes each: far below the Worker's 256 KB sync limit
+export const RECENT_GAMES = 10; // most recent games kept with a per-game grade, for the game history list
 const FOLLOW_UP = 4;                  // plies shown after the wrong move
 const RECALL_DAYS = 60;               // newest days kept per position
 const DRAWN = new Set(['agreed', 'repetition', 'stalemate', 'insufficient', '50move', 'timevsinsufficient']);
@@ -57,7 +66,7 @@ const newest = (days: Iterable<number>) => [...new Set(days)].sort((a, b) => a -
  * the same moves so far. If the user then plays a move no such variation has, that is a deviation, counted against every variation at that spot.
  * It only counts once the user has played a move of the line themselves, so a game in a different opening is not a mistake. No engine involved.
  */
-export function analyzeGames(games: RawGame[], user: string, openings: Opening[], now = Date.now(), maxItems = MAX_GAME_MISTAKES): GameImport {
+export function analyzeGames(games: RawGame[], user: string, openings: Opening[], now = Date.now(), maxItems = MAX_GAME_MISTAKES, table: GradeTable = grades): GameImport {
   const found = new Map<string, GameMistake>();
   const last = Math.max(0, ...games.map(g => g.end_time ?? 0));
   const rec = new Map<string, { ok: Set<number>; bad: Set<number> }>();
@@ -65,6 +74,8 @@ export function analyzeGames(games: RawGame[], user: string, openings: Opening[]
     const r = rec.get(`${k}#${p}`) ?? { ok: new Set<number>(), bad: new Set<number>() };
     r[kind].add(day); rec.set(`${k}#${p}`, r);
   };
+  const byOpening = new Map<string, OpeningStats>();
+  const recent: GameSummary[] = [];
   let read = 0, left = 0, kept = 0;
   for (const g of games) {
     const side = sideOf(g, user);
@@ -77,7 +88,7 @@ export function analyzeGames(games: RawGame[], user: string, openings: Opening[]
     const fens: string[] = []; // the position before each ply
     const rep = new Chess(); for (const s of sans) { fens.push(posKey(rep.fen())); rep.move(s); }
     const t = (g.end_time ?? 0) * 1000, day = Math.floor((g.end_time ?? 0) / 86400);
-    let leftHere = false, keptHere = false;
+    let leftHere = false, keptHere = false, worst: Graded | undefined;
     for (const o of openings) {
       if (o.color !== side.color) continue;
       let cands = o.variations, own = 0, deviated = false;
@@ -100,17 +111,26 @@ export function analyzeGames(games: RawGame[], user: string, openings: Opening[]
             if (t >= x.t) { x.t = t; x.line = sans.slice(p + 1, p + 1 + FOLLOW_UP); if (g.url) x.u = g.url; }
             found.set(id, x);
           }
+          const graded = gradeMove(table, fens[p], sans[p], side.color);
+          if (graded && (!worst || graded.lossPct > worst.lossPct)) worst = graded;
         }
         break;
       }
       if (deviated) leftHere = true; else if (own > 0) keptHere = true; // kept = followed the line until the opponent left it or it ended
+      if (own > 0) {
+        const bo = byOpening.get(o.id) ?? { games: 0, losses: 0 };
+        bo.games++; if (side.res === 'l') bo.losses++;
+        byOpening.set(o.id, bo);
+      }
     }
     if (leftHere) left++; else if (keptHere) kept++;
+    recent.push({ t, u: g.url, opponent: g[side.color === 'white' ? 'black' : 'white'].username, res: side.res, deviated: leftHere, ...(worst ? { grade: worst.grade, mark: worst.mark, label: worst.label } : {}) });
   }
   const mistakes = [...found.values()].sort((a, b) => b.n - a.n || b.t - a.t).slice(0, maxItems);
   const recalls: Record<string, Recalls> = {};
   for (const [id, r] of rec) recalls[id] = { ok: newest(r.ok), bad: newest(r.bad) };
-  return { user, at: now, ver: IMPORT_VERSION, last, games: read, left, kept, mistakes, recalls };
+  return { user, at: now, ver: IMPORT_VERSION, last, games: read, left, kept, mistakes, recalls,
+    recent: recent.sort((a, b) => b.t - a.t).slice(0, RECENT_GAMES), byOpening: Object.fromEntries(byOpening) };
 }
 
 const record = (x: GameMistake) => (x.n === 1 ? `In your game ${x.w ? 'you won' : x.d ? 'it was drawn' : 'you lost'}.` : `Played in ${x.n} of your games: ${x.w} won, ${x.d} drawn, ${x.l} lost.`);
@@ -143,7 +163,24 @@ export function mergeImports(old: GameImport, fresh: GameImport, maxItems = MAX_
     if (x.t >= o.t) { o.t = x.t; o.line = x.line; if (x.u) o.u = x.u; }
   }
   return { user: fresh.user, at: fresh.at, last: Math.max(old.last, fresh.last), games: old.games + fresh.games, left: old.left + fresh.left, kept: old.kept + fresh.kept,
-    mistakes: [...by.values()].sort((a, b) => b.n - a.n || b.t - a.t).slice(0, maxItems), recalls: mergeRecalls(old.recalls, fresh.recalls) };
+    mistakes: [...by.values()].sort((a, b) => b.n - a.n || b.t - a.t).slice(0, maxItems), recalls: mergeRecalls(old.recalls, fresh.recalls),
+    recent: mergeRecent(old.recent, fresh.recent), byOpening: mergeByOpening(old.byOpening, fresh.byOpening) };
+}
+
+/** Newest `RECENT_GAMES` games across both imports, by end time; the same game id (url) from a re-import wins with the fresher copy. */
+function mergeRecent(a: GameSummary[] = [], b: GameSummary[] = []): GameSummary[] {
+  const by = new Map(a.map(x => [x.u ?? `${x.t}`, x]));
+  for (const x of b) by.set(x.u ?? `${x.t}`, x);
+  return [...by.values()].sort((x, y) => y.t - x.t).slice(0, RECENT_GAMES);
+}
+
+function mergeByOpening(a: Record<string, OpeningStats> = {}, b: Record<string, OpeningStats> = {}): Record<string, OpeningStats> {
+  const out: Record<string, OpeningStats> = {};
+  for (const id of new Set([...Object.keys(a), ...Object.keys(b)])) {
+    const x = a[id], y = b[id];
+    out[id] = { games: (x?.games ?? 0) + (y?.games ?? 0), losses: (x?.losses ?? 0) + (y?.losses ?? 0) };
+  }
+  return out;
 }
 
 function mergeRecalls(a: Record<string, Recalls> = {}, b: Record<string, Recalls> = {}): Record<string, Recalls> {

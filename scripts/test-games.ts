@@ -27,6 +27,12 @@ assert.ok(m, 'deviation recorded against the line');
 assert.equal(m.n, 2); assert.equal(m.w, 1); assert.equal(m.l, 1);
 assert.deepEqual(m.line, [reply]); assert.equal(m.u, 'https://chess.com/game/2', 'latest game is kept');
 assert.ok(!gameMistakeText(m).includes(sans[2]), 'text must not name the line move');
+// recent games: newest first, with result and (when the deviation is a graded position) a grade
+assert.equal(r.recent?.length, 2);
+assert.equal(r.recent![0].u, 'https://chess.com/game/2'); assert.equal(r.recent![0].res, 'l'); assert.equal(r.recent![0].opponent, 'Them'); assert.ok(r.recent![0].deviated);
+assert.equal(r.recent![1].res, 'w');
+// losses per opening, for Home's "most lost" ordering
+assert.deepEqual(r.byOpening, { bird: { games: 2, losses: 1 } });
 // a game that stays in the line is "kept"; one in another opening is ignored; a game as the other colour is ignored for a white opening
 const stay = analyzeGames([game(sans.slice(0, 4))], 'ME', [bird]);
 assert.equal(stay.kept, 1); assert.equal(stay.left, 0); assert.equal(stay.mistakes.length, 0);
@@ -68,6 +74,8 @@ const m3 = both.mistakes.find(x => x.p === 2 && x.s === alt && x.k === m.k)!;
 assert.equal(m3.n, 3); assert.equal(m3.w, 2); assert.equal(m3.u, 'https://chess.com/game/3');
 assert.equal(both.games, 3); assert.equal(both.left, 3); assert.equal(both.last, 1_700_000_900);
 assert.equal(mergeImports(r, later, 1).mistakes.length, 1);
+assert.deepEqual(both.byOpening, { bird: { games: 3, losses: 1 } }, 'losses add up across imports');
+assert.equal(both.recent?.length, 3); assert.equal(both.recent![0].u, 'https://chess.com/game/3', 'newest game first after merge');
 console.log('incremental ok');
 // game recalls feed mastery
 import { gameAttempts } from '../src/games.ts';
