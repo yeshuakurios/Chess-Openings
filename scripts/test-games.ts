@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { Chess } from 'chess.js';
 import { analyzeGames, gameMistakeText, mistakesAt, type RawGame } from '../src/games.ts';
-import { fetchGames } from '../src/chesscom.ts';
+import { fetchGames } from '../src/lichess.ts';
 import { listContentFiles, loadOpening } from './shared.ts';
 import type { Opening } from '../src/types.ts';
 
@@ -27,6 +27,12 @@ assert.ok(m, 'deviation recorded against the line');
 assert.equal(m.n, 2); assert.equal(m.w, 1); assert.equal(m.l, 1);
 assert.deepEqual(m.line, [reply]); assert.equal(m.u, 'https://chess.com/game/2', 'latest game is kept');
 assert.ok(!gameMistakeText(m).includes(sans[2]), 'text must not name the line move');
+// recent games: newest first, with result and (when the deviation is a graded position) a grade
+assert.equal(r.recent?.length, 2);
+assert.equal(r.recent![0].u, 'https://chess.com/game/2'); assert.equal(r.recent![0].res, 'l'); assert.equal(r.recent![0].opponent, 'Them'); assert.ok(r.recent![0].deviated);
+assert.equal(r.recent![1].res, 'w');
+// losses per opening, for Home's "most lost" ordering
+assert.deepEqual(r.byOpening, { bird: { games: 2, losses: 1 } });
 // a game that stays in the line is "kept"; one in another opening is ignored; a game as the other colour is ignored for a white opening
 const stay = analyzeGames([game(sans.slice(0, 4))], 'ME', [bird]);
 assert.equal(stay.kept, 1); assert.equal(stay.left, 0); assert.equal(stay.mistakes.length, 0);
@@ -48,18 +54,16 @@ assert.equal(mistakesAt(undefined, m.k, 2, hand)[0].text, 'hand');
 assert.equal(mistakesAt(r, m.k, 3, hand)[0].text, 'hand', 'no game data at that move: hand-written stays');
 assert.equal(mistakesAt(r, m.k, 2, hand)[0].san, alt, 'game data replaces hand-written');
 assert.deepEqual(mistakesAt({ ...r, mistakes: [] }, m.k, 2, hand), hand, 'an empty import restores them');
-// fetching: newest archives first, newest games first, bad names and errors
-const urls: string[] = [];
-const fake = (async (url: string) => {
-  urls.push(url);
-  if (url.endsWith('/archives')) return Response.json({ archives: ['https://api.chess.com/pub/player/meme/games/2026/08', 'https://api.chess.com/pub/player/meme/games/2026/09', 'https://evil.example/x'] });
-  return Response.json({ games: [{ url: url + '#a' }, { url: url + '#b' }] });
-}) as unknown as typeof fetch;
-const got = await fetchGames(' Meme ', { get: fake, months: 2, max: 100 });
-assert.deepEqual(urls.slice(1), ['https://api.chess.com/pub/player/meme/games/2026/09', 'https://api.chess.com/pub/player/meme/games/2026/08']);
-assert.equal(got.length, 4); assert.ok(got[0].url!.endsWith('09#b'));
-await assert.rejects(fetchGames('a b', { get: fake, months: 1, max: 1 }), /username/);
-await assert.rejects(fetchGames('nobody', { get: (async () => new Response('', { status: 404 })) as unknown as typeof fetch, months: 1, max: 1 }), /No chess.com player/);
+// fetching: ndjson parsed, bad names and errors
+const ndjson = (rows: object[]) => new Response(rows.map(r => JSON.stringify(r)).join('\n'));
+const fake = (async () => ndjson([
+  { id: 'a', variant: 'standard', status: 'resign', winner: 'white', createdAt: 1_700_000_000_000, pgn: '1. e4', players: { white: { user: { name: 'Meme' } }, black: {} } },
+  { id: 'b', variant: 'standard', status: 'draw', createdAt: 1_700_000_100_000, pgn: '1. d4', players: { white: {}, black: { user: { name: 'Meme' } } } },
+])) as unknown as typeof fetch;
+const got = await fetchGames(' Meme ', { get: fake, max: 100 });
+assert.equal(got.length, 2); assert.ok(got[0].url!.endsWith('/a'));
+await assert.rejects(fetchGames('a b', { get: fake, max: 1 }), /username/);
+await assert.rejects(fetchGames('nobody', { get: (async () => new Response('', { status: 404 })) as unknown as typeof fetch, max: 1 }), /No Lichess player/);
 console.log('games ok');
 // incremental: counts add up, `last` moves forward, the latest follow-up wins, the cap holds
 import { mergeImports } from '../src/games.ts';
@@ -70,6 +74,8 @@ const m3 = both.mistakes.find(x => x.p === 2 && x.s === alt && x.k === m.k)!;
 assert.equal(m3.n, 3); assert.equal(m3.w, 2); assert.equal(m3.u, 'https://chess.com/game/3');
 assert.equal(both.games, 3); assert.equal(both.left, 3); assert.equal(both.last, 1_700_000_900);
 assert.equal(mergeImports(r, later, 1).mistakes.length, 1);
+assert.deepEqual(both.byOpening, { bird: { games: 3, losses: 1 } }, 'losses add up across imports');
+assert.equal(both.recent?.length, 3); assert.equal(both.recent![0].u, 'https://chess.com/game/3', 'newest game first after merge');
 console.log('incremental ok');
 // game recalls feed mastery
 import { gameAttempts } from '../src/games.ts';

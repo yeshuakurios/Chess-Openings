@@ -14,7 +14,7 @@ export interface Attempt {
   h: 0 | 1;        // 1 if Hint was pressed at this position first
   ms: number;      // time from the position appearing to this move
   t: number;       // epoch ms
-  m: 'p' | 'd' | 'g'; // practice, drill, or a move from an imported chess.com game (only built for mastery, never stored in the log)
+  m: 'p' | 'd' | 'g'; // practice, drill, or a move from an imported Lichess game (only built for mastery, never stored in the log)
   o?: 1;           // 1 if the line was started from the middle (spot check)
   s?: string;      // the move played, kept only for wrong attempts
 }
@@ -41,7 +41,7 @@ export interface Progress {
   /** Moves flagged at or before this time were handed off and are gone. Merged by max so clearing on one device sticks. */
   flagsClearedAt: number;
   questions: Question[];
-  /** Mistakes found in the owner's chess.com games; they replace the hand-written ones in Practice and Drill. The newest import wins on merge. */
+  /** Mistakes found in the owner's Lichess games; they replace the hand-written ones in Practice and Drill. The newest import wins on merge. */
   games?: GameImport;
   /** One review card per distinct mistake in the games (see `src/fixes.ts`). Built from `games` by `syncFixes`, reviewed in Drill. */
   fixes?: Record<string, Fix>;

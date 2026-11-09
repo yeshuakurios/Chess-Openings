@@ -1,6 +1,6 @@
 // Build-time only: runs Stockfish (Node) and writes src/grades.json: for every position where the trained side is to move in any line,
 // the engine's eval (pawns, White's view) after EACH legal move, plus its best reply. The app uses it to grade any move the owner played
-// (in a chess.com game or in Practice/Drill) without an engine at runtime. Positions already in the file are skipped, so a content change
+// (in a Lichess game or in Practice/Drill) without an engine at runtime. Positions already in the file are skipped, so a content change
 // only costs the new positions. `npm run grades` (DEPTH=12 by default; the file is generated, never edited by hand).
 import { createRequire } from 'node:module';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';

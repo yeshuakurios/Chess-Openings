@@ -9,11 +9,11 @@ import { LEVELS, SLOW_MS, hadSpotCheckToday, lineMastery, pickSpotCheck } from '
 import { FIX_DAYS, dueFixes, fixCounts, fixId, whenText, isOpen } from './fixes.ts';
 import { Rating } from 'ts-fsrs';
 import { troubleSpots } from './mistakes.ts';
-import { analyzeGames, gameAttempts, gameMistakeText, gradeOf, mergeImports, IMPORT_VERSION, type GameMistake } from './games.ts';
+import { analyzeGames, gameAttempts, gameMistakeText, gradeOf, mergeImports, IMPORT_VERSION, type GameImport, type GameMistake } from './games.ts';
 import { fmtEval } from './grade.ts';
 import { explainMistake } from './mistakestory.ts';
 import { mountMistakeStory } from './mistakeview.ts';
-import { fetchGames, FIRST_GAMES, LATER_GAMES, USERNAME } from './chesscom.ts';
+import { fetchGames, FIRST_GAMES, LATER_GAMES, USERNAME } from './lichess.ts';
 import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
 import { earnedNow, levelFor, totalXp } from './gamify.ts';
@@ -23,7 +23,7 @@ import { answers } from './answers.ts';
 import type { Opening, PlanBoard, Variation } from './types.ts';
 
 const GEAR = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
-const DEFAULT_CC_USER = 'bibleoverthinker'; // the owner's chess.com name, prefilled in Settings
+const DEFAULT_CC_USER = 'bibleoverthinker'; // the owner's Lichess name, prefilled in Settings
 const DRILL_CAP = 5; // lines per Drill session; a short, relaxed sitting. The rest stay due for next time
 /** Tell the user a new version is ready instead of reloading under them; applying it is their tap. */
 const updateSW = registerSW({
@@ -116,6 +116,9 @@ function home() {
   const progressCard = `<div class="quiet"><span>${esc(lv.title)}</span>${levelUp ? '<span class="tag">Level up!</span>' : ''}
     <div class="goal"><i style="width:${lv.span ? Math.round((lv.into / lv.span) * 100) : 100}%"></i></div></div>`;
   const saved = openings.filter(o => isShelved(o.id));
+  const byOpening = getProgress().games?.byOpening ?? {};
+  const shown = openings.filter(o => !isShelved(o.id)).slice()
+    .sort((a, b) => (byOpening[b.id]?.losses ?? 0) - (byOpening[a.id]?.losses ?? 0)); // most games lost in your own games first
   app.innerHTML = `
   <main class="page">
     <div class="row between head"><h1>Opening Goals</h1><a class="gear" href="${href('settings')}" aria-label="Settings">${GEAR}</a></div>
@@ -124,13 +127,14 @@ function home() {
     <a class="btn primary big" href="${href('drill')}">${due ? 'Play a few lines' : 'Nothing to review. Enjoy your day.'}</a>
     <div class="row links"><a href="${href('mistakes')}">Tricky spots${trouble ? ` (${trouble})` : ''}</a><a href="${href('ask')}">Questions${waiting ? ` (${waiting})` : ''}</a>${fromGames ? `<a href="${href('games')}">From your games (${fromGames})</a>` : ''}</div>
     <h2>Openings</h2>
-    ${openings.filter(o => !isShelved(o.id)).map(o => {
+    ${shown.map(o => {
       const done = o.variations.filter(v => isLearned(key(o, v))).length;
       const solid = o.variations.filter(v => LEVELS.indexOf(masteryOf(o, v).level) >= 3).length;
+      const losses = byOpening[o.id]?.losses ?? 0;
       return `<div class="card opening"><a class="link" href="${href('o', o.id)}">
         <span class="dot ${o.color}"></span><div><b>${esc(o.name)}</b>
         <div class="muted">${esc(o.summary)}</div>
-        <div class="tag">${o.color === 'white' ? 'White' : 'Black'} · ${done}/${o.variations.length} learned${solid ? ` · ${solid} solid` : ''}${o.status === 'draft' ? ' · draft' : ''}</div></div></a>
+        <div class="tag">${o.color === 'white' ? 'White' : 'Black'} · ${done}/${o.variations.length} learned${solid ? ` · ${solid} solid` : ''}${losses ? ` · lost ${losses}` : ''}${o.status === 'draft' ? ' · draft' : ''}</div></div></a>
         <div class="row"><button class="pill" type="button" data-later="${o.id}">Save for later</button></div></div>`;
     }).join('')}
     ${saved.length ? `<details class="more saved"><summary>Saved for later · ${saved.length}</summary>
@@ -152,7 +156,7 @@ function flaggedMoves() {
   });
 }
 
-/** What the last chess.com import found, as readable lines (the worst spots first). */
+/** What the last Lichess import found, as readable lines (the worst spots first). */
 function gameFindings() {
   const g = getProgress().games;
   if (!g?.games) return '';
@@ -174,9 +178,9 @@ function settingsPage() {
     <div class="card"><p class="muted">Your progress lives on this device. Sync copies it to your own Cloudflare Worker so another device can pick it up; export keeps a copy you can paste somewhere safe.</p>
     <div class="row"><button class="btn" id="sync">${hasToken() ? 'Sync now' : 'Set up sync'}</button><span class="muted" id="sync-msg">${esc(syncText)}</span></div>
     <div class="row"><button class="btn" id="exp">Export progress</button><button class="btn" id="imp">Import</button></div></div>
-    <h2>Your chess.com games</h2>
-    <div class="card"><p class="muted">Reads your latest ${FIRST_GAMES} games from chess.com the first time, then only games you have not imported yet (looking at the newest ${LATER_GAMES}). It is free public data: no key, no password. Those mistakes then replace the hand-written ones in Practice and Drill. Nothing is sent anywhere but chess.com.</p>
-    <input id="cc-user" type="text" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="chess.com username" aria-label="chess.com username" value="${esc(getProgress().games?.user ?? DEFAULT_CC_USER)}">
+    <h2>Your Lichess games</h2>
+    <div class="card"><p class="muted">Reads your latest ${FIRST_GAMES} games from Lichess the first time, then only games you have not imported yet (looking at the newest ${LATER_GAMES}). It is free public data: no key, no password. Those mistakes then replace the hand-written ones in Practice and Drill. Nothing is sent anywhere but Lichess.</p>
+    <input id="cc-user" type="text" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="Lichess username" aria-label="Lichess username" value="${esc(getProgress().games?.user ?? DEFAULT_CC_USER)}">
     <div class="row"><button class="btn primary" id="cc-go">${getProgress().games?.games ? 'Import new games' : 'Import games'}</button><button class="btn" id="cc-clear" ${getProgress().games?.games ? '' : 'disabled'}>Use hand-written again</button></div>
     <p class="muted" id="cc-msg" role="status"></p>${gameFindings()}</div>
     <h2>Flagged for more explanation</h2>
@@ -200,12 +204,12 @@ function settingsPage() {
   const ccMsg = (t: string) => { document.getElementById('cc-msg')!.textContent = t; };
   document.getElementById('cc-go')!.onclick = async () => {
     const user = (document.getElementById('cc-user') as HTMLInputElement).value.trim();
-    if (!USERNAME.test(user)) return ccMsg('Type your chess.com username first.');
+    if (!USERNAME.test(user)) return ccMsg('Type your Lichess username first.');
     if (!navigator.onLine) return ccMsg('You are offline. Try again with a connection.');
     const go = btn('cc-go'); go.disabled = true;
     try {
       const prev = getProgress().games, more = !!prev?.games && prev.ver === IMPORT_VERSION && prev.user.toLowerCase() === user.toLowerCase(); // same user again: only what is new (an import from before grading is read again in full)
-      const raw = await fetchGames(user, { progress: ccMsg, max: more ? LATER_GAMES : FIRST_GAMES, months: more ? 2 : 6 });
+      const raw = await fetchGames(user, { progress: ccMsg, max: more ? LATER_GAMES : FIRST_GAMES });
       const fresh = more ? raw.filter(g => (g.end_time ?? 0) > prev!.last) : raw;
       if (!fresh.length) { ccMsg(more ? 'No new games since your last import.' : 'No games found for that user.'); go.disabled = false; return; }
       const result = analyzeGames(fresh, user, openings);
@@ -285,6 +289,16 @@ function fixSpots() {
 }
 type Spot = ReturnType<typeof fixSpots>[number];
 
+/** The newest games read, each tagged with the worst grade found in it (see `GameSummary`); result only when nothing in it was graded. */
+function recentGamesCard(g?: GameImport) {
+  if (!g?.recent?.length) return '';
+  const resText = { w: 'Won', d: 'Drawn', l: 'Lost' } as const;
+  const rows = g.recent.map(x => `<li>${esc(when(x.t))} vs. ${esc(x.opponent || '?')} — ${resText[x.res]}
+      ${x.grade ? `<span class="grade ${x.grade}">${esc(x.label ?? '')} ${esc(x.mark ?? '')}</span>` : x.deviated ? '<span class="muted">left the line, not graded</span>' : ''}
+      ${x.u ? `<a href="${esc(x.u)}" target="_blank" rel="noopener">Open</a>` : ''}</li>`).join('');
+  return `<h2>Recent games</h2><div class="card"><ul class="recent-games">${rows}</ul></div>`;
+}
+
 function gamesPage() {
   const all = fixSpots(), g = getProgress().games, now = Date.now();
   // open ones first: due before not due, then the ones that cost the most
@@ -311,9 +325,10 @@ function gamesPage() {
       <div class="row"><a class="btn primary" href="${href('fix', s.o.id, s.v.id, String(s.x.p), encodeURIComponent(s.x.s))}">Show me</a>${isOpen(s.f) ? `<a class="btn" href="${href('fixit', encodeURIComponent(s.f.id))}">Drill this one</a>` : ''}<a class="btn" href="${href('practice', s.o.id, s.v.id, String(s.x.p))}">Practice the line</a>${s.x.u ? `<a class="btn" href="${esc(s.x.u)}" target="_blank" rel="noopener">Open the game</a>` : ''}</div></div>`;
   const shown = [...open, ...cleared];
   app.innerHTML = `<main class="page"><a class="back" data-goback href="#/">← Home</a><h1>From your games</h1>
-    <p class="muted">Each place you left your line in your own chess.com games is a mistake to clear. They come back in Drill on a schedule.</p>
+    <p class="muted">Each place you left your line in your own Lichess games is a mistake to clear. They come back in Drill on a schedule.</p>
+    ${recentGamesCard(g)}
     ${summary}
-    ${open.length ? open.map((s, i) => card(s, i)).join('') : total ? '<div class="card"><b>All clear.</b><p class="muted">Every mistake from your games is cleared. New ones appear when you import more games.</p></div>' : `<div class="card"><b>${g?.games ? 'No deviations found.' : 'No games imported yet.'}</b><p class="muted">${g?.games ? 'You followed your lines in the games read.' : 'Import your chess.com games in Settings.'}</p><div class="row"><a class="btn" href="${href('settings')}">Settings</a></div></div>`}
+    ${open.length ? open.map((s, i) => card(s, i)).join('') : total ? '<div class="card"><b>All clear.</b><p class="muted">Every mistake from your games is cleared. New ones appear when you import more games.</p></div>' : `<div class="card"><b>${g?.games ? 'No deviations found.' : 'No games imported yet.'}</b><p class="muted">${g?.games ? 'You followed your lines in the games read.' : 'Import your Lichess games in Settings.'}</p><div class="row"><a class="btn" href="${href('settings')}">Settings</a></div></div>`}
     ${cleared.length ? `<details class="more"><summary>Cleared · ${cleared.length}</summary>${cleared.map((s, i) => card(s, open.length + i)).join('')}</details>` : ''}
   </main>`;
   shown.forEach((s, i) => drawOnOpen('game-' + i, s.o, s.v, { ply: s.x.p, shapes: [] }));
