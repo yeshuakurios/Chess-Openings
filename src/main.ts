@@ -119,29 +119,41 @@ function home() {
   const byOpening = getProgress().games?.byOpening ?? {};
   const shown = openings.filter(o => !isShelved(o.id)).slice()
     .sort((a, b) => (byOpening[b.id]?.losses ?? 0) - (byOpening[a.id]?.losses ?? 0)); // most games lost in your own games first
+  const totalDone = openings.reduce((n, o) => n + o.variations.filter(v => isLearned(key(o, v))).length, 0);
+  const totalLines = openings.reduce((n, o) => n + o.variations.length, 0);
   app.innerHTML = `
   <main class="page">
     <div class="row between head"><h1>Opening Goals</h1><a class="gear" href="${href('settings')}" aria-label="Settings">${GEAR}</a></div>
-    <p class="muted">Learn the plan first, then the line.</p>
+    <p class="muted">Learn the plan first, then the line. · ${totalDone}/${totalLines} lines learned</p>
     ${progressCard}
     <a class="btn primary big" href="${href('drill')}">${due ? 'Play a few lines' : 'Nothing to review. Enjoy your day.'}</a>
     <div class="row links"><a href="${href('mistakes')}">Tricky spots${trouble ? ` (${trouble})` : ''}</a><a href="${href('ask')}">Questions${waiting ? ` (${waiting})` : ''}</a>${fromGames ? `<a href="${href('games')}">From your games (${fromGames})</a>` : ''}</div>
     <h2>Openings</h2>
-    ${shown.map(o => {
-      const done = o.variations.filter(v => isLearned(key(o, v))).length;
-      const solid = o.variations.filter(v => LEVELS.indexOf(masteryOf(o, v).level) >= 3).length;
+    ${shown.map((o, i) => {
       const losses = byOpening[o.id]?.losses ?? 0;
-      return `<div class="card opening"><a class="link" href="${href('o', o.id)}">
-        <span class="dot ${o.color}"></span><div><b>${esc(o.name)}</b>
-        <div class="muted">${esc(o.summary)}</div>
-        <div class="tag">${o.color === 'white' ? 'White' : 'Black'} · ${done}/${o.variations.length} learned${solid ? ` · ${solid} solid` : ''}${losses ? ` · lost ${losses}` : ''}${o.status === 'draft' ? ' · draft' : ''}</div></div></a>
-        <div class="row"><button class="pill" type="button" data-later="${o.id}">Save for later</button></div></div>`;
+      const coverage = Math.round(o.variations.reduce((sum, v) => sum + LEVELS.indexOf(masteryOf(o, v).level) / (LEVELS.length - 1), 0) / Math.max(1, o.variations.length) * 100);
+      const gv = goalVariation(o);
+      const boardId = `home-board-${i}`;
+      return `<div class="card opening-card">
+        <a class="link opening-head" href="${href('o', o.id)}">
+          ${o.goal.board && gv ? `<div class="home-thumb"><div id="${boardId}" class="cg-wrap"></div></div>` : `<span class="dot ${o.color}"></span>`}
+          <div><b>${esc(o.name)}</b>
+          <div class="muted">${esc(o.summary)}</div></div>
+        </a>
+        <div class="tag">${o.color === 'white' ? 'White' : 'Black'} · ${o.variations.length} line${o.variations.length === 1 ? '' : 's'} total · ${coverage} coverage score${losses ? ` · lost ${losses}` : ''}${o.status === 'draft' ? ' · draft' : ''}</div>
+        <div class="goal"><i style="width:${coverage}%"></i></div>
+        <div class="row between">
+          <a class="btn primary" href="${href('o', o.id)}">Start learning →</a>
+          <button class="pill" type="button" data-later="${o.id}">Save for later</button>
+        </div>
+      </div>`;
     }).join('')}
     ${saved.length ? `<details class="more saved"><summary>Saved for later · ${saved.length}</summary>
       ${saved.map(o => `<div class="saved-row"><a href="${href('o', o.id)}"><b>${esc(o.name)}</b><span class="muted"> · ${o.color === 'white' ? 'White' : 'Black'}</span></a>
         <button class="pill" type="button" data-back="${o.id}">Bring back</button></div>`).join('')}
       <p class="muted">Saved openings are hidden here and left out of Drill and Mistakes. Your progress on them is kept.</p></details>` : ''}
   </main>`;
+  shown.forEach((o, i) => { const gv = goalVariation(o); if (o.goal.board && gv) drawBoard(`home-board-${i}`, o, gv, o.goal.board); });
   app.querySelectorAll<HTMLButtonElement>('[data-later]').forEach(b => { b.onclick = () => { setShelved(b.dataset.later!, true); route(); }; });
   app.querySelectorAll<HTMLButtonElement>('[data-back]').forEach(b => { b.onclick = () => { setShelved(b.dataset.back!, false); route(); }; });
 }
@@ -372,10 +384,17 @@ function openingPage(o: Opening) {
   document.getElementById('shelve')!.onclick = () => { setShelved(o.id, !isShelved(o.id)); goTo('#/'); };
 }
 
-const lineMenu = (o: Opening, v: Variation, active: 'Learn' | 'Practice') => [
-  { label: 'Learn', href: href('learn', o.id, v.id), active: active === 'Learn' },
-  { label: 'Practice', href: href('practice', o.id, v.id), active: active === 'Practice' },
-];
+/** Discovered = at least learned; perfected = Mastered level; combo = the all-time Drill streak (global, like ChessReps' "best combo"). */
+const lineMenu = (o: Opening, v: Variation, active: 'Learn' | 'Practice') => {
+  const total = o.variations.length;
+  const discovered = o.variations.filter(x => isLearned(key(o, x))).length;
+  const perfected = o.variations.filter(x => masteryOf(o, x).level === 'Mastered').length;
+  return [
+    { label: 'Learn', href: href('learn', o.id, v.id), active: active === 'Learn', stat: `${discovered}/${total} discovered` },
+    { label: 'Practice', href: href('practice', o.id, v.id), active: active === 'Practice', stat: `${perfected}/${total} perfected` },
+    { label: 'Drill', href: href('drill'), active: false, stat: `×${getProgress().bestCombo} best combo` },
+  ];
+};
 
 function learn(o: Opening, v: Variation) {
   const showGoal = !isLearned(goalKey(o));
