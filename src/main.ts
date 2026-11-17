@@ -288,7 +288,7 @@ function askPage() {
     <p class="muted">Anything about an opening, a line or a move. Questions are stored with your progress and reviewed once a day; the answer appears here after the next update. To ask about one move, use "Ask a question" while you learn or practice it.</p>
     ${hasToken() ? '' : '<div class="card"><b>Sync is off.</b><p class="muted">The daily review reads questions from your synced copy, so set up sync in Settings first or it will never see them.</p></div>'}
     <div class="card"><textarea id="qtext" rows="3" maxlength="500" placeholder="Your question" aria-label="Your question"></textarea>
-    <div class="row"><button class="btn primary" id="qsend">Send</button><span class="muted" id="qmsg"></span></div></div>
+    <div class="row"><button class="btn primary" id="qsend">Send</button><button class="btn" id="qcopy">Copy</button><span class="muted" id="qmsg"></span></div></div>
     <div class="card"><b>Paste explanations from Claude</b><p class="muted">Paste a reply that has "EXPLANATION opening/line#ply" header lines. Each one is saved on this device, shown after you know that move in Learn, Practice and Drill, and copied to your D1 database every few minutes while sync is on. ${noteCount()} saved.</p>
     <textarea id="ntext" rows="4" placeholder="EXPLANATION bird/main-d5#4&#10;..." aria-label="Explanations to paste"></textarea>
     <div class="row"><button class="btn primary" id="nsave">Save explanations</button><span class="muted" id="nmsg"></span></div></div>
@@ -297,6 +297,12 @@ function askPage() {
       <p><b>${esc(q.q)}</b></p>${a ? `<p>${esc(a.a)}</p><div class="muted">Answered ${esc(when(a.t))}</div>` : '<p class="muted">Waiting for the daily review.</p>'}</div>`; }).join('')
       : '<div class="card"><p class="muted">No questions yet.</p></div>'}
   </main>`;
+  document.getElementById('qcopy')!.onclick = async () => {
+    const el = document.getElementById('qtext') as HTMLTextAreaElement, msg = document.getElementById('qmsg')!;
+    if (!el.value.trim()) { msg.textContent = 'Type a question first.'; return; }
+    try { await navigator.clipboard.writeText(`Chess opening question (plain text reply, under 900 characters):\n${el.value.trim()}`); msg.textContent = 'Copied ✓'; }
+    catch { el.focus(); el.select(); msg.textContent = 'Select all and copy.'; }
+  };
   document.getElementById('qsend')!.onclick = () => {
     const el = document.getElementById('qtext') as HTMLTextAreaElement;
     if (addQuestion(el.value)) askPage(); else document.getElementById('qmsg')!.textContent = 'Type a question first.';
@@ -451,15 +457,15 @@ const nextLine = (o: Opening) => o.variations.find(v => !isLearned(key(o, v))) ?
 /** Learn opens straight on the board; the goal and strategy are the first message, then each move's note. */
 function learn(o: Opening, v: Variation) {
   markLearned(goalKey(o));
-  app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button><details class="more inline"><summary>More</summary><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button></details>`, lineMenu(o, v, 'Learn'), linePicks(o, v, 'learn'));
-  walkLine(ui(), o, v, { next: btn('next'), prev: btn('prev'), trap: btn('trap'), flag: btn('flag'), ask: btn('ask') }, () => {
+  app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button><details class="more inline"><summary>More</summary><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button><button class="btn" id="paste">Paste explanation</button></details>`, lineMenu(o, v, 'Learn'), linePicks(o, v, 'learn'));
+  walkLine(ui(), o, v, { next: btn('next'), prev: btn('prev'), trap: btn('trap'), flag: btn('flag'), ask: btn('ask'), paste: btn('paste') }, () => {
     markLearned(key(o, v)); location.hash = href('practice', o.id, v.id);
   });
 }
 
 const btn = (id: string) => document.getElementById(id) as HTMLButtonElement;
-const ui = (): Ui => ({ board: document.getElementById('board')!, hint: btn('hint'), prev: btn('prev'), fwd: btn('fwd'), resume: (document.getElementById('resume') as HTMLButtonElement | null) ?? undefined, why: (document.getElementById('why') as HTMLButtonElement | null) ?? undefined, flag: (document.getElementById('flag') as HTMLButtonElement | null) ?? undefined, ask: (document.getElementById('ask') as HTMLButtonElement | null) ?? undefined });
-const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</button><button class="ctl" id="hint">Hint</button><button class="ctl" id="fwd" aria-label="Forward one move">›</button><button class="btn primary" id="resume" hidden>Back to the line</button><button class="btn" id="why" hidden>Show me why</button><details class="more inline"><summary>More</summary><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button></details>`;
+const ui = (): Ui => ({ board: document.getElementById('board')!, hint: btn('hint'), prev: btn('prev'), fwd: btn('fwd'), resume: (document.getElementById('resume') as HTMLButtonElement | null) ?? undefined, why: (document.getElementById('why') as HTMLButtonElement | null) ?? undefined, flag: (document.getElementById('flag') as HTMLButtonElement | null) ?? undefined, ask: (document.getElementById('ask') as HTMLButtonElement | null) ?? undefined, paste: (document.getElementById('paste') as HTMLButtonElement | null) ?? undefined });
+const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</button><button class="ctl" id="hint">Hint</button><button class="ctl" id="fwd" aria-label="Forward one move">›</button><button class="btn primary" id="resume" hidden>Back to the line</button><button class="btn" id="why" hidden>Show me why</button><details class="more inline"><summary>More</summary><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button><button class="btn" id="paste">Paste explanation</button></details>`;
 
 const endBtns = `<button class="btn primary" id="again" hidden>Again</button><button class="btn" id="done" hidden>Done</button>`;
 
