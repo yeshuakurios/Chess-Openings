@@ -28,7 +28,7 @@ const mistakesFor = (o: Opening, v: Variation, ply: number) => mistakesAt(getPro
 function wireAsk(btn: HTMLButtonElement | undefined, o: Opening, v: Variation, ply: () => number | undefined) {
   if (!btn) return () => {};
   const sync = () => { btn.disabled = ply() === undefined; };
-  btn.onclick = () => {
+  btn.onclick = async () => {
     const p = ply(); if (p === undefined) return;
     document.querySelector('.mv-overlay')?.remove();
     const wrap = document.createElement('div');
