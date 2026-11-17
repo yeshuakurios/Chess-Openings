@@ -13,10 +13,10 @@ export const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<'
 
 /** Shared play screen shell: header, progress, message card, eval bar, board, controls.
  * `menu`, when given, turns the title into a tappable mode switcher (Learn/Practice/…) for this line. */
-export function screenShell(title: string, subtitle: string, controls: string, menu?: { label: string; href: string; active?: boolean }[]): string {
+export function screenShell(title: string, subtitle: string, controls: string, menu?: { label: string; href: string; active?: boolean; stat?: string }[]): string {
   const titleHtml = menu && menu.length
     ? `<button class="modebtn" id="modebtn" type="button" aria-haspopup="true" aria-expanded="false">${esc(title)}<svg class="chev" viewBox="0 0 20 20" width="12" height="12" aria-hidden="true"><path d="M5 7l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-       <div class="modemenu" id="modemenu" hidden role="menu">${menu.map(m => `<a href="${m.href}" class="modeitem${m.active ? ' on' : ''}" role="menuitem">${esc(m.label)}</a>`).join('')}</div>`
+       <div class="modemenu" id="modemenu" hidden role="menu">${menu.map(m => `<a href="${m.href}" class="modeitem${m.active ? ' on' : ''}" role="menuitem"><span>${esc(m.label)}</span>${m.stat ? `<b>${esc(m.stat)}</b>` : ''}</a>`).join('')}</div>`
     : `<b>${esc(title)}</b>`;
   return `
   <header class="top"><a class="back" href="#/" id="back" data-goback aria-label="Back">←</a>
