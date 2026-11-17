@@ -4,7 +4,8 @@ import { createBoard, type Board } from './board.ts';
 import { esc, setEval, setMessage, setProgress } from './ui.ts';
 import { whyNot } from './why.ts';
 import { movePopularity } from './stats.ts';
-import { addQuestion, flagKey, getProgress, isFlagged, toggleFlag } from './store.ts';
+import { buildAskPrompt } from './askprompt.ts';
+import { flagKey, getProgress, isFlagged, toggleFlag } from './store.ts';
 import { mistakesAt } from './games.ts';
 import { explainMistake } from './mistakestory.ts';
 import { openMistakeStory } from './mistakeview.ts';
@@ -19,17 +20,22 @@ const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 export interface Ui { board: HTMLElement; hint: HTMLButtonElement; prev: HTMLButtonElement; fwd: HTMLButtonElement; resume?: HTMLButtonElement; why?: HTMLButtonElement; flag?: HTMLButtonElement; ask?: HTMLButtonElement }
 
 export const FLAG_TEXT = { off: 'Need more explanation', on: 'Flagged ✓ (tap to undo)' };
-export const ASK_TEXT = { idle: 'Ask a question', saved: 'Question saved ✓' };
+export const ASK_TEXT = { idle: 'Ask a question', saved: 'Prompt copied ✓' };
 /** The mistakes to play out at move `ply` of a line: from the owner's Lichess games when imported, the hand-written ones otherwise. */
 const mistakesFor = (o: Opening, v: Variation, ply: number) => mistakesAt(getProgress().games, key(o, v), ply, v.moves[ply]?.mistakes, o.color);
 /** Wire an "Ask a question" button to one move: a native prompt takes the text, the question is stored with the move's id. */
-function wireAsk(btn: HTMLButtonElement | undefined, k: string, ply: () => number | undefined) {
+function wireAsk(btn: HTMLButtonElement | undefined, o: Opening, v: Variation, ply: () => number | undefined) {
   if (!btn) return () => {};
   const sync = () => { btn.disabled = ply() === undefined; };
-  btn.onclick = () => {
+  btn.onclick = async () => {
     const p = ply(); if (p === undefined) return;
-    const text = prompt('Your question about this move. It is stored and answered in the daily review:');
-    if (text && addQuestion(text, flagKey(k, p))) { btn.textContent = ASK_TEXT.saved; setTimeout(() => { btn.textContent = ASK_TEXT.idle; }, 2500); }
+    const text = prompt('Your question about this move (leave empty for "why this move?"). A prompt with the line is copied for you to paste in Claude:');
+    if (text === null) return;
+    const out = buildAskPrompt(o, v, p, text);
+    let copied = false;
+    try { await navigator.clipboard.writeText(out); copied = true; } catch { /* iOS can refuse outside a tap; show it instead */ }
+    if (!copied) prompt('Copy this and paste it in Claude:', out);
+    btn.textContent = ASK_TEXT.saved; setTimeout(() => { btn.textContent = ASK_TEXT.idle; }, 2500);
   };
   sync();
   return sync;
@@ -86,7 +92,7 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
     const live = () => view === idx;
     // the move the button is about: the one being asked now, or the one on screen when looking back, or the last one when the line is done
     const flagPly = () => (busy ? undefined : finished ? v.moves.length - 1 : live() ? idx : view - 1 >= 0 ? view - 1 : undefined);
-    const syncFlag = wireFlag(ui.flag, key(o, v), flagPly), syncAsk = wireAsk(ui.ask, key(o, v), flagPly);
+    const syncFlag = wireFlag(ui.flag, key(o, v), flagPly), syncAsk = wireAsk(ui.ask, o, v, flagPly);
     const syncArrows = () => { ui.prev.disabled = busy || view === 0; ui.fwd.disabled = busy || live(); syncFlag(); syncAsk(); };
     const showLive = () => {
       view = idx; board.clearArrow(); syncArrows();
@@ -185,7 +191,7 @@ export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTM
   const board = createBoard(ui.board, o.color);
   let idx = 0, demoing = false, shown = 0, token = 0;
   const learnPly = () => (idx > 0 && !demoing ? idx - 1 : undefined);
-  const syncFlag = wireFlag(controls.flag, key(o, v), learnPly), syncAsk = wireAsk(controls.ask, key(o, v), learnPly);
+  const syncFlag = wireFlag(controls.flag, key(o, v), learnPly), syncAsk = wireAsk(controls.ask, o, v, learnPly);
   const render = () => {
     token++; demoing = false;
     const chess = new Chess(); let last: [Key, Key] | undefined;
