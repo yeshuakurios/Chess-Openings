@@ -9,6 +9,8 @@ import { mistakesAt } from './games.ts';
 import { explainMistake } from './mistakestory.ts';
 import { openMistakeStory } from './mistakeview.ts';
 import { key } from './content.ts';
+import { praise } from './session.ts';
+import { HAPTIC, buzz, glowBoard } from './juice.ts';
 import type { Mistake, Move, Opening, Variation } from './types.ts';
 
 export const START_EVAL = 0.2;
@@ -106,7 +108,8 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
 
     const finish = () => {
       finished = true; board.lock(); board.clearArrow(); setProgress(1); syncArrows();
-      setMessage(mistakes === 0 ? '<b>Flawless.</b> Line complete.' : `<b>Line complete</b> with ${mistakes} mistake${mistakes > 1 ? 's' : ''}.`, true);
+      setMessage(mistakes === 0 ? `<b>${praise(Math.random())}</b> Line complete.` : `<b>Line complete.</b> ${mistakes} slip${mistakes > 1 ? 's' : ''} to tidy up next time.`, true);
+      if (mistakes === 0) { glowBoard(); buzz(HAPTIC.win); }
       ui.hint.onclick = null; showWhy(false);
       resolve(mistakes);
     };
