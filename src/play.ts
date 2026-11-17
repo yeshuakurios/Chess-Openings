@@ -192,7 +192,7 @@ export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTM
     setEval(idx ? v.moves[idx - 1].eval : START_EVAL); setProgress(idx / v.moves.length);
     const m = v.moves[idx - 1];
     const pop = idx && !m.versus?.length ? movePopularity(m, (idx - 1) % 2 === 0 === (o.color === 'white')) : ''; // the contrast text needs the room
-    setMessage(idx ? `<b>${moveLabel(idx - 1, m.san)}</b> ${noteWithVersus(m)}${pop ? `<div class="stat">${pop}</div>` : ''}` : 'Press next to step through the line.');
+    setMessage(idx ? `<b>${moveLabel(idx - 1, m.san)}</b> ${noteWithVersus(m)}${pop ? `<div class="stat">${pop}</div>` : ''}` : `<b>${esc(o.goal.title)}.</b> ${esc(v.strategy)}<div class="stat">Press Next to step through ${esc(v.name)}.</div>`);
     controls.prev.disabled = idx === 0;
     controls.next.textContent = idx === v.moves.length ? 'Finish' : 'Next';
     syncFlag(); syncAsk();

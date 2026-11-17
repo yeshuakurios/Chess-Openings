@@ -13,14 +13,20 @@ export const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<'
 
 /** Shared play screen shell: header, progress, message card, eval bar, board, controls.
  * `menu`, when given, turns the title into a tappable mode switcher (Learn/Practice/…) for this line. */
-export function screenShell(title: string, subtitle: string, controls: string, menu?: { label: string; href: string; active?: boolean; stat?: string }[]): string {
+export interface LinePick { label: string; href: string; active?: boolean; moves: string }
+export function screenShell(title: string, subtitle: string, controls: string, menu?: { label: string; href: string; active?: boolean; stat?: string }[], lines?: LinePick[]): string {
+  const cur = lines?.findIndex(l => l.active) ?? -1;
+  const picker = lines && lines.length > 1
+    ? `<button class="linebtn" id="linebtn" type="button" aria-haspopup="true" aria-expanded="false">#${cur + 1}<svg class="chev" viewBox="0 0 20 20" width="12" height="12" aria-hidden="true"><path d="M5 7l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+       <div class="linemenu" id="linemenu" hidden role="menu">${lines.map((l, i) => `<a href="${l.href}" class="lineitem${l.active ? ' on' : ''}" role="menuitem"><i>${i + 1}</i><span><b>${esc(l.label)}</b><small>${esc(l.moves)}</small></span></a>`).join('')}</div>`
+    : '';
   const titleHtml = menu && menu.length
     ? `<button class="modebtn" id="modebtn" type="button" aria-haspopup="true" aria-expanded="false">${esc(title)}<svg class="chev" viewBox="0 0 20 20" width="12" height="12" aria-hidden="true"><path d="M5 7l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
        <div class="modemenu" id="modemenu" hidden role="menu">${menu.map(m => `<a href="${m.href}" class="modeitem${m.active ? ' on' : ''}" role="menuitem"><span>${esc(m.label)}</span>${m.stat ? `<b>${esc(m.stat)}</b>` : ''}</a>`).join('')}</div>`
     : `<b>${esc(title)}</b>`;
   return `
   <header class="top"><a class="back" href="#/" id="back" data-goback aria-label="Back">←</a>
-    <div class="title">${titleHtml}<span>${esc(subtitle)}</span></div></header>
+    <div class="title">${titleHtml}<span>${esc(subtitle)}</span></div>${picker}</header>
   <div class="bar"><div id="bar-fill"></div></div>
   <div class="msg" id="msg" role="status" aria-live="polite"></div>
   <div class="eval"><div id="eval-fill"></div><span id="eval-label">0.2</span></div>
@@ -32,12 +38,10 @@ export function screenShell(title: string, subtitle: string, controls: string, m
 // Guarded: some test scripts import this module under Node, with no document.
 if (typeof document !== 'undefined') document.addEventListener('click', e => {
   const t = e.target as HTMLElement;
-  const btn = t.closest<HTMLButtonElement>('#modebtn');
-  const menu = document.getElementById('modemenu');
-  if (btn && menu) {
-    const open = menu.hidden;
-    menu.hidden = !open; btn.setAttribute('aria-expanded', String(open));
-    return;
+  for (const [b, m] of [['modebtn', 'modemenu'], ['linebtn', 'linemenu']]) {
+    const btn = t.closest<HTMLButtonElement>(`#${b}`), menu = document.getElementById(m);
+    if (!menu) continue;
+    if (btn) { const open = menu.hidden; menu.hidden = !open; btn.setAttribute('aria-expanded', String(open)); }
+    else if (!menu.hidden && !t.closest(`#${m}`)) { menu.hidden = true; document.getElementById(b)?.setAttribute('aria-expanded', 'false'); }
   }
-  if (menu && !menu.hidden && !t.closest('#modemenu')) { menu.hidden = true; document.getElementById('modebtn')?.setAttribute('aria-expanded', 'false'); }
 });
