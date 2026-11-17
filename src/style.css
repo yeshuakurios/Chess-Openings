@@ -91,6 +91,14 @@ cg-board square.oc.move-dest{background:radial-gradient(transparent 0%,transpare
 .more[open] summary::after{transform:rotate(-135deg);margin-top:3px}
 .more p{color:#c3c8d6;margin:10px 0 0;font-size:15.5px}
 .more ul{color:#c3c8d6;font-size:15.5px}
+/* a quiet overflow menu for secondary controls (Need more explanation / Ask a question), so the primary nav row stays short */
+.more.inline{margin:0;border-top:none;padding-top:0}
+.more.inline summary{color:var(--muted);font-size:14px;padding:10px 10px}
+.more.inline .btn{display:block;width:100%;margin:6px 0 0;text-align:center}
+/* opening page: unstarted/mastered variations collapse to one row; only the in-progress one gets the full card */
+.card.compact{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px}
+.card.compact .tag{margin:2px 0 0;display:block}
+.card.compact .row{margin-top:0}
 .learn .btn.big{margin-top:18px}
 
 .head{margin-top:0;flex-wrap:nowrap}.head h1{margin:6px 0 0}
