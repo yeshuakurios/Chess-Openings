@@ -372,10 +372,15 @@ function openingPage(o: Opening) {
   document.getElementById('shelve')!.onclick = () => { setShelved(o.id, !isShelved(o.id)); goTo('#/'); };
 }
 
+const lineMenu = (o: Opening, v: Variation, active: 'Learn' | 'Practice') => [
+  { label: 'Learn', href: href('learn', o.id, v.id), active: active === 'Learn' },
+  { label: 'Practice', href: href('practice', o.id, v.id), active: active === 'Practice' },
+];
+
 function learn(o: Opening, v: Variation) {
   const showGoal = !isLearned(goalKey(o));
   const walk = () => {
-    app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button><details class="more inline"><summary>More</summary><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button></details>`);
+    app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button><details class="more inline"><summary>More</summary><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button></details>`, lineMenu(o, v, 'Learn'));
     walkLine(ui(), o, v, { next: btn('next'), prev: btn('prev'), trap: btn('trap'), flag: btn('flag'), ask: btn('ask') }, () => {
       markLearned(key(o, v)); location.hash = href('practice', o.id, v.id);
     });
@@ -407,7 +412,7 @@ const endBtns = `<button class="btn primary" id="again" hidden>Again</button><bu
 
 async function practice(o: Opening, v: Variation, startPly?: number) {
   const my = ++token;
-  app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`);
+  app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`, lineMenu(o, v, 'Practice'));
   const run = async () => {
     btn('again').hidden = true; btn('done').hidden = true;
     const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, ...(startPly ? { startPly } : {}), onAttempt: a => logAttempt({ ...a, k: key(o, v), m: 'p', ...(startPly ? { o: 1 as const } : {}) }) });
@@ -415,7 +420,7 @@ async function practice(o: Opening, v: Variation, startPly?: number) {
     if (mistakes === 0 && !startPly) { markLearned(key(o, v)); awardLineBonus(); } // starting mid-line is a spot check, not a whole line
     btn('again').hidden = false; btn('done').hidden = false;
     btn('done').onclick = () => goTo(startPly ? href('games') : href('o', o.id));
-    btn('again').onclick = () => { app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`); void run(); };
+    btn('again').onclick = () => { app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`, lineMenu(o, v, 'Practice')); void run(); };
   };
   void run();
 }
@@ -435,7 +440,7 @@ async function reviewFixes(ids: string[], my: number, title = 'A mistake from yo
     const f = getFixes()[id], found = f && lookup(f.k);
     if (!f || !found) continue;
     const [o, v] = found;
-    app.innerHTML = screenShell(title, esc(o.name), `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`);
+    app.innerHTML = screenShell(title, esc(o.name), `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`, lineMenu(o, v, 'Practice').map(m => ({ ...m, active: false })));
     let wrong = 0, hinted = false, ms = 0;
     await playLine(ui(), o, v, { stopped: () => my !== token, startPly: f.p, single: true, onAttempt: a => {
       logAttempt({ ...a, k: f.k, m: 'd', o: 1 });
@@ -479,7 +484,7 @@ async function drill() {
   }
   for (const k of stopped ? [] : queue) {
     const [o, v] = lookup(k)!;
-    app.innerHTML = screenShell('Drill', `${esc(o.name)}`, `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`);
+    app.innerHTML = screenShell('Drill', `${esc(o.name)}`, `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`, lineMenu(o, v, 'Practice').map(m => ({ ...m, active: false })));
     const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, onAttempt: a => logAttempt({ ...a, k: key(o, v), m: 'd' }) });
     if (my !== token) return;
     review(k, mistakes);
@@ -492,7 +497,7 @@ async function drill() {
     // Once a line is familiar, check it from the middle once a day. This feeds mastery only; it does not reschedule the line.
     const m = masteryOf(o, v), from = pickSpotCheck(m);
     if (LEVELS.indexOf(m.level) >= 2 && from !== undefined && !hadSpotCheckToday(k, getProgress().attempts)) {
-      app.innerHTML = screenShell('Spot check', esc(o.name), `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`);
+      app.innerHTML = screenShell('Spot check', esc(o.name), `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`, lineMenu(o, v, 'Practice').map(m => ({ ...m, active: false })));
       await playLine(ui(), o, v, { stopped: () => my !== token, startPly: from, onAttempt: a => logAttempt({ ...a, k, m: 'd', o: 1 }) });
       if (my !== token) return;
       if (!(await goOn())) break;
