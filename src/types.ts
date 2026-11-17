@@ -13,7 +13,11 @@ export interface Mistake { san: string; line: string[]; text: string; eval?: num
 /** Why this move differs from the one played in a near-identical position of another line (`line` = that variation's id: same moves except the opponent's previous reply). Never names this line's own move. */
 export interface Versus { line: string; text: string }
 export interface Move { san: string; note: string; eval: number; why?: Record<string, string>; mistakes?: Mistake[]; versus?: Versus[]; caps?: Alt[]; stats?: MoveStats; shapes?: Shape[] /* shown in Learn after this move */; narration?: string /* spoken in the video; see video/README.md */ }
-export interface Variation { id: string; name: string; strategy: string; board?: PlanBoard; narration?: string; moves: Move[] }
+/** One step of the middlegame plan shown when a line ends: a short sentence (plain words, no squares or move notation) and what to draw on the final position of the line. */
+export interface PlanStep { text: string; shapes: Shape[] }
+/** The simple middlegame plan: 3 steps, each with its own drawing on the position after the last move of the line. Same colours as shapes: green = your move or plan, blue = pressure, red = target or danger, yellow = key square. */
+export interface MiddlegamePlan { steps: PlanStep[] }
+export interface Variation { id: string; name: string; strategy: string; board?: PlanBoard; plan?: MiddlegamePlan; narration?: string; moves: Move[] }
 export interface Opening {
   id: string; name: string; color: 'white' | 'black'; summary: string; status: 'draft' | 'reviewed';
   goal: { title: string; text: string; plans: string[]; narration?: string; board?: PlanBoard & { variation: string } };

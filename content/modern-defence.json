@@ -409,7 +409,55 @@
           "narration": "And here is the flexible move, c6. It prepares a central break with the d-pawn or the e-pawn, and it gives Black room to expand on the queen-side. From here the plan is yours: choose a break, prepare it, and strike before White's space becomes an attack. When the center opens, that bishop on the long diagonal comes alive."
         }
       ],
-      "narration": "Now the line itself. White plays the classical setup, with pawns on e4 and d4, both knights out, a bishop developed, and a castled king. Black answers in the same calm way. After that, the middlegame is a fight about White's center. Do not be passive, because White's space can turn into a king-side attack if you wait too long. Choose a pawn break, either the d-pawn or the e-pawn, prepare it, and play it. Once pawns come off, the long-diagonal bishop wakes up."
+      "narration": "Now the line itself. White plays the classical setup, with pawns on e4 and d4, both knights out, a bishop developed, and a castled king. Black answers in the same calm way. After that, the middlegame is a fight about White's center. Do not be passive, because White's space can turn into a king-side attack if you wait too long. Choose a pawn break, either the d-pawn or the e-pawn, prepare it, and play it. Once pawns come off, the long-diagonal bishop wakes up.",
+      "plan": {
+        "steps": [
+          {
+            "text": "Prepare the break: bring the knight and bishop to useful squares.",
+            "shapes": [
+              {
+                "from": "b8",
+                "to": "d7",
+                "color": "green"
+              },
+              {
+                "from": "c8",
+                "to": "e6",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Strike at White’s center with a pawn break. Pick the one that fits where White’s pieces stand.",
+            "shapes": [
+              {
+                "from": "e7",
+                "to": "e5",
+                "color": "green"
+              },
+              {
+                "from": "d6",
+                "to": "d5",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Let the long-diagonal bishop come alive once the pawns are traded.",
+            "shapes": [
+              {
+                "from": "g7",
+                "to": "d4",
+                "color": "blue"
+              },
+              {
+                "from": "d4",
+                "color": "red"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "e4-austrian",
@@ -839,7 +887,55 @@
             }
           ]
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Castle quickly. White’s king is not safe yet, but yours must be.",
+            "shapes": [
+              {
+                "from": "e8",
+                "to": "g8",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Develop the queen-side knight and aim at White’s e-pawn.",
+            "shapes": [
+              {
+                "from": "b8",
+                "to": "c6",
+                "color": "green"
+              },
+              {
+                "from": "f6",
+                "to": "e4",
+                "color": "blue"
+              }
+            ]
+          },
+          {
+            "text": "White wants to push the e-pawn to kick your knight. Use the loosened king side as a target.",
+            "shapes": [
+              {
+                "from": "e4",
+                "to": "e5",
+                "color": "red"
+              },
+              {
+                "from": "c5",
+                "to": "f2",
+                "color": "red"
+              },
+              {
+                "from": "e1",
+                "color": "red"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "e4-c4",
@@ -1157,7 +1253,49 @@
             "b": 192
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Break with the e-pawn when your pieces are ready.",
+            "shapes": [
+              {
+                "from": "e7",
+                "to": "e5",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Keep the knight pressing White’s d-pawn. The long-diagonal bishop joins in later.",
+            "shapes": [
+              {
+                "from": "c6",
+                "to": "d4",
+                "color": "blue"
+              },
+              {
+                "from": "d4",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "If White castles on the queen side, storm it with pawns. Keep your long-diagonal bishop.",
+            "shapes": [
+              {
+                "from": "a7",
+                "to": "a5",
+                "color": "green"
+              },
+              {
+                "from": "g7",
+                "color": "yellow"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "e4-bc4",
@@ -1489,7 +1627,46 @@
             }
           ]
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Push the d-pawn to challenge the bishop and the e-pawn.",
+            "shapes": [
+              {
+                "from": "d6",
+                "to": "d5",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Develop the last pieces and keep the position flexible.",
+            "shapes": [
+              {
+                "from": "b8",
+                "to": "d7",
+                "color": "green"
+              },
+              {
+                "from": "c8",
+                "to": "e6",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Watch White’s bishop on the king-side diagonal. It has little to hit once you have castled.",
+            "shapes": [
+              {
+                "from": "c4",
+                "to": "f7",
+                "color": "red"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "e4-nc3",
@@ -1951,7 +2128,50 @@
             "b": 3
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Your long-diagonal bishop already hits the queen-side. Keep it open.",
+            "shapes": [
+              {
+                "from": "g7",
+                "to": "b2",
+                "color": "blue"
+              }
+            ]
+          },
+          {
+            "text": "Break in the center with the e-pawn when you are ready.",
+            "shapes": [
+              {
+                "from": "e7",
+                "to": "e5",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Finish development: knight out and the other bishop active.",
+            "shapes": [
+              {
+                "from": "b8",
+                "to": "d7",
+                "color": "green"
+              },
+              {
+                "from": "c8",
+                "to": "f5",
+                "color": "green"
+              },
+              {
+                "from": "e4",
+                "color": "red"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "d4-c4",
@@ -2273,7 +2493,50 @@
             }
           ]
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Decide whether to trade pawns in the center or keep it closed.",
+            "shapes": [
+              {
+                "from": "e5",
+                "to": "d4",
+                "color": "blue"
+              },
+              {
+                "from": "d4",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "If the center locks, attack White’s king with the f-pawn push.",
+            "shapes": [
+              {
+                "from": "f7",
+                "to": "f5",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Use the knights on outposts and keep the long-diagonal bishop flexible.",
+            "shapes": [
+              {
+                "from": "b8",
+                "to": "c6",
+                "color": "green"
+              },
+              {
+                "from": "f6",
+                "to": "d7",
+                "color": "green"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "d4-london",
@@ -2579,7 +2842,45 @@
             "b": 553
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Challenge White’s bishop and center with the e-pawn push.",
+            "shapes": [
+              {
+                "from": "e7",
+                "to": "e5",
+                "color": "green"
+              },
+              {
+                "from": "f4",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "Or hit the center with the c-pawn push.",
+            "shapes": [
+              {
+                "from": "c7",
+                "to": "c5",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "If the bishop retreats, take the extra space and keep the pieces coordinated.",
+            "shapes": [
+              {
+                "from": "g7",
+                "to": "d4",
+                "color": "blue"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "nf3-g3",
@@ -2866,7 +3167,46 @@
             "b": 528
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Support the center pawns with the knights and the c-pawn.",
+            "shapes": [
+              {
+                "from": "b8",
+                "to": "c6",
+                "color": "green"
+              },
+              {
+                "from": "c7",
+                "to": "c6",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Expand with the f-pawn push.",
+            "shapes": [
+              {
+                "from": "f7",
+                "to": "f5",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "White’s long-diagonal bishop eyes your queen side. Keep your pieces coordinated there.",
+            "shapes": [
+              {
+                "from": "g2",
+                "to": "b7",
+                "color": "yellow"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "c4-nc3",
@@ -3129,7 +3469,46 @@
             "b": 666
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Develop the last knight and castle.",
+            "shapes": [
+              {
+                "from": "g8",
+                "to": "e7",
+                "color": "green"
+              },
+              {
+                "from": "e8",
+                "to": "g8",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Prepare the d-pawn push to claim space in the center.",
+            "shapes": [
+              {
+                "from": "d7",
+                "to": "d5",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Keep the long-diagonal bishop open. It is your best piece.",
+            "shapes": [
+              {
+                "from": "g7",
+                "to": "c3",
+                "color": "blue"
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

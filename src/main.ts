@@ -14,6 +14,7 @@ import { analyzeGames, gameAttempts, gameMistakeText, gradeOf, mergeImports, IMP
 import { fmtEval } from './grade.ts';
 import { explainMistake } from './mistakestory.ts';
 import { mountMistakeStory } from './mistakeview.ts';
+import { openPlan } from './planview.ts';
 import { fetchGames, FIRST_GAMES, LATER_GAMES, USERNAME } from './lichess.ts';
 import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
@@ -457,15 +458,16 @@ const nextLine = (o: Opening) => o.variations.find(v => !isLearned(key(o, v))) ?
 /** Learn opens straight on the board; the goal and strategy are the first message, then each move's note. */
 function learn(o: Opening, v: Variation) {
   markLearned(goalKey(o));
-  app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button><details class="more inline"><summary>More</summary><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button><button class="btn" id="paste">Paste explanation</button></details>`, lineMenu(o, v, 'Learn'), linePicks(o, v, 'learn'));
+  app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button><button class="btn" id="ask">Ask a question</button><details class="more inline"><summary>More</summary><button class="btn" id="paste">Paste explanation</button></details>`, lineMenu(o, v, 'Learn'), linePicks(o, v, 'learn'));
   walkLine(ui(), o, v, { next: btn('next'), prev: btn('prev'), trap: btn('trap'), flag: btn('flag'), ask: btn('ask'), paste: btn('paste') }, () => {
-    markLearned(key(o, v)); location.hash = href('practice', o.id, v.id);
+    markLearned(key(o, v));
+    void openPlan(o, v, { doneLabel: 'On to Practice' }).then(() => { location.hash = href('practice', o.id, v.id); });
   });
 }
 
 const btn = (id: string) => document.getElementById(id) as HTMLButtonElement;
 const ui = (): Ui => ({ board: document.getElementById('board')!, hint: btn('hint'), prev: btn('prev'), fwd: btn('fwd'), resume: (document.getElementById('resume') as HTMLButtonElement | null) ?? undefined, why: (document.getElementById('why') as HTMLButtonElement | null) ?? undefined, flag: (document.getElementById('flag') as HTMLButtonElement | null) ?? undefined, ask: (document.getElementById('ask') as HTMLButtonElement | null) ?? undefined, paste: (document.getElementById('paste') as HTMLButtonElement | null) ?? undefined });
-const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</button><button class="ctl" id="hint">Hint</button><button class="ctl" id="fwd" aria-label="Forward one move">›</button><button class="btn primary" id="resume" hidden>Back to the line</button><button class="btn" id="why" hidden>Show me why</button><details class="more inline"><summary>More</summary><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button><button class="btn" id="paste">Paste explanation</button></details>`;
+const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</button><button class="ctl" id="hint">Hint</button><button class="ctl" id="fwd" aria-label="Forward one move">›</button><button class="btn primary" id="resume" hidden>Back to the line</button><button class="btn" id="ask">Ask a question</button><details class="more inline"><summary>More</summary><button class="btn" id="paste">Paste explanation</button></details>`;
 
 const endBtns = `<button class="btn primary" id="again" hidden>Again</button><button class="btn" id="done" hidden>Done</button>`;
 
@@ -482,6 +484,7 @@ async function practice(o: Opening, v: Variation, startPly?: number) {
     document.getElementById('msg')?.insertAdjacentHTML('beforeend', `<div class="stat">+${s.xp} XP${s.best >= 2 ? ` · best run ×${s.best}` : ''} · ${s.goal.today >= s.goal.target ? 'daily goal done' : `${s.goal.today}/${s.goal.target} today`}</div>`);
     celebrate(s);
     btn('again').hidden = false; btn('done').hidden = false;
+    if (!startPly) void openPlan(o, v, { delay: 900 });
     btn('done').onclick = () => goTo(startPly ? href('games') : '#/');
     btn('again').onclick = () => { app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`, lineMenu(o, v, 'Practice'), linePicks(o, v, 'practice')); void run(); };
   };
@@ -559,6 +562,8 @@ async function drill() {
     if (mistakes === 0) awardLineBonus();
     combo = mistakes === 0 ? combo + 1 : 0; setBestCombo(combo);
     played++;
+    await openPlan(o, v, { delay: 700 });
+    if (my !== token) return;
     const more = await goOn();
     if (my !== token) return;
     if (!more) break;

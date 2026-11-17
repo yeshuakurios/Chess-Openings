@@ -8,7 +8,8 @@ export interface MoveStats { total: number; n: number; w: number; d: number; b: 
 export interface Mistake { san: string; line: string[]; text: string; eval?: number }
 export interface Versus { line: string; text: string }
 export interface Move { san: string; note: string; eval?: number; why?: Record<string, string>; mistakes?: Mistake[]; versus?: Versus[]; caps?: Alt[]; stats?: MoveStats; shapes?: Shape[]; narration?: string }
-export interface Variation { id: string; name: string; strategy: string; board?: PlanBoard; narration?: string; moves: Move[] }
+export interface PlanStep { text: string; shapes: Shape[] }
+export interface Variation { id: string; name: string; strategy: string; board?: PlanBoard; plan?: { steps: PlanStep[] }; narration?: string; moves: Move[] }
 export interface Opening {
   id: string; name: string; color: 'white' | 'black'; summary: string;
   status: 'draft' | 'reviewed';

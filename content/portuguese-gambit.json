@@ -463,6 +463,48 @@
             "color": "yellow"
           }
         ]
+      },
+      "plan": {
+        "steps": [
+          {
+            "text": "Attack White’s center pawn with the knight.",
+            "shapes": [
+              {
+                "from": "c6",
+                "to": "d4",
+                "color": "yellow"
+              },
+              {
+                "from": "d4",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "Open the e-file by pushing the e-pawn.",
+            "shapes": [
+              {
+                "from": "e7",
+                "to": "e5",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "White’s king is still in the middle. Strike before White consolidates.",
+            "shapes": [
+              {
+                "from": "e1",
+                "color": "red"
+              },
+              {
+                "from": "f5",
+                "to": "c2",
+                "color": "red"
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -839,6 +881,45 @@
             "from": "g4",
             "to": "f3",
             "color": "red"
+          }
+        ]
+      },
+      "plan": {
+        "steps": [
+          {
+            "text": "Trade the light-squared bishop for a knight if it helps.",
+            "shapes": [
+              {
+                "from": "g4",
+                "to": "f3",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "Castle, then pressure the center pawn.",
+            "shapes": [
+              {
+                "from": "e8",
+                "to": "g8",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Challenge the center with a knight and a side pawn.",
+            "shapes": [
+              {
+                "from": "b8",
+                "to": "c6",
+                "color": "green"
+              },
+              {
+                "from": "c7",
+                "to": "c5",
+                "color": "green"
+              }
+            ]
           }
         ]
       }
@@ -1309,7 +1390,50 @@
             }
           ]
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "The kings are on opposite sides. Push the king-side pawns toward White’s king.",
+            "shapes": [
+              {
+                "from": "g7",
+                "to": "g5",
+                "color": "green"
+              },
+              {
+                "from": "h7",
+                "to": "h5",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Pressure the central pawn with the knight and the rook.",
+            "shapes": [
+              {
+                "from": "c6",
+                "to": "d4",
+                "color": "yellow"
+              },
+              {
+                "from": "d8",
+                "to": "d4",
+                "color": "blue"
+              }
+            ]
+          },
+          {
+            "text": "Keep the queen safe from tempo-gaining attacks.",
+            "shapes": [
+              {
+                "from": "d5",
+                "color": "yellow"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "nf3-bxf3",
@@ -1763,7 +1887,45 @@
             }
           ]
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Aim the knights at the weak squares in front of White’s doubled pawns.",
+            "shapes": [
+              {
+                "from": "f6",
+                "to": "d5",
+                "color": "green"
+              },
+              {
+                "from": "f3",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "Welcome trades, including queens. The doubled pawns matter more in an endgame.",
+            "shapes": [
+              {
+                "from": "a5",
+                "to": "c3",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "White has the bishop pair, so close the position when you can.",
+            "shapes": [
+              {
+                "from": "c7",
+                "to": "c5",
+                "color": "green"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "nc3-nxd5",
@@ -2213,7 +2375,51 @@
             "b": 9
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Trade a pair of knights to ease White’s space advantage.",
+            "shapes": [
+              {
+                "from": "d5",
+                "to": "c3",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "Castle and keep your pieces compact.",
+            "shapes": [
+              {
+                "from": "e8",
+                "to": "g8",
+                "color": "green"
+              },
+              {
+                "from": "g4",
+                "to": "f3",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "Pressure White’s central pawn with a knight and a side pawn.",
+            "shapes": [
+              {
+                "from": "c6",
+                "to": "d4",
+                "color": "blue"
+              },
+              {
+                "from": "c7",
+                "to": "c5",
+                "color": "green"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "c4-c6",
@@ -2616,7 +2822,53 @@
             "b": 4
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Develop the bishop with tempo on White’s pawn.",
+            "shapes": [
+              {
+                "from": "c8",
+                "to": "e6",
+                "color": "green"
+              },
+              {
+                "from": "c4",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "Castle and bring the rest of the pieces out.",
+            "shapes": [
+              {
+                "from": "f8",
+                "to": "e7",
+                "color": "green"
+              },
+              {
+                "from": "e8",
+                "to": "g8",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "You are a piece up for a pawn. Trade pieces to convert.",
+            "shapes": [
+              {
+                "from": "d4",
+                "color": "yellow"
+              },
+              {
+                "from": "e4",
+                "color": "yellow"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "nxd5-qxd5",
@@ -3063,7 +3315,49 @@
             "b": 127
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Castle and build behind the queen.",
+            "shapes": [
+              {
+                "from": "e8",
+                "to": "g8",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Challenge the center with a pawn break and the knights.",
+            "shapes": [
+              {
+                "from": "e6",
+                "to": "e5",
+                "color": "green"
+              },
+              {
+                "from": "c6",
+                "to": "b4",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "White’s c-pawn push can gain time on the queen. Know where it retreats.",
+            "shapes": [
+              {
+                "from": "c4",
+                "color": "red"
+              },
+              {
+                "from": "d5",
+                "color": "yellow"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "e5-bf5",
@@ -3414,7 +3708,49 @@
             }
           ]
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Hit the base of White’s pawn chain with the side pawn and the knights.",
+            "shapes": [
+              {
+                "from": "c5",
+                "to": "d4",
+                "color": "green"
+              },
+              {
+                "from": "c6",
+                "to": "d4",
+                "color": "blue"
+              }
+            ]
+          },
+          {
+            "text": "Then challenge the head of the chain with the f-pawn break.",
+            "shapes": [
+              {
+                "from": "f7",
+                "to": "f6",
+                "color": "green"
+              },
+              {
+                "from": "e5",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "Keep the light-squared bishop outside the chain, where it is active.",
+            "shapes": [
+              {
+                "from": "f5",
+                "color": "yellow"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "nc3-d4",
@@ -3715,7 +4051,53 @@
             "b": 3
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Keep the center locked so White’s pieces have less room.",
+            "shapes": [
+              {
+                "from": "d4",
+                "color": "yellow"
+              },
+              {
+                "from": "e5",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "Bring the knights to good squares.",
+            "shapes": [
+              {
+                "from": "b8",
+                "to": "d7",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Pick a break: the f-pawn or a side pawn push. Keep the f-pawn defended against the bishop.",
+            "shapes": [
+              {
+                "from": "f7",
+                "to": "f5",
+                "color": "green"
+              },
+              {
+                "from": "c7",
+                "to": "c5",
+                "color": "green"
+              },
+              {
+                "from": "f7",
+                "color": "red"
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

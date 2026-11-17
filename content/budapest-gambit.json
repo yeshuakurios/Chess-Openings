@@ -583,6 +583,47 @@
             "color": "red"
           }
         ]
+      },
+      "plan": {
+        "steps": [
+          {
+            "text": "Keep the pin on the knight so White cannot finish developing comfortably.",
+            "shapes": [
+              {
+                "from": "b4",
+                "to": "d2",
+                "color": "red"
+              },
+              {
+                "from": "d2",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "Castle and bring a rook to the center.",
+            "shapes": [
+              {
+                "from": "e8",
+                "to": "g8",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Keep both knights in the center. Trade the bishop for the pinned knight only if it costs White something.",
+            "shapes": [
+              {
+                "from": "e5",
+                "color": "yellow"
+              },
+              {
+                "from": "c6",
+                "color": "yellow"
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -986,6 +1027,50 @@
             "from": "e5",
             "to": "c4",
             "color": "yellow"
+          }
+        ]
+      },
+      "plan": {
+        "steps": [
+          {
+            "text": "Develop the bishop and castle so the king is safe.",
+            "shapes": [
+              {
+                "from": "f8",
+                "to": "e7",
+                "color": "green"
+              },
+              {
+                "from": "e8",
+                "to": "g8",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Undermine White’s big center with the d-pawn and the knight’s pressure.",
+            "shapes": [
+              {
+                "from": "d7",
+                "to": "d6",
+                "color": "green"
+              },
+              {
+                "from": "e5",
+                "to": "c4",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "If White kicks the knight with a pawn, retreat it to a good square.",
+            "shapes": [
+              {
+                "from": "e5",
+                "to": "g6",
+                "color": "blue"
+              }
+            ]
           }
         ]
       }
@@ -1602,7 +1687,48 @@
             "b": 102
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "The queen pins White’s e-pawn against the king. It cannot capture.",
+            "shapes": [
+              {
+                "from": "e7",
+                "to": "e1",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "The knight jumps next to the king with check. White’s own pieces block every escape.",
+            "shapes": [
+              {
+                "from": "d3",
+                "color": "red"
+              },
+              {
+                "from": "e1",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "If White never falls for it, the normal plan applies: castle and keep the knights active.",
+            "shapes": [
+              {
+                "from": "e8",
+                "to": "g8",
+                "color": "green"
+              },
+              {
+                "from": "c6",
+                "color": "yellow"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "e3-declined",
@@ -2018,7 +2144,44 @@
             }
           ]
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Trade pieces. Fewer pieces means fewer attacking chances for White.",
+            "shapes": [
+              {
+                "from": "d5",
+                "to": "c3",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "Keep a knight directly in front of White’s isolated pawn as a blockade.",
+            "shapes": [
+              {
+                "from": "d5",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "Attack the isolated pawn with your other pieces and head for a better endgame.",
+            "shapes": [
+              {
+                "from": "e7",
+                "to": "f6",
+                "color": "green"
+              },
+              {
+                "from": "d4",
+                "color": "red"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "nc3-declined",
@@ -2387,7 +2550,45 @@
             "b": 48
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Pressure White’s center pawn along the open file with the rook.",
+            "shapes": [
+              {
+                "from": "e8",
+                "to": "e3",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "Keep the bishop pinning the knight so White cannot develop in peace.",
+            "shapes": [
+              {
+                "from": "b4",
+                "to": "c3",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "Prepare a central pawn break while White’s king is still in the middle.",
+            "shapes": [
+              {
+                "from": "d7",
+                "to": "d5",
+                "color": "green"
+              },
+              {
+                "from": "e1",
+                "color": "yellow"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "d5-declined",
@@ -2736,7 +2937,45 @@
             }
           ]
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Put a knight on the outpost.",
+            "shapes": [
+              {
+                "from": "d7",
+                "to": "c5",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Challenge White’s space with a side-pawn push.",
+            "shapes": [
+              {
+                "from": "c7",
+                "to": "c6",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Prepare the king-side pawn break to gain room and hit the center.",
+            "shapes": [
+              {
+                "from": "f7",
+                "to": "f5",
+                "color": "green"
+              },
+              {
+                "from": "e4",
+                "color": "red"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "bf4-declined",
@@ -3046,7 +3285,55 @@
             "b": 3241
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Offer a bishop trade. White’s recapture opens a file and pulls a pawn off the center.",
+            "shapes": [
+              {
+                "from": "d6",
+                "to": "f4",
+                "color": "red"
+              },
+              {
+                "from": "f4",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "Castle, then keep pressure on the center with a pawn and a knight.",
+            "shapes": [
+              {
+                "from": "e8",
+                "to": "g8",
+                "color": "green"
+              },
+              {
+                "from": "c5",
+                "to": "d4",
+                "color": "blue"
+              }
+            ]
+          },
+          {
+            "text": "Open the center with a pawn break once the pieces are developed.",
+            "shapes": [
+              {
+                "from": "e6",
+                "to": "e5",
+                "color": "green"
+              },
+              {
+                "from": "d8",
+                "to": "b6",
+                "color": "green"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "nf3-declined",
@@ -3365,7 +3652,50 @@
             "b": 454
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Decide about the queens: keep them on, or trade them for an open file.",
+            "shapes": [
+              {
+                "from": "b6",
+                "to": "b3",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "Develop the rest of the pieces calmly.",
+            "shapes": [
+              {
+                "from": "e7",
+                "to": "e6",
+                "color": "green"
+              },
+              {
+                "from": "f8",
+                "to": "e7",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Watch White’s central pawn break and use your extra queen-side space.",
+            "shapes": [
+              {
+                "from": "e4",
+                "color": "red"
+              },
+              {
+                "from": "b7",
+                "to": "b5",
+                "color": "green"
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }
