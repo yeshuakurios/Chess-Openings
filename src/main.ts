@@ -476,7 +476,7 @@ async function practice(o: Opening, v: Variation, startPly?: number) {
     document.getElementById('msg')?.insertAdjacentHTML('beforeend', `<div class="stat">+${s.xp} XP${s.best >= 2 ? ` · best run ×${s.best}` : ''} · ${s.goal.today >= s.goal.target ? 'daily goal done' : `${s.goal.today}/${s.goal.target} today`}</div>`);
     celebrate(s);
     btn('again').hidden = false; btn('done').hidden = false;
-    btn('done').onclick = () => goTo(startPly ? href('games') : href('o', o.id));
+    btn('done').onclick = () => goTo(startPly ? href('games') : '#/');
     btn('again').onclick = () => { app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`, lineMenu(o, v, 'Practice'), linePicks(o, v, 'practice')); void run(); };
   };
   void run();
