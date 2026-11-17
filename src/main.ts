@@ -351,7 +351,12 @@ function openingPage(o: Opening) {
       ${fold(splitLead(o.goal.text)[1], o.goal.plans, 'The full plan')}
       ${boardFold('goal-board', o.goal.board)}</div>
     <h2>Variations</h2>
-    ${o.variations.map((v, i) => { const m = masteryOf(o, v), [lead, rest] = splitLead(v.strategy); return `<div class="card"><b>${esc(v.name)}</b>
+    ${o.variations.map((v, i) => {
+      const m = masteryOf(o, v), active = m.level !== 'New' && m.level !== 'Mastered';
+      if (!active) return `<div class="card compact"><div><b>${esc(v.name)}</b><span class="tag">${m.level}</span></div>
+        <div class="row"><a class="btn primary" href="${href('learn', o.id, v.id)}">Learn</a><a class="btn" href="${href('practice', o.id, v.id)}">Practice</a></div></div>`;
+      const [lead, rest] = splitLead(v.strategy);
+      return `<div class="card"><b>${esc(v.name)}</b>
       <p class="muted">${esc(lead)}</p>
       ${viewFold('lv-' + i)}
       ${fold(rest, [], 'Read the strategy')}
@@ -359,49 +364,44 @@ function openingPage(o: Opening) {
       <div class="row"><a class="btn primary" href="${href('learn', o.id, v.id)}">Learn</a>
       <a class="btn" href="${href('practice', o.id, v.id)}">Practice</a>
       <span class="tag">${m.level}</span></div>
-      <p class="muted">${m.hint}</p></div>`; }).join('')}
+      <p class="muted">${m.hint}</p></div>`;
+    }).join('')}
   </main>`;
   drawOnOpen('goal-board', o, goalVariation(o), o.goal.board);
-  o.variations.forEach((v, i) => mountOnOpen('lv-' + i, o, v));
+  o.variations.forEach((v, i) => { const m = masteryOf(o, v); if (m.level !== 'New' && m.level !== 'Mastered') mountOnOpen('lv-' + i, o, v); });
   document.getElementById('shelve')!.onclick = () => { setShelved(o.id, !isShelved(o.id)); goTo('#/'); };
 }
 
 function learn(o: Opening, v: Variation) {
-  const steps: { tag: string; title: string; body: string; list: string[]; board?: PlanBoard; from?: Variation; viewer?: boolean }[] = [
-    ...(isLearned(goalKey(o)) ? [] : [{ tag: 'Step 1 · Positional goal', title: o.goal.title, body: o.goal.text, list: o.goal.plans, board: o.goal.board, from: goalVariation(o) }]),
-    { tag: 'Strategy for this variation', title: v.name, body: v.strategy, list: [] as string[], board: v.board, from: v, viewer: true }
-  ];
-  let i = 0;
-  const showStep = () => {
-    window.scrollTo(0, 0);
-    const s = steps[i];
-    const [lead, rest] = splitLead(s.body);
-    const board = s.board ?? (s.from ? { ply: s.from.moves.length, shapes: [] } : undefined); // no hand-made board: show where the line ends
-    app.innerHTML = `<main class="page learn"><a class="back" data-goback href="${href('o', o.id)}">← ${esc(o.name)}</a>
-      <div class="steps" aria-hidden="true">${steps.map((_, n) => `<i class="${n <= i ? 'on' : ''}"></i>`).join('')}</div>
-      <div class="tag">${s.tag}</div>
-      <h2 class="hero-title">${esc(s.title)}</h2><p class="lead">${esc(lead)}</p>
-      ${fold(rest, s.list, 'Read more')}
-      ${s.viewer ? lineViewerSlot('step-view') : boardFold('step-board', s.from ? board : undefined)}
-      <button class="btn primary big" id="go">${i === steps.length - 1 ? 'Show me the line' : 'Next: the strategy'}</button></main>`;
-    if (s.viewer) mountLineViewer(document.getElementById('step-view')!, o, v); else drawOnOpen('step-board', o, s.from, board);
-    document.getElementById('go')!.onclick = () => {
-      if (i === 0 && steps.length === 2) markLearned(goalKey(o));
-      if (i < steps.length - 1) { i++; showStep(); } else walk();
-    };
-  };
+  const showGoal = !isLearned(goalKey(o));
   const walk = () => {
-    app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button>`);
+    app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button><details class="more inline"><summary>More</summary><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button></details>`);
     walkLine(ui(), o, v, { next: btn('next'), prev: btn('prev'), trap: btn('trap'), flag: btn('flag'), ask: btn('ask') }, () => {
       markLearned(key(o, v)); location.hash = href('practice', o.id, v.id);
     });
   };
-  showStep();
+  window.scrollTo(0, 0);
+  const [goalLead, goalRest] = splitLead(o.goal.text);
+  const [stratLead, stratRest] = splitLead(v.strategy);
+  app.innerHTML = `<main class="page learn"><a class="back" data-goback href="${href('o', o.id)}">← ${esc(o.name)}</a>
+    ${showGoal ? `<div class="tag">Positional goal</div><h2 class="hero-title">${esc(o.goal.title)}</h2><p class="lead">${esc(goalLead)}</p>
+    ${fold(goalRest, o.goal.plans, 'Read more')}
+    ${boardFold('goal-board', o.goal.board)}` : ''}
+    <div class="tag">Strategy for this variation</div><h2 class="hero-title">${esc(v.name)}</h2><p class="lead">${esc(stratLead)}</p>
+    ${fold(stratRest, [], 'Read more')}
+    ${lineViewerSlot('step-view')}
+    <button class="btn primary big" id="go">Show me the line</button></main>`;
+  mountLineViewer(document.getElementById('step-view')!, o, v);
+  if (showGoal) drawOnOpen('goal-board', o, goalVariation(o), o.goal.board);
+  document.getElementById('go')!.onclick = () => {
+    if (showGoal) markLearned(goalKey(o));
+    walk();
+  };
 }
 
 const btn = (id: string) => document.getElementById(id) as HTMLButtonElement;
 const ui = (): Ui => ({ board: document.getElementById('board')!, hint: btn('hint'), prev: btn('prev'), fwd: btn('fwd'), resume: (document.getElementById('resume') as HTMLButtonElement | null) ?? undefined, why: (document.getElementById('why') as HTMLButtonElement | null) ?? undefined, flag: (document.getElementById('flag') as HTMLButtonElement | null) ?? undefined, ask: (document.getElementById('ask') as HTMLButtonElement | null) ?? undefined });
-const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</button><button class="ctl" id="hint">Hint</button><button class="ctl" id="fwd" aria-label="Forward one move">›</button><button class="btn primary" id="resume" hidden>Back to the line</button><button class="btn" id="why" hidden>Show me why</button><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button>`;
+const hintBtn = `<button class="ctl" id="prev" aria-label="Back one move">‹</button><button class="ctl" id="hint">Hint</button><button class="ctl" id="fwd" aria-label="Forward one move">›</button><button class="btn primary" id="resume" hidden>Back to the line</button><button class="btn" id="why" hidden>Show me why</button><details class="more inline"><summary>More</summary><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button></details>`;
 
 const endBtns = `<button class="btn primary" id="again" hidden>Again</button><button class="btn" id="done" hidden>Done</button>`;
 
