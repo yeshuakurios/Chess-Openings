@@ -8,7 +8,7 @@ export function notation(v: Variation, ply: number): string {
 
 /**
  * Text the owner pastes into a Claude session to ask about one move. It carries everything needed to answer without opening the app
- * (opening, line id, notation, FEN after the move, the line's own note) and a "queue" tag so the answer is saved to docs/explain-queue.json.
+ * (opening, line id, notation, FEN after the move, the line's own note) and a header the answer must repeat, so the owner can paste the reply into the app (Ask page > Paste explanations).
  * Pure, so it is tested without a browser.
  */
 export function buildAskPrompt(o: Opening, v: Variation, ply: number, question: string): string {
@@ -22,6 +22,7 @@ export function buildAskPrompt(o: Opening, v: Variation, ply: number, question: 
     `Moves: ${notation(v, ply)}`,
     `Move asked about: ${mover} plays ${m.san} (ply ${ply + 1}). Position after it: ${c.fen()}`,
     `The app says: ${m.note}`,
+    `Reply format: a line "EXPLANATION ${o.id}/${v.id}#${ply}", then plain text under 900 characters. Do not name the move the line plays until after the position is known.`,
     `My question: ${question.trim() || 'Why this move, and why not the natural alternatives?'}`,
   ].join('\n');
 }

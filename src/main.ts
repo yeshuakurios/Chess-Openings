@@ -1,6 +1,7 @@
 import './style.css';
 import { registerSW } from 'virtual:pwa-register';
 import { openings, findOpening, findVariation, key } from './content.ts';
+import { addNotes, noteCount, loadNotes, startNoteCycle } from './notestore.ts';
 import { getFixes, reviewFix, addQuestion, awardLineBonus, clearFlags, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, isShelved, loadProgress, logAttempt, markLearned, review, setBestCombo, setGames, setShelved, setToken, syncNow, type SyncStatus } from './store.ts';
 import { moveLabel, playLine, walkLine, type Ui } from './play.ts';
 import { fenAfter, staticBoard } from './board.ts';
@@ -288,6 +289,9 @@ function askPage() {
     ${hasToken() ? '' : '<div class="card"><b>Sync is off.</b><p class="muted">The daily review reads questions from your synced copy, so set up sync in Settings first or it will never see them.</p></div>'}
     <div class="card"><textarea id="qtext" rows="3" maxlength="500" placeholder="Your question" aria-label="Your question"></textarea>
     <div class="row"><button class="btn primary" id="qsend">Send</button><span class="muted" id="qmsg"></span></div></div>
+    <div class="card"><b>Paste explanations from Claude</b><p class="muted">Paste a reply that has "EXPLANATION opening/line#ply" header lines. Each one is saved on this device, shown after you know that move in Learn, Practice and Drill, and copied to your D1 database every few minutes while sync is on. ${noteCount()} saved.</p>
+    <textarea id="ntext" rows="4" placeholder="EXPLANATION bird/main-d5#4&#10;..." aria-label="Explanations to paste"></textarea>
+    <div class="row"><button class="btn primary" id="nsave">Save explanations</button><span class="muted" id="nmsg"></span></div></div>
     <h2>Your questions</h2>
     ${list.length ? list.map(q => { const a = answers[q.id]; return `<div class="card"><div class="tag">${esc(questionContext(q.k))} · ${esc(when(q.t))}</div>
       <p><b>${esc(q.q)}</b></p>${a ? `<p>${esc(a.a)}</p><div class="muted">Answered ${esc(when(a.t))}</div>` : '<p class="muted">Waiting for the daily review.</p>'}</div>`; }).join('')
@@ -296,6 +300,14 @@ function askPage() {
   document.getElementById('qsend')!.onclick = () => {
     const el = document.getElementById('qtext') as HTMLTextAreaElement;
     if (addQuestion(el.value)) askPage(); else document.getElementById('qmsg')!.textContent = 'Type a question first.';
+  };
+  wireNotes();
+}
+
+function wireNotes() {
+  document.getElementById('nsave')!.onclick = () => {
+    const n = addNotes((document.getElementById('ntext') as HTMLTextAreaElement).value);
+    document.getElementById('nmsg')!.textContent = n ? `Saved ${n}.` : 'No "EXPLANATION opening/line#ply" header found.';
   };
 }
 
@@ -591,6 +603,8 @@ function route() {
 // iOS may evict site storage for rarely used apps; ask for durable storage so progress survives (best effort, a no-op where unsupported)
 void navigator.storage?.persist?.().catch(() => {});
 await loadProgress();
+await loadNotes();
+startNoteCycle();
 window.addEventListener('hashchange', route);
 installNavLinks(route);
 const autoplayId = new URLSearchParams(location.search).get('autoplay'); // video rendering: see video/README.md

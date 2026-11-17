@@ -39,7 +39,30 @@ async function ensureTables(db: D1Database) {
   if (tablesReady) return;
   await db.prepare('CREATE TABLE IF NOT EXISTS explain_cache (key TEXT PRIMARY KEY, text TEXT NOT NULL, model TEXT NOT NULL, created_at INTEGER NOT NULL)').run();
   await db.prepare('CREATE TABLE IF NOT EXISTS explain_usage (day TEXT PRIMARY KEY, calls INTEGER NOT NULL)').run();
+  await db.prepare('CREATE TABLE IF NOT EXISTS explanations (k TEXT PRIMARY KEY, text TEXT NOT NULL, t INTEGER NOT NULL)').run();
   tablesReady = true;
+}
+
+const NOTE_KEY = /^[\w-]+\/[\w-]+#\d+$/, MAX_NOTES_PER_PUT = 100;
+/** The owner's pasted explanations, one row per move. GET lists them all; PUT upserts the given ones, a row only being replaced by a newer `t`. */
+async function explanations(req: Request, env: Env): Promise<Response> {
+  await ensureTables(env.DB);
+  if (req.method === 'GET') {
+    const { results } = await env.DB.prepare('SELECT k, text, t FROM explanations ORDER BY t').all<{ k: string; text: string; t: number }>();
+    return json({ items: results });
+  }
+  if (req.method !== 'PUT') return json({ error: 'method not allowed' }, 405);
+  const text = await req.text();
+  if (text.length > MAX_BYTES) return json({ error: 'too large' }, 413);
+  let items: unknown;
+  try { items = (JSON.parse(text) as { items?: unknown }).items; } catch { return json({ error: 'invalid' }, 400); }
+  if (!Array.isArray(items) || items.length > MAX_NOTES_PER_PUT) return json({ error: 'invalid' }, 400);
+  const rows = items.flatMap(x => {
+    const o = x as { k?: unknown; text?: unknown; t?: unknown };
+    return typeof o?.k === 'string' && NOTE_KEY.test(o.k) && typeof o.text === 'string' && o.text.trim() && typeof o.t === 'number' ? [{ k: o.k, text: o.text.slice(0, 1000), t: o.t }] : [];
+  });
+  if (rows.length) await env.DB.batch(rows.map(r => env.DB.prepare('INSERT INTO explanations (k, text, t) VALUES (?1, ?2, ?3) ON CONFLICT(k) DO UPDATE SET text = ?2, t = ?3 WHERE ?3 > explanations.t').bind(r.k, r.text, r.t)));
+  return json({ ok: true, saved: rows.length });
 }
 
 /** Rephrase a verified, rule-based mistake explanation. Any failure returns an error and the app keeps the rule-based text. */
@@ -71,12 +94,13 @@ async function explain(req: Request, env: Env): Promise<Response> {
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
-    if (url.pathname !== '/api/progress' && url.pathname !== '/api/explain' && url.pathname !== '/api/questions') return env.ASSETS.fetch(req);
+    if (url.pathname !== '/api/progress' && url.pathname !== '/api/explain' && url.pathname !== '/api/questions' && url.pathname !== '/api/explanations') return env.ASSETS.fetch(req);
 
     const given = (req.headers.get('authorization') ?? '').replace(/^Bearer /, '');
     if (!env.SYNC_TOKEN || !(await sameToken(given, env.SYNC_TOKEN))) return json({ error: 'unauthorized' }, 401);
     if (url.pathname === '/api/explain') return explain(req, env);
     if (url.pathname === '/api/questions') return questions(req, env);
+    if (url.pathname === '/api/explanations') return explanations(req, env);
 
     if (req.method === 'GET') {
       const row = await env.DB.prepare('SELECT data, updated_at FROM progress WHERE id = 1').first<{ data: string; updated_at: number }>();

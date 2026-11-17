@@ -62,14 +62,14 @@ const revive = (c: Card): Card => ({ ...c, due: new Date(c.due), last_review: c.
 
 let progress: Progress = empty();
 
-async function kvGet(k: string): Promise<string | undefined> {
+export async function kvGet(k: string): Promise<string | undefined> {
   const db = await open();
   return new Promise((res, rej) => {
     const r = db.transaction(STORE).objectStore(STORE).get(k);
     r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
   });
 }
-async function kvSet(k: string, v: string) {
+export async function kvSet(k: string, v: string) {
   const db = await open();
   return new Promise<void>((res, rej) => {
     const tx = db.transaction(STORE, 'readwrite');

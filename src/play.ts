@@ -4,6 +4,7 @@ import { createBoard, type Board } from './board.ts';
 import { esc, setEval, setMessage, setProgress } from './ui.ts';
 import { whyNot } from './why.ts';
 import { movePopularity } from './stats.ts';
+import { getNote } from './notestore.ts';
 import { buildAskPrompt } from './askprompt.ts';
 import { flagKey, getProgress, isFlagged, toggleFlag } from './store.ts';
 import { mistakesAt } from './games.ts';
@@ -52,6 +53,12 @@ function wireFlag(btn: HTMLButtonElement | undefined, k: string, ply: () => numb
 /** The move's note, then (after the answer is known) how it differs from the same spot in a sibling line. */
 export function noteWithVersus(m: Move): string {
   return m.note + (m.versus?.length ? m.versus.map(x => `<div class="vs">${esc(x.text)}</div>`).join('') : '');
+}
+
+/** The line's note plus, when the owner pasted one back from Claude, that explanation (only shown after the move is known, in Learn, Practice and Drill). */
+export function noteFor(o: Opening, v: Variation, ply: number): string {
+  const mine = getNote(flagKey(key(o, v), ply));
+  return noteWithVersus(v.moves[ply]) + (mine ? `<div class="vs mine">${esc(mine)}</div>` : '');
 }
 
 /** Play a common mistake out on the board: the wrong move, then the punishment, then the lesson. Leaves the final position and message up; the caller puts the line back. */
@@ -106,11 +113,11 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
       view = k; board.lock(); board.clearArrow();
       board.show(at(k), lasts[k]);
       setEval(k ? v.moves[k - 1].eval : START_EVAL); setProgress(k / v.moves.length);
-      setMessage(k ? `<b>${moveLabel(k - 1, v.moves[k - 1].san)}</b> ${noteWithVersus(v.moves[k - 1])}` : 'Start position.');
+      setMessage(k ? `<b>${moveLabel(k - 1, v.moves[k - 1].san)}</b> ${noteFor(o, v, k - 1)}` : 'Start position.');
       syncArrows();
     };
     ui.prev.onclick = () => { if (!busy && view > 0) showView(view - 1); };
-    ui.fwd.onclick = () => { if (busy || live()) return; if (view + 1 === idx) { showLive(); setEval(v.moves[idx - 1].eval); setProgress(idx / v.moves.length); setMessage(noteWithVersus(v.moves[idx - 1])); } else showView(view + 1); };
+    ui.fwd.onclick = () => { if (busy || live()) return; if (view + 1 === idx) { showLive(); setEval(v.moves[idx - 1].eval); setProgress(idx / v.moves.length); setMessage(noteFor(o, v, idx - 1)); } else showView(view + 1); };
 
     const finish = () => {
       finished = true; board.lock(); board.clearArrow(); setProgress(1); syncArrows();
@@ -159,12 +166,12 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
         setEval(v.moves[idx - 1].eval); setProgress(idx / v.moves.length);
         if (opts.single) { // a mistake card: only this one position is asked
           finished = true; board.lock(); board.clearArrow(); setProgress(1); syncArrows();
-          setMessage(`<b>${mistakes === 0 ? 'That is the move.' : 'Found it.'}</b> ${noteWithVersus(v.moves[idx - 1])}`, mistakes === 0);
+          setMessage(`<b>${mistakes === 0 ? 'That is the move.' : 'Found it.'}</b> ${noteFor(o, v, idx - 1)}`, mistakes === 0);
           ui.hint.onclick = null; showWhy(false);
           resolve(mistakes);
           return;
         }
-        setMessage(noteWithVersus(v.moves[idx - 1]));
+        setMessage(noteFor(o, v, idx - 1));
         void next();
       } else {
         chess.undo(); mistakes++; wrong = { idx, san: m.san }; showWhy(true);
@@ -201,7 +208,7 @@ export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTM
     setEval(idx ? v.moves[idx - 1].eval : START_EVAL); setProgress(idx / v.moves.length);
     const m = v.moves[idx - 1];
     const pop = idx && !m.versus?.length ? movePopularity(m, (idx - 1) % 2 === 0 === (o.color === 'white')) : ''; // the contrast text needs the room
-    setMessage(idx ? `<b>${moveLabel(idx - 1, m.san)}</b> ${noteWithVersus(m)}${pop ? `<div class="stat">${pop}</div>` : ''}` : `<b>${esc(o.goal.title)}.</b> ${esc(v.strategy)}<div class="stat">Press Next to step through ${esc(v.name)}.</div>`);
+    setMessage(idx ? `<b>${moveLabel(idx - 1, m.san)}</b> ${noteFor(o, v, idx - 1)}${pop ? `<div class="stat">${pop}</div>` : ''}` : `<b>${esc(o.goal.title)}.</b> ${esc(v.strategy)}<div class="stat">Press Next to step through ${esc(v.name)}.</div>`);
     controls.prev.disabled = idx === 0;
     controls.next.textContent = idx === v.moves.length ? 'Finish' : 'Next';
     syncFlag(); syncAsk();
