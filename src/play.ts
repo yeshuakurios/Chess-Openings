@@ -4,7 +4,7 @@ import { createBoard, type Board } from './board.ts';
 import { esc, setEval, setMessage, setProgress } from './ui.ts';
 import { whyNot } from './why.ts';
 import { movePopularity } from './stats.ts';
-import { getNote } from './notestore.ts';
+import { addNotes, getNote } from './notestore.ts';
 import { buildAskPrompt } from './askprompt.ts';
 import { flagKey, getProgress, isFlagged, toggleFlag } from './store.ts';
 import { mistakesAt } from './games.ts';
@@ -18,7 +18,7 @@ import type { Mistake, Move, Opening, Variation } from './types.ts';
 export const START_EVAL = 0.2;
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-export interface Ui { board: HTMLElement; hint: HTMLButtonElement; prev: HTMLButtonElement; fwd: HTMLButtonElement; resume?: HTMLButtonElement; why?: HTMLButtonElement; flag?: HTMLButtonElement; ask?: HTMLButtonElement }
+export interface Ui { board: HTMLElement; hint: HTMLButtonElement; prev: HTMLButtonElement; fwd: HTMLButtonElement; resume?: HTMLButtonElement; why?: HTMLButtonElement; flag?: HTMLButtonElement; ask?: HTMLButtonElement; paste?: HTMLButtonElement }
 
 export const FLAG_TEXT = { off: 'Need more explanation', on: 'Flagged ✓ (tap to undo)' };
 export const ASK_TEXT = { idle: 'Ask a question', saved: 'Prompt copied ✓' };
@@ -37,6 +37,22 @@ function wireAsk(btn: HTMLButtonElement | undefined, o: Opening, v: Variation, p
     try { await navigator.clipboard.writeText(out); copied = true; } catch { /* iOS can refuse outside a tap; show it instead */ }
     if (!copied) prompt('Copy this and paste it in Claude:', out);
     btn.textContent = ASK_TEXT.saved; setTimeout(() => { btn.textContent = ASK_TEXT.idle; }, 2500);
+  };
+  sync();
+  return sync;
+}
+/** One tap: read the clipboard (Claude's reply) and save it as the explanation for this move. A reply without its EXPLANATION header is filed under the move on screen. */
+function wirePaste(btn: HTMLButtonElement | undefined, k: string, ply: () => number | undefined) {
+  if (!btn) return () => {};
+  const sync = () => { btn.disabled = ply() === undefined; };
+  btn.onclick = async () => {
+    const p = ply(); if (p === undefined) return;
+    let text = '';
+    try { text = await navigator.clipboard.readText(); } catch { /* iOS can refuse; fall back to a prompt */ }
+    if (!text.trim()) text = prompt('Paste the explanation from Claude:') ?? '';
+    if (!text.trim()) return;
+    const n = addNotes(/^\s*EXPLANATION\s/m.test(text) ? text : `EXPLANATION ${flagKey(k, p)}\n${text}`);
+    btn.textContent = n ? 'Saved ✓' : 'Not understood'; setTimeout(() => { btn.textContent = 'Paste explanation'; }, 2000);
   };
   sync();
   return sync;
@@ -99,8 +115,8 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
     const live = () => view === idx;
     // the move the button is about: the one being asked now, or the one on screen when looking back, or the last one when the line is done
     const flagPly = () => (busy ? undefined : finished ? v.moves.length - 1 : live() ? idx : view - 1 >= 0 ? view - 1 : undefined);
-    const syncFlag = wireFlag(ui.flag, key(o, v), flagPly), syncAsk = wireAsk(ui.ask, o, v, flagPly);
-    const syncArrows = () => { ui.prev.disabled = busy || view === 0; ui.fwd.disabled = busy || live(); syncFlag(); syncAsk(); };
+    const syncFlag = wireFlag(ui.flag, key(o, v), flagPly), syncAsk = wireAsk(ui.ask, o, v, flagPly), syncPaste = wirePaste(ui.paste, key(o, v), flagPly);
+    const syncArrows = () => { ui.prev.disabled = busy || view === 0; ui.fwd.disabled = busy || live(); syncFlag(); syncAsk(); syncPaste(); };
     const showLive = () => {
       view = idx; board.clearArrow(); syncArrows();
       if (finished) { board.show(chess, last); return; }
@@ -194,11 +210,11 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
 }
 
 /** Step-through walkthrough used by Learn mode. On a move with known slips, a button plays the common mistake out before going on. */
-export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTMLButtonElement; prev: HTMLButtonElement; trap?: HTMLButtonElement; flag?: HTMLButtonElement; ask?: HTMLButtonElement }, onEnd: () => void) {
+export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTMLButtonElement; prev: HTMLButtonElement; trap?: HTMLButtonElement; flag?: HTMLButtonElement; ask?: HTMLButtonElement; paste?: HTMLButtonElement }, onEnd: () => void) {
   const board = createBoard(ui.board, o.color);
   let idx = 0, demoing = false, shown = 0, token = 0;
   const learnPly = () => (idx > 0 && !demoing ? idx - 1 : undefined);
-  const syncFlag = wireFlag(controls.flag, key(o, v), learnPly), syncAsk = wireAsk(controls.ask, o, v, learnPly);
+  const syncFlag = wireFlag(controls.flag, key(o, v), learnPly), syncAsk = wireAsk(controls.ask, o, v, learnPly), syncPaste = wirePaste(controls.paste, key(o, v), learnPly);
   const render = () => {
     token++; demoing = false;
     const chess = new Chess(); let last: [Key, Key] | undefined;
@@ -211,7 +227,7 @@ export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTM
     setMessage(idx ? `<b>${moveLabel(idx - 1, m.san)}</b> ${noteFor(o, v, idx - 1)}${pop ? `<div class="stat">${pop}</div>` : ''}` : `<b>${esc(o.goal.title)}.</b> ${esc(v.strategy)}<div class="stat">Press Next to step through ${esc(v.name)}.</div>`);
     controls.prev.disabled = idx === 0;
     controls.next.textContent = idx === v.moves.length ? 'Finish' : 'Next';
-    syncFlag(); syncAsk();
+    syncFlag(); syncAsk(); syncPaste();
     if (controls.trap) {
       const n = idx ? mistakesFor(o, v, idx - 1).length : 0;
       controls.trap.hidden = !n; controls.trap.disabled = false;
@@ -222,7 +238,7 @@ export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTM
     const list = idx ? mistakesFor(o, v, idx - 1) : [];
     if (!list.length) return;
     const x = list[shown++ % list.length], my = ++token;
-    demoing = true; syncFlag(); syncAsk(); controls.prev.disabled = true; controls.trap!.disabled = true; controls.next.disabled = true;
+    demoing = true; syncFlag(); syncAsk(); syncPaste(); controls.prev.disabled = true; controls.trap!.disabled = true; controls.next.disabled = true;
     const before = new Chess(); for (let i = 0; i < idx - 1; i++) before.move(v.moves[i].san);
     await showMistake(board, before.fen(), x, () => my !== token);
     if (my !== token) return;
