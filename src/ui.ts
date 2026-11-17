@@ -20,7 +20,7 @@ export function screenShell(title: string, subtitle: string, controls: string, m
     : `<b>${esc(title)}</b>`;
   return `
   <header class="top"><a class="back" href="#/" id="back" data-goback aria-label="Back">←</a>
-    <div class="title">${titleHtml}<span>${esc(subtitle)}</span></div></header>
+    <div class="title">${titleHtml}<span>${esc(subtitle)}</span></div><span class="combo" id="combo" hidden aria-label="Moves in a row"></span></header>
   <div class="bar"><div id="bar-fill"></div></div>
   <div class="msg" id="msg" role="status" aria-live="polite"></div>
   <div class="eval"><div id="eval-fill"></div><span id="eval-label">0.2</span></div>

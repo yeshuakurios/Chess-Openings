@@ -16,7 +16,9 @@ import { mountMistakeStory } from './mistakeview.ts';
 import { fetchGames, FIRST_GAMES, LATER_GAMES, USERNAME } from './lichess.ts';
 import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
-import { earnedNow, levelFor, totalXp } from './gamify.ts';
+import { DAILY_GOAL, dayKey, earnedNow, levelFor, streaks, totalXp, xpForAttempt } from './gamify.ts';
+import { hasMilestone, isComboMark, newTally, snapshot, summarize, tallyMove, type Snapshot, type Summary, type Tally } from './session.ts';
+import { HAPTIC, buzz, confetti, floatXp, showCombo, toast } from './juice.ts';
 import { esc, screenShell } from './ui.ts';
 import { goTo, installNavLinks, trackEntry } from './nav.ts';
 import { answers } from './answers.ts';
@@ -85,6 +87,31 @@ const masteryOf = (o: Opening, v: Variation) => {
 const refreshBadges = () => grantBadges(earnedNow({
   xp: getProgress().xp, levels: openings.flatMap(o => o.variations.map(v => masteryOf(o, v).level))
 }));
+const masteredKeys = () => openings.flatMap(o => o.variations.filter(v => masteryOf(o, v).level === 'Mastered').map(v => key(o, v)));
+const takeSnapshot = (): Snapshot => { refreshBadges(); const p = getProgress(); return snapshot(p.xp, Object.keys(p.badges), masteredKeys(), fixCounts(getFixes()).cleared); };
+const lineName = (k: string) => { const [oid, vid] = k.split('/'); const o = findOpening(oid), v = o && findVariation(o, vid); return o && v ? `${o.name}: ${v.name}` : k; };
+
+/** The session's running tally (moves, combo, XP). Reset at the start of each Practice run and each Drill session. */
+let tally: Tally = newTally();
+/** Instant feedback for one move: a floating +XP, the combo chip and a haptic tap. A wrong move just clears the chip, quietly. */
+function feel(a: { ok: 0 | 1; h: 0 | 1 }) {
+  tally = tallyMove(tally, a);
+  if (a.ok) { const mark = isComboMark(tally.combo); floatXp(xpForAttempt(a)); showCombo(tally.combo, mark); buzz(mark ? HAPTIC.mark : HAPTIC.right); }
+  else { showCombo(0); buzz(HAPTIC.wrong); }
+}
+/** The milestones in a summary, as short lines (gains only). */
+const wins = (s: Summary) => [
+  s.level ? `New title: <b>${esc(s.level)}</b>` : '',
+  ...s.mastered.map(k => `Mastered <b>${esc(lineName(k))}</b>`),
+  s.cleared ? `Cleared <b>${s.cleared}</b> ${s.cleared === 1 ? 'mistake' : 'mistakes'} from your games` : '',
+  s.goal.reachedNow ? `Daily goal reached` : '',
+  ...s.badges.map(b => `Badge: <b>${esc(b)}</b>`)
+].filter(Boolean);
+function celebrate(s: Summary) {
+  if (!hasMilestone(s)) return;
+  confetti(); buzz(HAPTIC.win);
+  toast(wins(s)[0]);
+}
 const goalKey = (o: Opening) => `goal:${o.id}`;
 const lookup = (k: string): [Opening, Variation] | undefined => {
   const [oid, vid] = k.split('/'); const o = findOpening(oid); const v = o && findVariation(o, vid);
@@ -113,8 +140,13 @@ function home() {
   const prog = getProgress(), lv = levelFor(totalXp(prog.xp));
   let levelUp = false; // best effort: the last level shown is kept on this device only
   try { const seen = Number(localStorage.getItem('level-seen') ?? 0); levelUp = seen > 0 && lv.n > seen; localStorage.setItem('level-seen', String(lv.n)); } catch { /* storage unavailable */ }
+  const today = prog.xp[dayKey()] ?? 0, st = streaks(prog.xp);
+  // gentle, never a threat: a live streak is an invitation, a broken one is simply not mentioned
+  const streakText = st.current ? (today ? `<b>${st.current}-day streak</b>` : `Play one line to make it <b>${st.current + 1} days</b>`) : 'Start a streak today';
   const progressCard = `<div class="quiet"><span>${esc(lv.title)}</span>${levelUp ? '<span class="tag">Level up!</span>' : ''}
-    <div class="goal"><i style="width:${lv.span ? Math.round((lv.into / lv.span) * 100) : 100}%"></i></div></div>`;
+    <div class="goal"><i style="width:${lv.span ? Math.round((lv.into / lv.span) * 100) : 100}%"></i></div>
+    <div class="streak"><span>${streakText}</span><span>${today >= DAILY_GOAL ? '<b>Daily goal done</b>' : `<b>${today}</b>/${DAILY_GOAL} XP today`}</span></div>
+    <div class="goal today"><i style="width:${Math.min(100, Math.round((today / DAILY_GOAL) * 100))}%"></i></div></div>`;
   const saved = openings.filter(o => isShelved(o.id));
   const byOpening = getProgress().games?.byOpening ?? {};
   const shown = openings.filter(o => !isShelved(o.id)).slice()
@@ -434,9 +466,13 @@ async function practice(o: Opening, v: Variation, startPly?: number) {
   app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`, lineMenu(o, v, 'Practice'));
   const run = async () => {
     btn('again').hidden = true; btn('done').hidden = true;
-    const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, ...(startPly ? { startPly } : {}), onAttempt: a => logAttempt({ ...a, k: key(o, v), m: 'p', ...(startPly ? { o: 1 as const } : {}) }) });
+    const before = takeSnapshot(); tally = newTally();
+    const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, ...(startPly ? { startPly } : {}), onAttempt: a => { logAttempt({ ...a, k: key(o, v), m: 'p', ...(startPly ? { o: 1 as const } : {}) }); feel(a); } });
     if (my !== token) return;
     if (mistakes === 0 && !startPly) { markLearned(key(o, v)); awardLineBonus(); } // starting mid-line is a spot check, not a whole line
+    const s = summarize(before, takeSnapshot(), tally, getProgress().xp);
+    document.getElementById('msg')?.insertAdjacentHTML('beforeend', `<div class="stat">+${s.xp} XP${s.best >= 2 ? ` · best run ×${s.best}` : ''} · ${s.goal.today >= s.goal.target ? 'daily goal done' : `${s.goal.today}/${s.goal.target} today`}</div>`);
+    celebrate(s);
     btn('again').hidden = false; btn('done').hidden = false;
     btn('done').onclick = () => goTo(startPly ? href('games') : href('o', o.id));
     btn('again').onclick = () => { app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`, lineMenu(o, v, 'Practice')); void run(); };
@@ -461,8 +497,9 @@ async function reviewFixes(ids: string[], my: number, title = 'A mistake from yo
     const [o, v] = found;
     app.innerHTML = screenShell(title, esc(o.name), `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`, lineMenu(o, v, 'Practice').map(m => ({ ...m, active: false })));
     let wrong = 0, hinted = false, ms = 0;
+    showCombo(tally.combo);
     await playLine(ui(), o, v, { stopped: () => my !== token, startPly: f.p, single: true, onAttempt: a => {
-      logAttempt({ ...a, k: f.k, m: 'd', o: 1 });
+      logAttempt({ ...a, k: f.k, m: 'd', o: 1 }); feel(a);
       if (!a.ok) wrong++; else { hinted = hinted || !!a.h; ms = a.ms; }
     } });
     if (my !== token) return { done, more: false };
@@ -470,6 +507,7 @@ async function reviewFixes(ids: string[], my: number, title = 'A mistake from yo
     done++;
     const msg = document.getElementById('msg');
     if (msg && nf) msg.insertAdjacentHTML('beforeend', `<div class="stat">${nf.clearedAt ? '<b>Cleared ✓</b> You have this one.' : `${esc(whenText(nf))} · clean on ${nf.days.length} of ${FIX_DAYS} days`}</div>`);
+    if (nf?.clearedAt && !f.clearedAt) { confetti(); buzz(HAPTIC.win); }
     if (!(await goOn()) || my !== token) return { done, more: false };
   }
   return { done, more: true };
@@ -479,6 +517,7 @@ async function reviewFixes(ids: string[], my: number, title = 'A mistake from yo
 async function fixDrillOne(id: string) {
   const my = ++token;
   if (!getFixes()[id]) { location.hash = href('games'); return; }
+  tally = newTally();
   await reviewFixes([id], my);
   if (my === token) location.hash = href('games');
 }
@@ -496,6 +535,7 @@ async function drill() {
     return;
   }
   let combo = 0, played = 0, fixesDone = 0, stopped = false;
+  const before = takeSnapshot(); tally = newTally();
   if (fixIds.length) {
     const r = await reviewFixes(fixIds, my);
     if (my !== token) return;
@@ -504,7 +544,8 @@ async function drill() {
   for (const k of stopped ? [] : queue) {
     const [o, v] = lookup(k)!;
     app.innerHTML = screenShell('Drill', `${esc(o.name)}`, `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`, lineMenu(o, v, 'Practice').map(m => ({ ...m, active: false })));
-    const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, onAttempt: a => logAttempt({ ...a, k: key(o, v), m: 'd' }) });
+    showCombo(tally.combo); // the run of correct moves carries across lines in one sitting
+    const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, onAttempt: a => { logAttempt({ ...a, k: key(o, v), m: 'd' }); feel(a); } });
     if (my !== token) return;
     review(k, mistakes);
     if (mistakes === 0) awardLineBonus();
@@ -517,7 +558,8 @@ async function drill() {
     const m = masteryOf(o, v), from = pickSpotCheck(m);
     if (LEVELS.indexOf(m.level) >= 2 && from !== undefined && !hadSpotCheckToday(k, getProgress().attempts)) {
       app.innerHTML = screenShell('Spot check', esc(o.name), `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`, lineMenu(o, v, 'Practice').map(m => ({ ...m, active: false })));
-      await playLine(ui(), o, v, { stopped: () => my !== token, startPly: from, onAttempt: a => logAttempt({ ...a, k, m: 'd', o: 1 }) });
+      showCombo(tally.combo);
+      await playLine(ui(), o, v, { stopped: () => my !== token, startPly: from, onAttempt: a => { logAttempt({ ...a, k, m: 'd', o: 1 }); feel(a); } });
       if (my !== token) return;
       if (!(await goOn())) break;
       if (my !== token) return;
@@ -525,9 +567,16 @@ async function drill() {
   }
   const left = allDue.length - played + dueFixes(getFixes()).filter(f => lookup(f.k)).length;
   const parts = [played ? `${played} ${played === 1 ? 'line' : 'lines'}` : '', fixesDone ? `${fixesDone} ${fixesDone === 1 ? 'mistake' : 'mistakes'} from your games` : ''].filter(Boolean).join(' and ');
-  app.innerHTML = `<main class="page"><h1>Nice work</h1><div class="card"><b>${parts || 'Nothing'} played.</b>
+  const s = summarize(before, takeSnapshot(), tally, getProgress().xp), w = wins(s);
+  const goalPct = Math.min(100, Math.round((s.goal.today / s.goal.target) * 100));
+  app.innerHTML = `<main class="page summary"><h1>Session complete</h1><div class="card"><div class="big-num">+${s.xp} XP</div><b>${parts || 'Nothing'} played.</b>
+    <div class="stats"><div><b>${s.accuracy ?? '–'}${s.accuracy === undefined ? '' : '%'}</b><span>first-try moves</span></div><div><b>×${s.best}</b><span>best run</span></div><div><b>${s.streak}</b><span>day streak</span></div></div>
+    <div class="streak"><span>Today</span><span>${s.goal.today >= s.goal.target ? '<b>Daily goal done</b>' : `<b>${s.goal.today}</b>/${s.goal.target} XP`}</span></div>
+    <div class="goal today"><i style="width:${goalPct}%"></i></div>
+    ${w.length ? `<ul class="wins">${w.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
     <p class="muted">${left > 0 ? 'The rest will be waiting whenever you feel like more.' : 'Everything is up to date. Come back whenever you like.'}</p></div>
     <a class="btn primary big" href="#/" data-goto>Done</a>${left > 0 ? `<a class="btn big" href="${href('drill')}">A few more</a>` : ''}</main>`;
+  celebrate(s);
 }
 
 function route() {
