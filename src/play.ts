@@ -28,15 +28,22 @@ const mistakesFor = (o: Opening, v: Variation, ply: number) => mistakesAt(getPro
 function wireAsk(btn: HTMLButtonElement | undefined, o: Opening, v: Variation, ply: () => number | undefined) {
   if (!btn) return () => {};
   const sync = () => { btn.disabled = ply() === undefined; };
-  btn.onclick = async () => {
+  btn.onclick = () => {
     const p = ply(); if (p === undefined) return;
-    const text = prompt('Your question about this move (leave empty for "why this move?"). A prompt with the line is copied for you to paste in Claude:');
-    if (text === null) return;
-    const out = buildAskPrompt(o, v, p, text);
-    let copied = false;
-    try { await navigator.clipboard.writeText(out); copied = true; } catch { /* iOS can refuse outside a tap; show it instead */ }
-    if (!copied) prompt('Copy this and paste it in Claude:', out);
-    btn.textContent = ASK_TEXT.saved; setTimeout(() => { btn.textContent = ASK_TEXT.idle; }, 2500);
+    document.querySelector('.mv-overlay')?.remove();
+    const wrap = document.createElement('div');
+    wrap.className = 'mv-overlay'; wrap.setAttribute('role', 'dialog'); wrap.setAttribute('aria-modal', 'true'); wrap.setAttribute('aria-label', 'Ask a question');
+    wrap.innerHTML = '<main class="page"><h1>Ask a question</h1><p class="muted">Leave it empty to ask "why this move?". Copy the prompt, paste it in Claude, then copy the reply and tap Paste explanation.</p><div class="card"><textarea id="aq" rows="3" maxlength="300" placeholder="Your question about this move" aria-label="Your question"></textarea><textarea id="ap" rows="5" readonly aria-label="Prompt to copy"></textarea><div class="row"><button class="btn primary" id="acopy">Copy prompt</button><button class="btn" id="aclose">Close</button><span class="muted" id="amsg"></span></div></div></main>';
+    document.body.appendChild(wrap);
+    const q = wrap.querySelector<HTMLTextAreaElement>('#aq')!, out = wrap.querySelector<HTMLTextAreaElement>('#ap')!, msg = wrap.querySelector<HTMLElement>('#amsg')!;
+    const build = () => { out.value = buildAskPrompt(o, v, p, q.value); };
+    build(); q.oninput = build;
+    wrap.querySelector<HTMLButtonElement>('#acopy')!.onclick = async () => {
+      build();
+      try { await navigator.clipboard.writeText(out.value); msg.textContent = 'Copied ✓'; }
+      catch { out.focus(); out.select(); msg.textContent = 'Select all and copy.'; }
+    };
+    wrap.querySelector<HTMLButtonElement>('#aclose')!.onclick = () => wrap.remove();
   };
   sync();
   return sync;
