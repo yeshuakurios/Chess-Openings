@@ -288,7 +288,7 @@ function askPage() {
     <p class="muted">Anything about an opening, a line or a move. Questions are stored with your progress and reviewed once a day; the answer appears here after the next update. To ask about one move, use "Ask a question" while you learn or practice it.</p>
     ${hasToken() ? '' : '<div class="card"><b>Sync is off.</b><p class="muted">The daily review reads questions from your synced copy, so set up sync in Settings first or it will never see them.</p></div>'}
     <div class="card"><textarea id="qtext" rows="3" maxlength="500" placeholder="Your question" aria-label="Your question"></textarea>
-    <div class="row"><button class="btn primary" id="qsend">Send</button><span class="muted" id="qmsg"></span></div></div>
+    <div class="row"><button class="btn primary" id="qsend">Send</button><button class="btn" id="qcopy">Copy</button><span class="muted" id="qmsg"></span></div></div>
     <div class="card"><b>Paste explanations from Claude</b><p class="muted">Paste a reply that has "EXPLANATION opening/line#ply" header lines. Each one is saved on this device, shown after you know that move in Learn, Practice and Drill, and copied to your D1 database every few minutes while sync is on. ${noteCount()} saved.</p>
     <textarea id="ntext" rows="4" placeholder="EXPLANATION bird/main-d5#4&#10;..." aria-label="Explanations to paste"></textarea>
     <div class="row"><button class="btn primary" id="nsave">Save explanations</button><span class="muted" id="nmsg"></span></div></div>
@@ -297,6 +297,12 @@ function askPage() {
       <p><b>${esc(q.q)}</b></p>${a ? `<p>${esc(a.a)}</p><div class="muted">Answered ${esc(when(a.t))}</div>` : '<p class="muted">Waiting for the daily review.</p>'}</div>`; }).join('')
       : '<div class="card"><p class="muted">No questions yet.</p></div>'}
   </main>`;
+  document.getElementById('qcopy')!.onclick = async () => {
+    const el = document.getElementById('qtext') as HTMLTextAreaElement, msg = document.getElementById('qmsg')!;
+    if (!el.value.trim()) { msg.textContent = 'Type a question first.'; return; }
+    try { await navigator.clipboard.writeText(`Chess opening question (plain text reply, under 900 characters):\n${el.value.trim()}`); msg.textContent = 'Copied ✓'; }
+    catch { el.focus(); el.select(); msg.textContent = 'Select all and copy.'; }
+  };
   document.getElementById('qsend')!.onclick = () => {
     const el = document.getElementById('qtext') as HTMLTextAreaElement;
     if (addQuestion(el.value)) askPage(); else document.getElementById('qmsg')!.textContent = 'Type a question first.';
