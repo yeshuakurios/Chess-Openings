@@ -4,7 +4,9 @@ import { createBoard, type Board } from './board.ts';
 import { esc, setEval, setMessage, setProgress } from './ui.ts';
 import { whyNot } from './why.ts';
 import { movePopularity } from './stats.ts';
-import { addQuestion, flagKey, getProgress, isFlagged, toggleFlag } from './store.ts';
+import { getNote } from './notestore.ts';
+import { buildAskPrompt } from './askprompt.ts';
+import { flagKey, getProgress, isFlagged, toggleFlag } from './store.ts';
 import { mistakesAt } from './games.ts';
 import { explainMistake } from './mistakestory.ts';
 import { openMistakeStory } from './mistakeview.ts';
@@ -19,17 +21,22 @@ const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 export interface Ui { board: HTMLElement; hint: HTMLButtonElement; prev: HTMLButtonElement; fwd: HTMLButtonElement; resume?: HTMLButtonElement; why?: HTMLButtonElement; flag?: HTMLButtonElement; ask?: HTMLButtonElement }
 
 export const FLAG_TEXT = { off: 'Need more explanation', on: 'Flagged ✓ (tap to undo)' };
-export const ASK_TEXT = { idle: 'Ask a question', saved: 'Question saved ✓' };
+export const ASK_TEXT = { idle: 'Ask a question', saved: 'Prompt copied ✓' };
 /** The mistakes to play out at move `ply` of a line: from the owner's Lichess games when imported, the hand-written ones otherwise. */
 const mistakesFor = (o: Opening, v: Variation, ply: number) => mistakesAt(getProgress().games, key(o, v), ply, v.moves[ply]?.mistakes, o.color);
 /** Wire an "Ask a question" button to one move: a native prompt takes the text, the question is stored with the move's id. */
-function wireAsk(btn: HTMLButtonElement | undefined, k: string, ply: () => number | undefined) {
+function wireAsk(btn: HTMLButtonElement | undefined, o: Opening, v: Variation, ply: () => number | undefined) {
   if (!btn) return () => {};
   const sync = () => { btn.disabled = ply() === undefined; };
-  btn.onclick = () => {
+  btn.onclick = async () => {
     const p = ply(); if (p === undefined) return;
-    const text = prompt('Your question about this move. It is stored and answered in the daily review:');
-    if (text && addQuestion(text, flagKey(k, p))) { btn.textContent = ASK_TEXT.saved; setTimeout(() => { btn.textContent = ASK_TEXT.idle; }, 2500); }
+    const text = prompt('Your question about this move (leave empty for "why this move?"). A prompt with the line is copied for you to paste in Claude:');
+    if (text === null) return;
+    const out = buildAskPrompt(o, v, p, text);
+    let copied = false;
+    try { await navigator.clipboard.writeText(out); copied = true; } catch { /* iOS can refuse outside a tap; show it instead */ }
+    if (!copied) prompt('Copy this and paste it in Claude:', out);
+    btn.textContent = ASK_TEXT.saved; setTimeout(() => { btn.textContent = ASK_TEXT.idle; }, 2500);
   };
   sync();
   return sync;
@@ -46,6 +53,12 @@ function wireFlag(btn: HTMLButtonElement | undefined, k: string, ply: () => numb
 /** The move's note, then (after the answer is known) how it differs from the same spot in a sibling line. */
 export function noteWithVersus(m: Move): string {
   return m.note + (m.versus?.length ? m.versus.map(x => `<div class="vs">${esc(x.text)}</div>`).join('') : '');
+}
+
+/** The line's note plus, when the owner pasted one back from Claude, that explanation (only shown after the move is known, in Learn, Practice and Drill). */
+export function noteFor(o: Opening, v: Variation, ply: number): string {
+  const mine = getNote(flagKey(key(o, v), ply));
+  return noteWithVersus(v.moves[ply]) + (mine ? `<div class="vs mine">${esc(mine)}</div>` : '');
 }
 
 /** Play a common mistake out on the board: the wrong move, then the punishment, then the lesson. Leaves the final position and message up; the caller puts the line back. */
@@ -86,7 +99,7 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
     const live = () => view === idx;
     // the move the button is about: the one being asked now, or the one on screen when looking back, or the last one when the line is done
     const flagPly = () => (busy ? undefined : finished ? v.moves.length - 1 : live() ? idx : view - 1 >= 0 ? view - 1 : undefined);
-    const syncFlag = wireFlag(ui.flag, key(o, v), flagPly), syncAsk = wireAsk(ui.ask, key(o, v), flagPly);
+    const syncFlag = wireFlag(ui.flag, key(o, v), flagPly), syncAsk = wireAsk(ui.ask, o, v, flagPly);
     const syncArrows = () => { ui.prev.disabled = busy || view === 0; ui.fwd.disabled = busy || live(); syncFlag(); syncAsk(); };
     const showLive = () => {
       view = idx; board.clearArrow(); syncArrows();
@@ -100,11 +113,11 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
       view = k; board.lock(); board.clearArrow();
       board.show(at(k), lasts[k]);
       setEval(k ? v.moves[k - 1].eval : START_EVAL); setProgress(k / v.moves.length);
-      setMessage(k ? `<b>${moveLabel(k - 1, v.moves[k - 1].san)}</b> ${noteWithVersus(v.moves[k - 1])}` : 'Start position.');
+      setMessage(k ? `<b>${moveLabel(k - 1, v.moves[k - 1].san)}</b> ${noteFor(o, v, k - 1)}` : 'Start position.');
       syncArrows();
     };
     ui.prev.onclick = () => { if (!busy && view > 0) showView(view - 1); };
-    ui.fwd.onclick = () => { if (busy || live()) return; if (view + 1 === idx) { showLive(); setEval(v.moves[idx - 1].eval); setProgress(idx / v.moves.length); setMessage(noteWithVersus(v.moves[idx - 1])); } else showView(view + 1); };
+    ui.fwd.onclick = () => { if (busy || live()) return; if (view + 1 === idx) { showLive(); setEval(v.moves[idx - 1].eval); setProgress(idx / v.moves.length); setMessage(noteFor(o, v, idx - 1)); } else showView(view + 1); };
 
     const finish = () => {
       finished = true; board.lock(); board.clearArrow(); setProgress(1); syncArrows();
@@ -153,12 +166,12 @@ export function playLine(ui: Ui, o: Opening, v: Variation, opts: { stopped: () =
         setEval(v.moves[idx - 1].eval); setProgress(idx / v.moves.length);
         if (opts.single) { // a mistake card: only this one position is asked
           finished = true; board.lock(); board.clearArrow(); setProgress(1); syncArrows();
-          setMessage(`<b>${mistakes === 0 ? 'That is the move.' : 'Found it.'}</b> ${noteWithVersus(v.moves[idx - 1])}`, mistakes === 0);
+          setMessage(`<b>${mistakes === 0 ? 'That is the move.' : 'Found it.'}</b> ${noteFor(o, v, idx - 1)}`, mistakes === 0);
           ui.hint.onclick = null; showWhy(false);
           resolve(mistakes);
           return;
         }
-        setMessage(noteWithVersus(v.moves[idx - 1]));
+        setMessage(noteFor(o, v, idx - 1));
         void next();
       } else {
         chess.undo(); mistakes++; wrong = { idx, san: m.san }; showWhy(true);
@@ -185,7 +198,7 @@ export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTM
   const board = createBoard(ui.board, o.color);
   let idx = 0, demoing = false, shown = 0, token = 0;
   const learnPly = () => (idx > 0 && !demoing ? idx - 1 : undefined);
-  const syncFlag = wireFlag(controls.flag, key(o, v), learnPly), syncAsk = wireAsk(controls.ask, key(o, v), learnPly);
+  const syncFlag = wireFlag(controls.flag, key(o, v), learnPly), syncAsk = wireAsk(controls.ask, o, v, learnPly);
   const render = () => {
     token++; demoing = false;
     const chess = new Chess(); let last: [Key, Key] | undefined;
@@ -195,7 +208,7 @@ export function walkLine(ui: Ui, o: Opening, v: Variation, controls: { next: HTM
     setEval(idx ? v.moves[idx - 1].eval : START_EVAL); setProgress(idx / v.moves.length);
     const m = v.moves[idx - 1];
     const pop = idx && !m.versus?.length ? movePopularity(m, (idx - 1) % 2 === 0 === (o.color === 'white')) : ''; // the contrast text needs the room
-    setMessage(idx ? `<b>${moveLabel(idx - 1, m.san)}</b> ${noteWithVersus(m)}${pop ? `<div class="stat">${pop}</div>` : ''}` : `<b>${esc(o.goal.title)}.</b> ${esc(v.strategy)}<div class="stat">Press Next to step through ${esc(v.name)}.</div>`);
+    setMessage(idx ? `<b>${moveLabel(idx - 1, m.san)}</b> ${noteFor(o, v, idx - 1)}${pop ? `<div class="stat">${pop}</div>` : ''}` : `<b>${esc(o.goal.title)}.</b> ${esc(v.strategy)}<div class="stat">Press Next to step through ${esc(v.name)}.</div>`);
     controls.prev.disabled = idx === 0;
     controls.next.textContent = idx === v.moves.length ? 'Finish' : 'Next';
     syncFlag(); syncAsk();
