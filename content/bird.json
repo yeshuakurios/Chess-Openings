@@ -476,6 +476,58 @@
             "color": "green"
           }
         ]
+      },
+      "plan": {
+        "steps": [
+          {
+            "text": "Aim the knight and the long-diagonal bishop at the key central square, then jump the knight there.",
+            "shapes": [
+              {
+                "from": "f3",
+                "to": "e5",
+                "color": "green"
+              },
+              {
+                "from": "b2",
+                "to": "e5",
+                "color": "blue"
+              },
+              {
+                "from": "e5",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "Play the d-pawn up one step and bring the last knight out behind it.",
+            "shapes": [
+              {
+                "from": "d2",
+                "to": "d3",
+                "color": "green"
+              },
+              {
+                "from": "b1",
+                "to": "d2",
+                "color": "blue"
+              }
+            ]
+          },
+          {
+            "text": "Swing the queen toward the king side and keep the pawns in front of your king solid.",
+            "shapes": [
+              {
+                "from": "d1",
+                "to": "e1",
+                "color": "green"
+              },
+              {
+                "from": "g8",
+                "color": "red"
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -899,6 +951,52 @@
             "color": "yellow"
           }
         ]
+      },
+      "plan": {
+        "steps": [
+          {
+            "text": "Finish development first: knight out and the king-side bishop to its long diagonal.",
+            "shapes": [
+              {
+                "from": "b1",
+                "to": "c3",
+                "color": "green"
+              },
+              {
+                "from": "f1",
+                "to": "g2",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Trade off the bishop that eyes your king-side pawns.",
+            "shapes": [
+              {
+                "from": "c1",
+                "to": "f4",
+                "color": "red"
+              },
+              {
+                "from": "d6",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "Keep the king in the middle until the attack is blunted. The extra pawn decides later.",
+            "shapes": [
+              {
+                "from": "e1",
+                "color": "yellow"
+              },
+              {
+                "from": "g4",
+                "color": "red"
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -1160,6 +1258,49 @@
           {
             "from": "g1",
             "color": "green"
+          }
+        ]
+      },
+      "plan": {
+        "steps": [
+          {
+            "text": "Use the pawn wedge for space: bring the knight out, then push the e-pawn.",
+            "shapes": [
+              {
+                "from": "b1",
+                "to": "c3",
+                "color": "green"
+              },
+              {
+                "from": "e3",
+                "to": "e4",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Develop the dark-squared bishop on a useful diagonal to support the center.",
+            "shapes": [
+              {
+                "from": "c1",
+                "to": "d2",
+                "color": "blue"
+              }
+            ]
+          },
+          {
+            "text": "Swing the queen toward the king side and lift a rook once the center is set.",
+            "shapes": [
+              {
+                "from": "d1",
+                "to": "e1",
+                "color": "green"
+              },
+              {
+                "from": "g8",
+                "color": "red"
+              }
+            ]
           }
         ]
       }
@@ -1561,7 +1702,62 @@
             ]
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Aim the knight and the long-diagonal bishop at the key central square, then jump the knight there.",
+            "shapes": [
+              {
+                "from": "f3",
+                "to": "e5",
+                "color": "green"
+              },
+              {
+                "from": "b2",
+                "to": "e5",
+                "color": "blue"
+              },
+              {
+                "from": "e5",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "If Black pushes the center pawn to cramp you, answer with a side-pawn lever.",
+            "shapes": [
+              {
+                "from": "c2",
+                "to": "c4",
+                "color": "green"
+              },
+              {
+                "from": "d4",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "Trade off the king-side defenders, then bring the queen over to attack.",
+            "shapes": [
+              {
+                "from": "d1",
+                "to": "e1",
+                "color": "green"
+              },
+              {
+                "from": "f6",
+                "color": "red"
+              },
+              {
+                "from": "e7",
+                "color": "red"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "vs-c5",
@@ -1932,7 +2128,62 @@
             ]
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Aim the knight and the long-diagonal bishop at the key central square, then jump the knight there.",
+            "shapes": [
+              {
+                "from": "f3",
+                "to": "e5",
+                "color": "green"
+              },
+              {
+                "from": "b2",
+                "to": "e5",
+                "color": "blue"
+              },
+              {
+                "from": "e5",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "If Black pushes the center pawn to cramp you, answer with a side-pawn lever.",
+            "shapes": [
+              {
+                "from": "c2",
+                "to": "c4",
+                "color": "green"
+              },
+              {
+                "from": "d4",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "Trade off the king-side defenders, then bring the queen over to attack.",
+            "shapes": [
+              {
+                "from": "d1",
+                "to": "e1",
+                "color": "green"
+              },
+              {
+                "from": "f6",
+                "color": "red"
+              },
+              {
+                "from": "e7",
+                "color": "red"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "vs-g6",
@@ -2246,7 +2497,49 @@
             ]
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Decide the center: support the pawn that was just hit, or trade it and open lines.",
+            "shapes": [
+              {
+                "from": "c2",
+                "to": "c3",
+                "color": "green"
+              },
+              {
+                "from": "d4",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "Bring the other knight out and control the key central square with pawns and pieces.",
+            "shapes": [
+              {
+                "from": "b1",
+                "to": "c3",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Once the center is settled, start play on the king side with the queen.",
+            "shapes": [
+              {
+                "from": "d1",
+                "to": "e1",
+                "color": "green"
+              },
+              {
+                "from": "g7",
+                "color": "red"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "vs-e6",
@@ -2638,7 +2931,59 @@
             ]
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Plant a knight on the key central square, backed by the long-diagonal bishop.",
+            "shapes": [
+              {
+                "from": "f3",
+                "to": "e5",
+                "color": "green"
+              },
+              {
+                "from": "b2",
+                "to": "e5",
+                "color": "blue"
+              },
+              {
+                "from": "e5",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "Aim the bishop at the king side and bring the queen over for an attack.",
+            "shapes": [
+              {
+                "from": "d3",
+                "to": "h7",
+                "color": "yellow"
+              },
+              {
+                "from": "d1",
+                "to": "e1",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Watch for Black’s central pawn break and answer it with the other knight.",
+            "shapes": [
+              {
+                "from": "b1",
+                "to": "c3",
+                "color": "green"
+              },
+              {
+                "from": "c5",
+                "color": "red"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "main-d5-nc6",
@@ -2977,7 +3322,55 @@
             ]
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Count the attackers and defenders on the f-pawn and keep it defended.",
+            "shapes": [
+              {
+                "from": "d6",
+                "to": "f4",
+                "color": "red"
+              },
+              {
+                "from": "e3",
+                "to": "f4",
+                "color": "blue"
+              },
+              {
+                "from": "f4",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "If Black trades the bishop for your knight, you get the bishop pair. Open the position later.",
+            "shapes": [
+              {
+                "from": "g4",
+                "to": "f3",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "Develop the long-diagonal bishop and take control of the key central square.",
+            "shapes": [
+              {
+                "from": "c1",
+                "to": "b2",
+                "color": "green"
+              },
+              {
+                "from": "f3",
+                "to": "e5",
+                "color": "green"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "vs-f5",
@@ -3284,7 +3677,45 @@
             ]
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Expand in the center with a pawn before Black does.",
+            "shapes": [
+              {
+                "from": "c2",
+                "to": "c4",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Bring the other knight out to the third rank.",
+            "shapes": [
+              {
+                "from": "b1",
+                "to": "c3",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Swing the queen to the king side, but do not weaken your queen side.",
+            "shapes": [
+              {
+                "from": "d1",
+                "to": "e1",
+                "color": "green"
+              },
+              {
+                "from": "b2",
+                "color": "yellow"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "vs-d6",
@@ -3598,7 +4029,49 @@
             ]
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Decide the center: support the pawn that was just hit, or trade it and open lines.",
+            "shapes": [
+              {
+                "from": "c2",
+                "to": "c3",
+                "color": "green"
+              },
+              {
+                "from": "d4",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "Bring the other knight out and control the key central square with pawns and pieces.",
+            "shapes": [
+              {
+                "from": "b1",
+                "to": "c3",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Once the center is settled, start play on the king side with the queen.",
+            "shapes": [
+              {
+                "from": "d1",
+                "to": "e1",
+                "color": "green"
+              },
+              {
+                "from": "g7",
+                "color": "red"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "vs-nc6",
@@ -3896,7 +4369,50 @@
             "b": 64
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Challenge Black’s central pawn with a side-pawn lever.",
+            "shapes": [
+              {
+                "from": "c2",
+                "to": "c4",
+                "color": "green"
+              },
+              {
+                "from": "d5",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "Keep the long-diagonal bishop on the center and jump the knight to the key square.",
+            "shapes": [
+              {
+                "from": "f3",
+                "to": "e5",
+                "color": "green"
+              },
+              {
+                "from": "b2",
+                "to": "e5",
+                "color": "blue"
+              }
+            ]
+          },
+          {
+            "text": "Swing the queen to the king side and trade rather than let Black’s pawn break cramp you.",
+            "shapes": [
+              {
+                "from": "d1",
+                "to": "e1",
+                "color": "green"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "d5-bf5",
@@ -4213,7 +4729,49 @@
             ]
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Aim a knight at Black’s outside bishop to challenge it or force it away.",
+            "shapes": [
+              {
+                "from": "f3",
+                "to": "h4",
+                "color": "green"
+              },
+              {
+                "from": "f5",
+                "color": "red"
+              }
+            ]
+          },
+          {
+            "text": "Take the long diagonal with your bishop and control the key central square.",
+            "shapes": [
+              {
+                "from": "c1",
+                "to": "b2",
+                "color": "green"
+              },
+              {
+                "from": "e5",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "Push a pawn to gain space once the bishop has been dealt with.",
+            "shapes": [
+              {
+                "from": "c2",
+                "to": "c4",
+                "color": "green"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "d5-e6",
@@ -4555,7 +5113,54 @@
             "b": 16
           }
         }
-      ]
+      ],
+      "plan": {
+        "steps": [
+          {
+            "text": "Plant a knight on the key central square, backed by the long-diagonal bishop.",
+            "shapes": [
+              {
+                "from": "f3",
+                "to": "e5",
+                "color": "green"
+              },
+              {
+                "from": "b2",
+                "to": "e5",
+                "color": "blue"
+              },
+              {
+                "from": "e5",
+                "color": "yellow"
+              }
+            ]
+          },
+          {
+            "text": "Aim the bishop at the king side and swing the queen over to attack.",
+            "shapes": [
+              {
+                "from": "d3",
+                "to": "h7",
+                "color": "yellow"
+              },
+              {
+                "from": "d1",
+                "to": "e1",
+                "color": "green"
+              }
+            ]
+          },
+          {
+            "text": "Do not rush the center pawn forward where Black can hit it. Break only when your pieces are ready.",
+            "shapes": [
+              {
+                "from": "d4",
+                "color": "red"
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

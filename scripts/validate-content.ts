@@ -52,6 +52,19 @@ for (const file of listContentFiles()) {
       if (!Number.isInteger(v.board.ply) || v.board.ply < 0 || v.board.ply > v.moves.length) fail(tag, `board ply ${v.board.ply} out of range`);
       checkShapes(`${tag} board`, v.board.shapes);
     }
+    if (!v.plan?.steps || v.plan.steps.length !== 3) fail(tag, 'needs a middlegame plan of exactly 3 steps (npm run plans documents the format)');
+    else {
+      // the drawings are on the position after the last move: arrows must start on a piece, and no step may be empty or a wall of text
+      const end = new Chess(); try { v.moves.forEach(m => end.move(m.san)); } catch { /* reported below */ }
+      v.plan.steps.forEach((st, k) => {
+        const at = `${tag} plan step ${k + 1}`;
+        if (!st.text || st.text.length > 130) fail(at, 'text missing or longer than 130 characters (it must stay a one-glance sentence)');
+        plain(at, st.text ?? '');
+        if (!st.shapes?.length) fail(at, 'needs at least one drawing');
+        checkShapes(at, st.shapes);
+        for (const sh of st.shapes ?? []) if (sh.to !== undefined && SQUARE.test(sh.from) && !end.get(sh.from as Parameters<typeof end.get>[0])) fail(at, `arrow ${sh.from}${sh.to} starts on an empty square in the final position`);
+      });
+    }
     const chess = new Chess();
     v.moves.forEach((m, i) => {
       spoken(`${tag} ply ${i + 1} narration`, m.narration);

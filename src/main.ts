@@ -14,6 +14,7 @@ import { analyzeGames, gameAttempts, gameMistakeText, gradeOf, mergeImports, IMP
 import { fmtEval } from './grade.ts';
 import { explainMistake } from './mistakestory.ts';
 import { mountMistakeStory } from './mistakeview.ts';
+import { openPlan } from './planview.ts';
 import { fetchGames, FIRST_GAMES, LATER_GAMES, USERNAME } from './lichess.ts';
 import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
@@ -459,7 +460,8 @@ function learn(o: Opening, v: Variation) {
   markLearned(goalKey(o));
   app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button><details class="more inline"><summary>More</summary><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button><button class="btn" id="paste">Paste explanation</button></details>`, lineMenu(o, v, 'Learn'), linePicks(o, v, 'learn'));
   walkLine(ui(), o, v, { next: btn('next'), prev: btn('prev'), trap: btn('trap'), flag: btn('flag'), ask: btn('ask'), paste: btn('paste') }, () => {
-    markLearned(key(o, v)); location.hash = href('practice', o.id, v.id);
+    markLearned(key(o, v));
+    void openPlan(o, v, { doneLabel: 'On to Practice' }).then(() => { location.hash = href('practice', o.id, v.id); });
   });
 }
 
@@ -482,6 +484,7 @@ async function practice(o: Opening, v: Variation, startPly?: number) {
     document.getElementById('msg')?.insertAdjacentHTML('beforeend', `<div class="stat">+${s.xp} XP${s.best >= 2 ? ` · best run ×${s.best}` : ''} · ${s.goal.today >= s.goal.target ? 'daily goal done' : `${s.goal.today}/${s.goal.target} today`}</div>`);
     celebrate(s);
     btn('again').hidden = false; btn('done').hidden = false;
+    if (!startPly) void openPlan(o, v, { delay: 900 });
     btn('done').onclick = () => goTo(startPly ? href('games') : '#/');
     btn('again').onclick = () => { app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`, lineMenu(o, v, 'Practice'), linePicks(o, v, 'practice')); void run(); };
   };
@@ -559,6 +562,8 @@ async function drill() {
     if (mistakes === 0) awardLineBonus();
     combo = mistakes === 0 ? combo + 1 : 0; setBestCombo(combo);
     played++;
+    await openPlan(o, v, { delay: 700 });
+    if (my !== token) return;
     const more = await goOn();
     if (my !== token) return;
     if (!more) break;
