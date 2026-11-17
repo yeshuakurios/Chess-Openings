@@ -143,7 +143,7 @@ function home() {
         <div class="tag">${o.color === 'white' ? 'White' : 'Black'} · ${o.variations.length} line${o.variations.length === 1 ? '' : 's'} total · ${coverage} coverage score${losses ? ` · lost ${losses}` : ''}${o.status === 'draft' ? ' · draft' : ''}</div>
         <div class="goal"><i style="width:${coverage}%"></i></div>
         <div class="row between">
-          <a class="btn primary" href="${href('o', o.id)}">Start learning →</a>
+          <a class="btn primary" href="${href('learn', o.id, nextLine(o).id)}">Start learning →</a>
           <button class="pill" type="button" data-later="${o.id}">Save for later</button>
         </div>
       </div>`;
@@ -396,31 +396,21 @@ const lineMenu = (o: Opening, v: Variation, active: 'Learn' | 'Practice') => {
   ];
 };
 
+/** The line picker (#n ⌄) in the board header: every variation of this opening, for the given mode. */
+const linePicks = (o: Opening, v: Variation, mode: 'learn' | 'practice') => o.variations.map(x => ({
+  label: x.name, href: href(mode, o.id, x.id), active: x.id === v.id,
+  moves: x.moves.map((m, i) => (i % 2 === 0 ? `${i / 2 + 1}. ` : '') + m.san).join(' ')
+}));
+/** The line "Start learning" opens: the first one not learned yet, else the first. */
+const nextLine = (o: Opening) => o.variations.find(v => !isLearned(key(o, v))) ?? o.variations[0];
+
+/** Learn opens straight on the board; the goal and strategy are the first message, then each move's note. */
 function learn(o: Opening, v: Variation) {
-  const showGoal = !isLearned(goalKey(o));
-  const walk = () => {
-    app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button><details class="more inline"><summary>More</summary><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button></details>`, lineMenu(o, v, 'Learn'));
-    walkLine(ui(), o, v, { next: btn('next'), prev: btn('prev'), trap: btn('trap'), flag: btn('flag'), ask: btn('ask') }, () => {
-      markLearned(key(o, v)); location.hash = href('practice', o.id, v.id);
-    });
-  };
-  window.scrollTo(0, 0);
-  const [goalLead, goalRest] = splitLead(o.goal.text);
-  const [stratLead, stratRest] = splitLead(v.strategy);
-  app.innerHTML = `<main class="page learn"><a class="back" data-goback href="${href('o', o.id)}">← ${esc(o.name)}</a>
-    ${showGoal ? `<div class="tag">Positional goal</div><h2 class="hero-title">${esc(o.goal.title)}</h2><p class="lead">${esc(goalLead)}</p>
-    ${fold(goalRest, o.goal.plans, 'Read more')}
-    ${boardFold('goal-board', o.goal.board)}` : ''}
-    <div class="tag">Strategy for this variation</div><h2 class="hero-title">${esc(v.name)}</h2><p class="lead">${esc(stratLead)}</p>
-    ${fold(stratRest, [], 'Read more')}
-    ${lineViewerSlot('step-view')}
-    <button class="btn primary big" id="go">Show me the line</button></main>`;
-  mountLineViewer(document.getElementById('step-view')!, o, v);
-  if (showGoal) drawOnOpen('goal-board', o, goalVariation(o), o.goal.board);
-  document.getElementById('go')!.onclick = () => {
-    if (showGoal) markLearned(goalKey(o));
-    walk();
-  };
+  markLearned(goalKey(o));
+  app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button><details class="more inline"><summary>More</summary><button class="btn" id="flag">Need more explanation</button><button class="btn" id="ask">Ask a question</button></details>`, lineMenu(o, v, 'Learn'), linePicks(o, v, 'learn'));
+  walkLine(ui(), o, v, { next: btn('next'), prev: btn('prev'), trap: btn('trap'), flag: btn('flag'), ask: btn('ask') }, () => {
+    markLearned(key(o, v)); location.hash = href('practice', o.id, v.id);
+  });
 }
 
 const btn = (id: string) => document.getElementById(id) as HTMLButtonElement;
@@ -431,7 +421,7 @@ const endBtns = `<button class="btn primary" id="again" hidden>Again</button><bu
 
 async function practice(o: Opening, v: Variation, startPly?: number) {
   const my = ++token;
-  app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`, lineMenu(o, v, 'Practice'));
+  app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`, lineMenu(o, v, 'Practice'), linePicks(o, v, 'practice'));
   const run = async () => {
     btn('again').hidden = true; btn('done').hidden = true;
     const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, ...(startPly ? { startPly } : {}), onAttempt: a => logAttempt({ ...a, k: key(o, v), m: 'p', ...(startPly ? { o: 1 as const } : {}) }) });
@@ -439,7 +429,7 @@ async function practice(o: Opening, v: Variation, startPly?: number) {
     if (mistakes === 0 && !startPly) { markLearned(key(o, v)); awardLineBonus(); } // starting mid-line is a spot check, not a whole line
     btn('again').hidden = false; btn('done').hidden = false;
     btn('done').onclick = () => goTo(startPly ? href('games') : href('o', o.id));
-    btn('again').onclick = () => { app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`, lineMenu(o, v, 'Practice')); void run(); };
+    btn('again').onclick = () => { app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`, lineMenu(o, v, 'Practice'), linePicks(o, v, 'practice')); void run(); };
   };
   void run();
 }
