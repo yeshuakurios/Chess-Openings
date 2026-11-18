@@ -2096,7 +2096,7 @@
         },
         {
           "san": "c6",
-          "note": "Support the center pawn.",
+          "note": "Block the long diagonal: the bishop on e4 was eyeing b7 and the rook on a8.",
           "eval": 0,
           "caps": [
             {
