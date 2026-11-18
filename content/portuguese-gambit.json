@@ -3801,7 +3801,7 @@
         },
         {
           "san": "Nc3",
-          "note": "White develops and lets Black decide what to do with the pawn.",
+          "note": "White develops, but it is a small slip: the knight can be kicked with d4, so Black gains space with tempo.",
           "eval": -0.3,
           "stats": {
             "total": 32077619,
