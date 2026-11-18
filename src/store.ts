@@ -113,8 +113,13 @@ export function setShelved(openingId: string, on: boolean) {
   void save();
 }
 
+/** "Completed": the line was played through with no mistakes and no hints (the green check). Also puts it in the Drill schedule. */
 export function markLearned(k: string) {
   progress.learned[k] = true;
+  startCard(k);
+}
+/** Put a line in the Drill schedule (any finished Practice run, flawless or not). */
+export function startCard(k: string) {
   if (!progress.cards[k]) progress.cards[k] = createEmptyCard(new Date());
   void save();
 }

@@ -13,12 +13,12 @@ export const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<'
 
 /** Shared play screen shell: header, progress, message card, eval bar, board, controls.
  * `menu`, when given, turns the title into a tappable mode switcher (Learn/Practice/…) for this line. */
-export interface LinePick { label: string; href: string; active?: boolean; moves: string }
+export interface LinePick { label: string; href: string; active?: boolean; moves: string; mark?: 'green' | 'gold' }
 export function screenShell(title: string, subtitle: string, controls: string, menu?: { label: string; href: string; active?: boolean; stat?: string }[], lines?: LinePick[]): string {
   const cur = lines?.findIndex(l => l.active) ?? -1;
   const picker = lines && lines.length > 1
     ? `<button class="linebtn" id="linebtn" type="button" aria-haspopup="true" aria-expanded="false">#${cur + 1}<svg class="chev" viewBox="0 0 20 20" width="12" height="12" aria-hidden="true"><path d="M5 7l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-       <div class="linemenu" id="linemenu" hidden role="menu">${lines.map((l, i) => `<a href="${l.href}" class="lineitem${l.active ? ' on' : ''}" role="menuitem"><i>${i + 1}</i><span><b>${esc(l.label)}</b><small>${esc(l.moves)}</small></span></a>`).join('')}</div>`
+       <div class="linemenu" id="linemenu" hidden role="menu">${lines.map((l, i) => `<a href="${l.href}" class="lineitem${l.active ? ' on' : ''}" role="menuitem"><i>${i + 1}</i><span><b>${esc(l.label)}${l.mark ? `<span class="check ${l.mark}" aria-label="${l.mark === 'gold' ? 'Mastered' : 'Completed'}">✓</span>` : ''}</b><small>${esc(l.moves)}</small></span></a>`).join('')}</div>`
     : '';
   const titleHtml = menu && menu.length
     ? `<button class="modebtn" id="modebtn" type="button" aria-haspopup="true" aria-expanded="false">${esc(title)}<svg class="chev" viewBox="0 0 20 20" width="12" height="12" aria-hidden="true"><path d="M5 7l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>

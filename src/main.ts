@@ -2,7 +2,7 @@ import './style.css';
 import { registerSW } from 'virtual:pwa-register';
 import { openings, findOpening, findVariation, key } from './content.ts';
 import { addNotes, noteCount, loadNotes, startNoteCycle } from './notestore.ts';
-import { getFixes, reviewFix, addQuestion, awardLineBonus, clearFlags, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, isShelved, loadProgress, logAttempt, markLearned, review, setBestCombo, setGames, setShelved, setToken, syncNow, type SyncStatus } from './store.ts';
+import { getFixes, reviewFix, addQuestion, awardLineBonus, clearFlags, dueKeys, exportProgress, getProgress, grantBadges, hasToken, importProgress, isLearned, isShelved, loadProgress, logAttempt, markLearned, review, startCard, setBestCombo, setGames, setShelved, setToken, syncNow, type SyncStatus } from './store.ts';
 import { moveLabel, playLine, walkLine, type Ui } from './play.ts';
 import { fenAfter, staticBoard } from './board.ts';
 import { lineViewerSlot, mountLineViewer } from './lineview.ts';
@@ -20,7 +20,7 @@ import { aiExplain } from './ai.ts';
 import { lineReach, reachText } from './stats.ts';
 import { DAILY_GOAL, dayKey, earnedNow, levelFor, streaks, totalXp, xpForAttempt } from './gamify.ts';
 import { hasMilestone, isComboMark, newTally, snapshot, summarize, tallyMove, type Snapshot, type Summary, type Tally } from './session.ts';
-import { HAPTIC, buzz, confetti, floatXp, showCombo, toast } from './juice.ts';
+import { HAPTIC, buzz, confetti, floatXp, masteryCelebration, showCombo, toast } from './juice.ts';
 import { esc, screenShell } from './ui.ts';
 import { goTo, installNavLinks, trackEntry } from './nav.ts';
 import { answers } from './answers.ts';
@@ -111,7 +111,9 @@ const wins = (s: Summary) => [
 ].filter(Boolean);
 function celebrate(s: Summary) {
   if (!hasMilestone(s)) return;
-  confetti(); buzz(HAPTIC.win);
+  buzz(HAPTIC.win);
+  if (s.mastered.length) { masteryCelebration(lineName(s.mastered[0]), s.mastered.length - 1); return; }
+  confetti();
   toast(wins(s)[0]);
 }
 const goalKey = (o: Opening) => `goal:${o.id}`;
@@ -158,7 +160,7 @@ function home() {
   app.innerHTML = `
   <main class="page">
     <div class="row between head"><h1>Opening Goals</h1><a class="gear" href="${href('settings')}" aria-label="Settings">${GEAR}</a></div>
-    <p class="muted">Learn the plan first, then the line. · ${totalDone}/${totalLines} lines learned</p>
+    <p class="muted">Practice each line until it is perfect. · ${totalDone}/${totalLines} lines completed</p>
     ${progressCard}
     <a class="btn primary big" href="${href('drill')}">${due ? 'Play a few lines' : 'Nothing to review. Enjoy your day.'}</a>
     <div class="row links"><a href="${href('mistakes')}">Tricky spots${trouble ? ` (${trouble})` : ''}</a><a href="${href('ask')}">Questions${waiting ? ` (${waiting})` : ''}</a>${fromGames ? `<a href="${href('games')}">From your games (${fromGames})</a>` : ''}</div>
@@ -177,7 +179,7 @@ function home() {
         <div class="tag">${o.color === 'white' ? 'White' : 'Black'} · ${o.variations.length} line${o.variations.length === 1 ? '' : 's'} total · ${coverage} coverage score${losses ? ` · lost ${losses}` : ''}${o.status === 'draft' ? ' · draft' : ''}</div>
         <div class="goal"><i style="width:${coverage}%"></i></div>
         <div class="row between">
-          <a class="btn primary" href="${href('learn', o.id, nextLine(o).id)}">Start learning →</a>
+          <a class="btn primary" href="${href('practice', o.id, nextLine(o).id)}">Start practicing →</a>
           <button class="pill" type="button" data-later="${o.id}">Save for later</button>
         </div>
       </div>`;
@@ -416,16 +418,15 @@ function openingPage(o: Opening) {
     <h2>Variations</h2>
     ${o.variations.map((v, i) => {
       const m = masteryOf(o, v), active = m.level !== 'New' && m.level !== 'Mastered';
-      if (!active) return `<div class="card compact"><div><b>${esc(v.name)}</b><span class="tag">${m.level}</span></div>
-        <div class="row"><a class="btn primary" href="${href('learn', o.id, v.id)}">Learn</a><a class="btn" href="${href('practice', o.id, v.id)}">Practice</a></div></div>`;
+      if (!active) return `<div class="card compact"><div><b>${esc(v.name)}</b>${checkOf(o, v)}<span class="tag">${m.level}</span></div>
+        <div class="row"><a class="btn primary" href="${href('practice', o.id, v.id)}">Practice</a></div></div>`;
       const [lead, rest] = splitLead(v.strategy);
-      return `<div class="card"><b>${esc(v.name)}</b>
+      return `<div class="card"><b>${esc(v.name)}</b>${checkOf(o, v)}
       <p class="muted">${esc(lead)}</p>
       ${viewFold('lv-' + i)}
       ${fold(rest, [], 'Read the strategy')}
       ${lineReach(o, v) !== undefined ? `<p class="muted">${esc(reachText(lineReach(o, v)))}</p>` : ''}
-      <div class="row"><a class="btn primary" href="${href('learn', o.id, v.id)}">Learn</a>
-      <a class="btn" href="${href('practice', o.id, v.id)}">Practice</a>
+      <div class="row"><a class="btn primary" href="${href('practice', o.id, v.id)}">Practice</a>
       <span class="tag">${m.level}</span></div>
       <p class="muted">${m.hint}</p></div>`;
     }).join('')}
@@ -435,35 +436,28 @@ function openingPage(o: Opening) {
   document.getElementById('shelve')!.onclick = () => { setShelved(o.id, !isShelved(o.id)); goTo('#/'); };
 }
 
-/** Discovered = at least learned; perfected = Mastered level; combo = the all-time Drill streak (global, like ChessReps' "best combo"). */
-const lineMenu = (o: Opening, v: Variation, active: 'Learn' | 'Practice') => {
-  const total = o.variations.length;
-  const discovered = o.variations.filter(x => isLearned(key(o, x))).length;
+/** Mode switcher: Practice and Drill. Perfected = Mastered level; combo = the all-time Drill streak. */
+const lineMenu = (o: Opening, v: Variation) => {
   const perfected = o.variations.filter(x => masteryOf(o, x).level === 'Mastered').length;
   return [
-    { label: 'Learn', href: href('learn', o.id, v.id), active: active === 'Learn', stat: `${discovered}/${total} discovered` },
-    { label: 'Practice', href: href('practice', o.id, v.id), active: active === 'Practice', stat: `${perfected}/${total} perfected` },
+    { label: 'Practice', href: href('practice', o.id, v.id), active: true, stat: `${perfected}/${o.variations.length} mastered` },
     { label: 'Drill', href: href('drill'), active: false, stat: `×${getProgress().bestCombo} best combo` },
   ];
 };
 
+/** Green ✓ once the line was played through with no mistakes and no hints; gold ✓ once Mastered. */
+const checkOf = (o: Opening, v: Variation) =>
+  masteryOf(o, v).level === 'Mastered' ? '<span class="check gold" title="Mastered" aria-label="Mastered">✓</span>'
+  : isLearned(key(o, v)) ? '<span class="check green" title="Played with no mistakes" aria-label="Played with no mistakes">✓</span>' : '';
+
 /** The line picker (#n ⌄) in the board header: every variation of this opening, for the given mode. */
-const linePicks = (o: Opening, v: Variation, mode: 'learn' | 'practice') => o.variations.map(x => ({
-  label: x.name, href: href(mode, o.id, x.id), active: x.id === v.id,
+const linePicks = (o: Opening, v: Variation) => o.variations.map(x => ({
+  label: x.name, href: href('practice', o.id, x.id), active: x.id === v.id,
+  mark: masteryOf(o, x).level === 'Mastered' ? 'gold' as const : isLearned(key(o, x)) ? 'green' as const : undefined,
   moves: x.moves.map((m, i) => (i % 2 === 0 ? `${i / 2 + 1}. ` : '') + m.san).join(' ')
 }));
 /** The line "Start learning" opens: the first one not learned yet, else the first. */
 const nextLine = (o: Opening) => o.variations.find(v => !isLearned(key(o, v))) ?? o.variations[0];
-
-/** Learn opens straight on the board; the goal and strategy are the first message, then each move's note. */
-function learn(o: Opening, v: Variation) {
-  markLearned(goalKey(o));
-  app.innerHTML = screenShell('Learn', esc(o.name), `<button class="ctl" id="prev">‹</button><button class="btn" id="trap" hidden>Common mistake</button><button class="btn primary" id="next">Next</button><button class="btn" id="ask">Ask a question</button><details class="more inline"><summary>More</summary><button class="btn" id="paste">Paste explanation</button></details>`, lineMenu(o, v, 'Learn'), linePicks(o, v, 'learn'));
-  walkLine(ui(), o, v, { next: btn('next'), prev: btn('prev'), trap: btn('trap'), flag: btn('flag'), ask: btn('ask'), paste: btn('paste') }, () => {
-    markLearned(key(o, v));
-    void openPlan(o, v, { doneLabel: 'On to Practice' }).then(() => { location.hash = href('practice', o.id, v.id); });
-  });
-}
 
 const btn = (id: string) => document.getElementById(id) as HTMLButtonElement;
 const ui = (): Ui => ({ board: document.getElementById('board')!, hint: btn('hint'), prev: btn('prev'), fwd: btn('fwd'), resume: (document.getElementById('resume') as HTMLButtonElement | null) ?? undefined, why: (document.getElementById('why') as HTMLButtonElement | null) ?? undefined, flag: (document.getElementById('flag') as HTMLButtonElement | null) ?? undefined, ask: (document.getElementById('ask') as HTMLButtonElement | null) ?? undefined, paste: (document.getElementById('paste') as HTMLButtonElement | null) ?? undefined });
@@ -473,20 +467,20 @@ const endBtns = `<button class="btn primary" id="again" hidden>Again</button><bu
 
 async function practice(o: Opening, v: Variation, startPly?: number) {
   const my = ++token;
-  app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`, lineMenu(o, v, 'Practice'), linePicks(o, v, 'practice'));
+  app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`, lineMenu(o, v), linePicks(o, v));
   const run = async () => {
     btn('again').hidden = true; btn('done').hidden = true;
     const before = takeSnapshot(); tally = newTally();
     const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, ...(startPly ? { startPly } : {}), onAttempt: a => { logAttempt({ ...a, k: key(o, v), m: 'p', ...(startPly ? { o: 1 as const } : {}) }); feel(a); } });
     if (my !== token) return;
-    if (mistakes === 0 && !startPly) { markLearned(key(o, v)); awardLineBonus(); } // starting mid-line is a spot check, not a whole line
+    if (!startPly) { startCard(key(o, v)); if (mistakes === 0) { markLearned(key(o, v)); awardLineBonus(); } } // starting mid-line is a spot check, not a whole line
     const s = summarize(before, takeSnapshot(), tally, getProgress().xp);
     document.getElementById('msg')?.insertAdjacentHTML('beforeend', `<div class="stat">+${s.xp} XP${s.best >= 2 ? ` · best run ×${s.best}` : ''} · ${s.goal.today >= s.goal.target ? 'daily goal done' : `${s.goal.today}/${s.goal.target} today`}</div>`);
     celebrate(s);
     btn('again').hidden = false; btn('done').hidden = false;
     if (!startPly) void openPlan(o, v, { delay: 900 });
     btn('done').onclick = () => goTo(startPly ? href('games') : '#/');
-    btn('again').onclick = () => { app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`, lineMenu(o, v, 'Practice'), linePicks(o, v, 'practice')); void run(); };
+    btn('again').onclick = () => { app.innerHTML = screenShell('Practice', esc(o.name), `${hintBtn}${endBtns}`, lineMenu(o, v), linePicks(o, v)); void run(); };
   };
   void run();
 }
@@ -506,7 +500,7 @@ async function reviewFixes(ids: string[], my: number, title = 'A mistake from yo
     const f = getFixes()[id], found = f && lookup(f.k);
     if (!f || !found) continue;
     const [o, v] = found;
-    app.innerHTML = screenShell(title, esc(o.name), `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`, lineMenu(o, v, 'Practice').map(m => ({ ...m, active: false })));
+    app.innerHTML = screenShell(title, esc(o.name), `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`, lineMenu(o, v).map(m => ({ ...m, active: false })));
     let wrong = 0, hinted = false, ms = 0;
     showCombo(tally.combo);
     await playLine(ui(), o, v, { stopped: () => my !== token, startPly: f.p, single: true, onAttempt: a => {
@@ -542,7 +536,7 @@ async function drill() {
     const learned = Object.keys(getProgress().cards).length;
     app.innerHTML = `<main class="page"><a class="back" data-goback href="#/">← Home</a><h1>Drill</h1>
       <div class="card"><b>${learned ? 'Nothing is due right now.' : 'Nothing to drill yet.'}</b>
-      <p class="muted">${learned ? 'Come back later; the scheduler will bring lines back just before you would forget them.' : 'Learn a variation first and it will appear here.'}</p></div></main>`;
+      <p class="muted">${learned ? 'Come back later; the scheduler will bring lines back just before you would forget them.' : 'Finish a line in Practice and it will appear here.'}</p></div></main>`;
     return;
   }
   let combo = 0, played = 0, fixesDone = 0, stopped = false;
@@ -554,7 +548,7 @@ async function drill() {
   }
   for (const k of stopped ? [] : queue) {
     const [o, v] = lookup(k)!;
-    app.innerHTML = screenShell('Drill', `${esc(o.name)}`, `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`, lineMenu(o, v, 'Practice').map(m => ({ ...m, active: false })));
+    app.innerHTML = screenShell('Drill', `${esc(o.name)}`, `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`, lineMenu(o, v).map(m => ({ ...m, active: false })));
     showCombo(tally.combo); // the run of correct moves carries across lines in one sitting
     const mistakes = await playLine(ui(), o, v, { stopped: () => my !== token, onAttempt: a => { logAttempt({ ...a, k: key(o, v), m: 'd' }); feel(a); } });
     if (my !== token) return;
@@ -570,7 +564,7 @@ async function drill() {
     // Once a line is familiar, check it from the middle once a day. This feeds mastery only; it does not reschedule the line.
     const m = masteryOf(o, v), from = pickSpotCheck(m);
     if (LEVELS.indexOf(m.level) >= 2 && from !== undefined && !hadSpotCheckToday(k, getProgress().attempts)) {
-      app.innerHTML = screenShell('Spot check', esc(o.name), `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`, lineMenu(o, v, 'Practice').map(m => ({ ...m, active: false })));
+      app.innerHTML = screenShell('Spot check', esc(o.name), `${hintBtn}<button class="btn primary" id="nextline" hidden>Next</button><button class="btn" id="enough" hidden>That's enough for today</button>`, lineMenu(o, v).map(m => ({ ...m, active: false })));
       showCombo(tally.combo);
       await playLine(ui(), o, v, { stopped: () => my !== token, startPly: from, onAttempt: a => { logAttempt({ ...a, k, m: 'd', o: 1 }); feel(a); } });
       if (my !== token) return;
@@ -599,7 +593,7 @@ function route() {
   const [, a, b, c, d, e] = location.hash.split('/');
   const o = b ? findOpening(b) : undefined; const v = o && c ? findVariation(o, c) : undefined;
   if (a === 'o' && o) openingPage(o);
-  else if (a === 'learn' && o && v) learn(o, v);
+  else if (a === 'learn' && o && v) goTo(href('practice', o.id, v.id)); // Learn was removed; old links open Practice
   else if (a === 'practice' && o && v) void practice(o, v, d && Number(d) > 0 && Number(d) < v.moves.length ? Number(d) : undefined);
   else if (a === 'games') gamesPage();
   else if (a === 'fix' && o && v && d) fixPage(o, v, Number(d), decodeURIComponent(e ?? ''));
