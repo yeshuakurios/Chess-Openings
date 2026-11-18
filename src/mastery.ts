@@ -49,7 +49,7 @@ export function positionState(attempts: Attempt[]): PositionState {
 export interface LineMastery { level: Level; states: Map<number, PositionState>; hint: string }
 
 const HINTS: Record<Level, string> = {
-  New: 'Press Learn to start.',
+  New: 'Press Practice to start.',
   Learning: 'Next: play the whole line with no mistakes and no hints.',
   Familiar: 'Next: recall every move cleanly on another day.',
   Solid: 'Next: recall it again after a few weeks, and from the middle of the line.',

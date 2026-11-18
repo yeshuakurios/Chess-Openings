@@ -66,3 +66,27 @@ export function confetti(count = 36) {
   document.body.appendChild(box);
   setTimeout(() => box.remove(), 2200);
 }
+
+/** The big one: a line just reached Mastered. A golden check, a gold confetti shower and the line's name, tap anywhere to close. */
+export function masteryCelebration(name: string, more = 0) {
+  document.querySelector('.mastery-pop')?.remove();
+  const el = document.createElement('div');
+  el.className = 'mastery-pop'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Line mastered');
+  el.innerHTML = `<div class="mp-card"><div class="mp-check" aria-hidden="true">✓</div><h2>Mastered!</h2><p></p>${more ? `<small>and ${more} more</small>` : ''}<small>Tap to continue</small></div>`;
+  el.querySelector('p')!.textContent = name;
+  el.onclick = () => el.remove();
+  document.body.appendChild(el);
+  if (reduced()) return;
+  const box = document.createElement('div');
+  box.className = 'confetti gold'; box.setAttribute('aria-hidden', 'true');
+  const golds = ['#ffd700', '#ffb703', '#ffe08a', '#f4a261', '#fff3b0'];
+  for (let i = 0; i < 110; i++) {
+    const c = document.createElement('i');
+    c.style.left = `${Math.random() * 100}%`; c.style.background = golds[i % golds.length];
+    c.style.animationDelay = `${Math.random() * 0.8}s`;
+    c.style.setProperty('--dx', `${(Math.random() - 0.5) * 220}px`); c.style.setProperty('--r', `${Math.random() * 720 - 360}deg`);
+    box.appendChild(c);
+  }
+  document.body.appendChild(box);
+  setTimeout(() => box.remove(), 3600);
+}

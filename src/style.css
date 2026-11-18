@@ -273,3 +273,18 @@ button.back{appearance:none;background:none;border:0;font:inherit;font-weight:60
 .pl-panel{min-height:76px}
 .pl-step{display:flex;gap:12px;align-items:flex-start;margin:8px 0;font-size:18px;line-height:1.35}
 .pl-step b{flex:none;width:30px;height:30px;border-radius:50%;background:#4ade80;color:#0b0f1a;display:grid;place-items:center;font-size:16px}
+
+/* completion marks: green = played through with no mistakes, gold = mastered */
+.check{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:6px;border-radius:50%;font-size:12px;font-weight:800;vertical-align:middle;line-height:1}
+.check.green{background:#2ecc71;color:#06260f}
+.check.gold{background:linear-gradient(135deg,#ffe08a,#ffb703);color:#4a3000;box-shadow:0 0 8px rgba(255,200,40,.6)}
+.confetti.gold i{animation-duration:2.6s}
+.mastery-pop{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.72);animation:mpfade .3s ease-out}
+.mp-card{text-align:center;padding:28px 36px;max-width:86vw;color:#fff}
+.mp-card h2{font-size:34px;margin:12px 0 4px;color:#ffd166}
+.mp-card p{font-size:18px;margin:0 0 10px}
+.mp-card small{display:block;color:var(--muted);margin-top:6px}
+.mp-check{width:120px;height:120px;margin:0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:76px;font-weight:800;color:#4a3000;background:radial-gradient(circle at 35% 30%,#fff3b0,#ffd700 45%,#e09f00);box-shadow:0 0 60px rgba(255,200,40,.75);animation:mppop .7s cubic-bezier(.2,1.4,.4,1)}
+@keyframes mpfade{from{opacity:0}to{opacity:1}}
+@keyframes mppop{0%{transform:scale(.2) rotate(-25deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+@media (prefers-reduced-motion:reduce){.mp-check,.mastery-pop{animation:none}}
