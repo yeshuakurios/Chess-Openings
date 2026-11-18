@@ -103,6 +103,19 @@ for (const file of listContentFiles()) {
       }
       try { chess.move(m.san); } catch { fail(tag, `illegal move ${i + 1}: ${m.san}`); return; }
       if (!m.note) fail(tag, `ply ${i + 1} (${m.san}) has no note`);
+      // Pawn claims must hold on the board after the move (a pawn that was traded off cannot be "supported").
+      for (const t of [m.note, m.narration]) {
+        if (!t) continue;
+        for (const r of t.matchAll(/\b([a-h])-pawn/gi)) {
+          const file = r[1].toLowerCase();
+          const has = [1, 2, 3, 4, 5, 6, 7, 8].some(rk => chess.get(`${file}${rk}` as Parameters<typeof chess.get>[0])?.type === 'p');
+          if (!has) fail(tag, `ply ${i + 1} (${m.san}): text mentions the ${file}-pawn but no pawn is on the ${file}-file`);
+        }
+        if (/\b(center|central) pawn/i.test(t)) {
+          const has = ['d', 'e'].some(fl => [4, 5].some(rk => chess.get(`${fl}${rk}` as Parameters<typeof chess.get>[0])?.type === 'p'));
+          if (!has) fail(tag, `ply ${i + 1} (${m.san}): text mentions a center pawn but no pawn is on d4, d5, e4 or e5`);
+        }
+      }
       checkShapes(`${tag} ply ${i + 1}`, m.shapes);
       if (process.argv.includes('--require-evals') && typeof m.eval !== 'number') fail(tag, `ply ${i + 1} has no eval`);
     });
